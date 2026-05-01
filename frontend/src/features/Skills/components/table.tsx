@@ -1,61 +1,29 @@
-import {
-  createColumnHelper,
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  flexRender,
-  type PaginationState,
-} from "@tanstack/react-table";
-import type { Skill } from "../types/skill";
-import { useEffect, useState } from "react";
+import { flexRender } from "@tanstack/react-table";
 import { Pagination } from "./Pagination";
+import { useSkills } from "../hooks/useSkills";
+import { useSkillsTable } from "../hooks/useSkillsTable";
 
-const columnHelper = createColumnHelper<Skill>();
-
-const columns = [
-  columnHelper.accessor("id", {
-    cell: (info) => info.getValue(),
-    header: "ID",
-  }),
-  columnHelper.accessor("skill", {
-    cell: (info) => info.getValue(),
-    header: "Skill",
-  }),
-  columnHelper.accessor("level", {
-    cell: (info) => info.getValue(),
-    header: "Level",
-  }),
-];
 
 export default function Table() {
-  const [skills, setSkills] = useState<Skill[]>([]);
+  const { skills, loading, error, fetchSkills } = useSkills();
+  const { table } = useSkillsTable(skills);
 
-  useEffect(() => {
-    fetch('/api/skills')
-      .then(response => response.json())
-      .then(data => setSkills(data))
-      .catch(error => console.error('Error:', error));
-  }, []);
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  if (error) {
+    return (
+      <div>
+        <p>Error: {error.message}</p>
+        <button onClick={() => void fetchSkills()}>Retry</button>
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    console.info("Pagination: ", pagination);
-  }, [pagination]);
-
-  const table = useReactTable({
-    data: skills,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
-    state: {
-      pagination,
-    },
-  });
+  if (skills.length === 0) {
+    return <p>No skills found.</p>;
+  }
 
   return (
     <section className="mx-auto mt-1 w-full max-w-3xl px-2">
