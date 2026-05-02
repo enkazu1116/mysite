@@ -1,10 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import Header from './components/header'
-import Content from './components/content'
-import Skills from './features/Skills/skills'
-import { BrowserRouter, Routes, Route } from 'react-router'
+import App from './App'
 
 if (import.meta.env.DEV) {
   const { worker } = await import ('./features/Skills/api/mock/browser');
@@ -13,12 +10,6 @@ if (import.meta.env.DEV) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Content />} />
-        <Route path="/skills" element={<Skills />} />
-      </Routes>
-    </BrowserRouter>
+    <App />
   </StrictMode>,
 )

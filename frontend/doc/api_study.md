@@ -81,3 +81,73 @@ stateを適切に構造化する必要があります。
 記事の多くでも安易に使用することを警告しています。
 
 [参考記事](https://zenn.dev/t_keshi/books/you-and-cleaner-react/viewer/for-asynchronous-processing)
+
+## 実装
+```typescript
+const fetchSkills = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+        const data = await fetchSkillsApi();
+        setSkills(data);
+    } catch (error: unknown) {
+        setError(error instanceof Error ? error : new Error("Unknown error"));
+    } finally {
+        setLoading(false);
+    }
+}, []);
+```
+
+### 詳細
+#### useCallback
+再レンダー間で関数定義をキャッシュできるようにするフック
+パフォーマンスを向上させるために関数インスタンスを再生成を抑制し、再描画を減らす。
+
+**構文**
+`useCallback(func, deps)`
+- func: メモ化する関数
+- deps: 依存する変数
+引数depsには、関数が依存する変数を列挙する。
+
+今回の場合は、`fetchSkills`という関数の変数に、`useCallback()`を渡している。
+`useCallback()`はasync関数と[]を引数に関数定義をキャッシュ化している。
+[公式](https://ja.react.dev/reference/react/useCallback#usecallback)
+
+#### 処理内容
+`fetchSkillsApi()`で関数の処理結果を受け取り、`setSkills()`でStateに管理をさせる。
+
+## TanstackQuery(旧: React Query)
+非同期の状態管理ライブラリ
+キャッシュの管理・状態管理・再取得など簡単にさせてくれるらしい。
+ただし、Tanstack Query自体はデータフェッチは行なっていないです。
+
+### Install
+```zsh
+pnpm add @tanstack/react-query
+```
+
+### useQuery()
+```typescript
+const { data, isLoading, error } = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodoList
+})
+```
+
+**引数**
+- queryKey(必須): データを再取得する時やキャッシュ管理などで利用される一意のキー。
+  データが保存される場所
+- queryFn(必須): Promiseを返す関数
+他にも必要に応じて引数を設定可能。
+[useQuery公式](https://tanstack.com/query/latest/docs/framework/react/reference/useQuery)
+
+#### 詳細
+`useQuery`では、引数を指定して変数に処理結果を格納するだけで、簡単に実装が可能。
+その前に実装していた内容は、`useState`, `useCallback`で状態変数を設定し、async関数を定義してから
+`useEffect`で実行していた。
+なのでかなり簡略化ができている。
+
+[参考記事1](https://qiita.com/A-Yuki28/items/1224e19c86bbcd4d4890)
+[参考記事2](https://zenn.dev/tsunadog/articles/61c27e1add4580)
+[公式](https://tanstack.com/query/latest)
