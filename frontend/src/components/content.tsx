@@ -4,5 +4,5 @@ export default function Content() {
             <h1>Content</h1>
             <p>Hi, My name is John</p>
         </div>
-    )
+    );
 }

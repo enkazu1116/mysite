@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+import { projects } from '../../../Projects/data/ProjectData';
 
 export const handlers = [
     http.get('/api/skills', () => {
@@ -10,5 +11,8 @@ export const handlers = [
             { id: 5, skill: 'React', level: 2 },
             { id: 6, skill: 'Node.js', level: 2 },
         ]);
+    }),
+    http.get('/api/projects', () => {
+        return HttpResponse.json(projects);
     }),
 ];

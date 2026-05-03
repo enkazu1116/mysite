@@ -1,0 +1,40 @@
+import type { Project } from "../types/project";
+
+export const projects: Project[] = [
+    {
+        id: 1,
+        projectName: "Project 1",
+        description: "Description 1",
+        useLanguage: "Java",
+        useFramework: "Spring Boot",
+        useDatabase: "MySQL",
+        myRole: "Developer",
+        myAchievement: "Achievement 1",
+        createdAt: "2021-01-01",
+        updatedAt: "2021-01-01T00:00:00.000Z",
+    },
+    {
+        id: 2,
+        projectName: "Project 2",
+        description: "Description 2",
+        useLanguage: "Go",
+        useFramework: "Gin",
+        useDatabase: "PostgreSQL",
+        myRole: "Developer",
+        myAchievement: "Achievement 2",
+        createdAt: "2021-01-01",
+        updatedAt: "2021-01-01T00:00:00.000Z",
+    },
+    {
+        id: 3,
+        projectName: "Project 3",
+        description: "Description 3",
+        useLanguage: "JavaScript",
+        useFramework: "React",
+        useDatabase: "MySQL",
+        myRole: "Developer",
+        myAchievement: "Achievement 3",
+        createdAt: "2021-01-01",
+        updatedAt: "2021-01-01T00:00:00.000Z",
+    },
+];
