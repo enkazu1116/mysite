@@ -4,6 +4,7 @@ import Header from './components/header';
 import Content from './components/content';
 import Skills from './features/Skills/skills';
 import Projects from './features/Projects/projects';
+import Books from './features/Books/books';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -21,6 +22,7 @@ function App() {
                             <Route path="/" element={<Content />} />
                             <Route path="/skills" element={<Skills />} />
                             <Route path="/projects" element={<Projects />} />
+                            <Route path="/books" element={<Books />} />
                         </Routes>        
                     </Suspense>
                 </ErrorBoundary>
