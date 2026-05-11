@@ -13,8 +13,6 @@
     "@types/uuid": "^11.0.0",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.18",
-    "ui6": "^0.1.0",
-    "ui7": "^0.2.3",
     "uuid": "^14.0.0"
   },
   "devDependencies": {
