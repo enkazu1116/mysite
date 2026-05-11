@@ -1,12 +1,16 @@
 {
   "name": "backend",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "infisical run -- bun run --hot src/index.ts",
+    "db:push": "infisical run -- drizzle-kit push",
+    "db:generate": "infisical run -- drizzle-kit generate",
+    "db:migrate": "infisical run -- drizzle-kit migrate",
+    "db:studio": "infisical run -- drizzle-kit studio",
+    "db:introspect": "infisical run -- drizzle-kit introspect"
   },
   "dependencies": {
     "@libsql/client": "^0.17.3",
     "@types/uuid": "^11.0.0",
-    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.18",
     "ui6": "^0.1.0",
