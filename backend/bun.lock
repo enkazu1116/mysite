@@ -9,8 +9,6 @@
         "@types/uuid": "^11.0.0",
         "drizzle-orm": "^0.45.2",
         "hono": "^4.12.18",
-        "ui6": "^0.1.0",
-        "ui7": "^0.2.3",
         "uuid": "^14.0.0",
       },
       "devDependencies": {
@@ -146,10 +144,6 @@
     "source-map-support": ["source-map-support@0.5.21", "", { "dependencies": { "buffer-from": "^1.0.0", "source-map": "^0.6.0" } }, "sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w=="],
 
     "tsx": ["tsx@4.21.0", "", { "dependencies": { "esbuild": "~0.27.0", "get-tsconfig": "^4.7.5" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "bin": { "tsx": "dist/cli.mjs" } }, "sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw=="],
-
-    "ui6": ["ui6@0.1.0", "", {}, "sha512-XcIEJ70rdq52eI9qfj4Pk3TG8um3nwdpIekCE7cDtVapfT7XQjzjODog5Un3RZ2cdej1DYdjC+wxLfFHhgCuHw=="],
-
-    "ui7": ["ui7@0.2.3", "", {}, "sha512-WeCFU1VYtnvHy+QghHEfv8UezR/8ip600E0TQnIZ1dE/bkz4p5KW+Ysgrc3OmwDWawH5KBz2bjWiq0HoOlgzxA=="],
 
     "undici-types": ["undici-types@7.19.2", "", {}, "sha512-qYVnV5OEm2AW8cJMCpdV20CDyaN3g0AjDlOGf1OW4iaDEx8MwdtChUp4zu4H0VP3nDRF/8RKWH+IPp9uW0YGZg=="],
 
