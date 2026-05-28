@@ -51,3 +51,20 @@ pnpm-workspace.yamlの記載内容を修正する。
 allowBuilds:
   msw: false
 ```
+
+### 取り組み3
+**.pnpm-storeとTurborepoの活用**
+1. .pnpm-storeの役割
+ハードリンクで共有ストアを使う仕組みを採用しており、インストールの高速化とディスク使用量の節約を実現する
+2. Turborepoの役割
+モノレポ向けの高速タスクランナー
+
+*なぜTurborepoを使用するのか？*
+問題提起の発火場所となったサイトを見ると、異なるマウントポイント間でハードリンクを作成できない制約があるということだった。
+Turborepoは`turbo prune`というコマンドを使用すると、
+そのアプリのビルドには必要ないアプリやパッケージを消した状態のモノレポを作ってくれるコマンドだそう。
+結果として、リンク切れになる現象に対してnode_modulesにコピーできるので解決することができる。
+
+[公式](https://pnpm.io/docker)
+[参考](https://qiita.com/boxfish_jp/items/2388a5eb04908da3d5b9)
+[問題提起の発火場所となったサイト](https://zenn.dev/umyanka/articles/bd6d78415a0d8d)
