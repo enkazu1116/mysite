@@ -1,5 +1,8 @@
 {
-    "name": "frontend",
-    "service": "frontend",
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "name": "frontend",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "frontend",
+  "workspaceFolder": "/frontend",
+  "forwardPorts": [5173],
+  "postCreateCommand": "pnpm install --frozen-lockfile"
 }
