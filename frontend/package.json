@@ -39,6 +39,7 @@
     "globals": "^17.5.0",
     "jsdom": "^29.1.1",
     "msw": "^2.14.2",
+    "turbo": "^2.9.16",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10",
@@ -49,6 +50,7 @@
       "public"
     ]
   },
+  "packageManager": "pnpm@11.0.0",
   "devEngines": {
     "packageManager": {
       "name": "pnpm",

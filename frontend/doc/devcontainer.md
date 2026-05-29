@@ -68,3 +68,22 @@ Turborepoは`turbo prune`というコマンドを使用すると、
 [公式](https://pnpm.io/docker)
 [参考](https://qiita.com/boxfish_jp/items/2388a5eb04908da3d5b9)
 [問題提起の発火場所となったサイト](https://zenn.dev/umyanka/articles/bd6d78415a0d8d)
+
+### 取り組み4
+**Dockerfileの管理を1本化**
+もともとマルチステージビルドでビルド時間を短縮する予定はあった。
+時間短縮だけが目的であったが、最初の取り組みでは`devcontainer/Dockerfile`と配置していた。
+開発用のコンテナだけを用意しようとしたが、`Turborepo`も使用すると
+ビルドに関して利便性が向上させられる見込みがあったため、導入した。
+
+*自分の誤解*
+ビルドに関して利便性を向上させたが、開発環境には必要技術ではなかった。
+ビルド用にDockerfileを分けて、学んだ技術を生かそうかと考えた。
+
+*最終判断*
+Dockerfileを複数管理することに、違和感を覚えた。
+おそらく管理対象が増えることが望ましくないと考えたためである。
+下記記事を発見し、1つのファイルでの管理に決定
+
+[参考1](https://qiita.com/Sho2010@github/items/6d0f6fe356be6957cfe9)
+[参考2](https://qiita.com/t_sato_gradito/items/10917346738f8a5002c8)
