@@ -1,13 +1,12 @@
 import type {
-    CreateSkillInput,
-    DeleteSkillInput,
-    UpdateSkillInput,
+    CreateSkillsInput,
+    DeleteSkillsInput,
+    UpdateSkillsInput,
 } from "../types/skillInput";
 import type { Skill } from "../types/skill";
 
 /**
- * スキル情報の永続化層に対する取得契約を表す Repository。
- * アプリケーション層はこの契約に依存し、具体的な DB 実装には依存しない。
+ * スキル情報の永続化層に対する契約を表す Repository。
  */
 interface SkillRepository {
     /**
@@ -18,38 +17,35 @@ interface SkillRepository {
     findAll(): Promise<Skill[]>;
 
     /**
-     * 指定したユーザーに紐づくスキル情報を取得する。
+     * 指定したスキル ID に紐づくスキル情報を取得する。
      *
-     * @param userId 検索対象のユーザー ID
-     * @returns 指定ユーザーのスキル一覧
+     * @param skillId 検索対象のスキル ID
+     * @returns 指定スキルの情報。存在しない場合は null
      */
-    findByUserId(userId: string): Promise<Skill[]>;
+    findBySkillId(skillId: string): Promise<Skill | null>;
 
     /**
-     * 1 件分のスキル情報を新規登録する。
-     * フロントエンドで複数言語が選択されていても、このメソッドは 1 言語ずつ登録する想定。
+     * 複数のスキル情報を一括登録する。
      *
      * @param input 登録対象のスキル情報
-     * @returns 登録後のスキル情報
+     * @returns 登録後のスキル情報一覧
      */
-    create(input: CreateSkillInput): Promise<Skill>;
+    createSkills(input: CreateSkillsInput): Promise<Skill[]>;
 
     /**
-     * 既存のスキル情報を 1 件更新する。
-     * 更新対象は skillId と userId の組み合わせで特定する。
+     * 複数のスキル情報を一括更新する。
      *
      * @param input 更新対象のスキル情報
-     * @returns 更新後のスキル情報
+     * @returns 更新後のスキル情報一覧
      */
-    update(input: UpdateSkillInput): Promise<Skill>;
+    updateSkills(input: UpdateSkillsInput): Promise<Skill[]>;
 
     /**
-     * 既存のスキル情報を 1 件物理削除する。
-     * 削除対象は skillId と userId の組み合わせで特定する。
+     * 複数のスキル情報を一括削除する。
      *
      * @param input 削除対象の識別情報
      */
-    delete(input: DeleteSkillInput): Promise<void>;
+    deleteSkills(input: DeleteSkillsInput): Promise<void>;
 }
 
 export type { SkillRepository };

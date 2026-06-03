@@ -1,9 +1,12 @@
-import { Hono } from 'hono'
+import { Hono } from "hono";
+import { skillsRouter } from "./features/skills/router/router";
 
-const app = new Hono()
+const app = new Hono();
 
 app.get('/', (c) => {
   return c.text('Hello Hono!')
-})
+});
 
-export default app
+app.route("/skills", skillsRouter);
+
+export default app;
