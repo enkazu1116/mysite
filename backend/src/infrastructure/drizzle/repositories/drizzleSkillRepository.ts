@@ -2,9 +2,9 @@ import { and, eq, sql } from "drizzle-orm";
 import type { SkillRepository } from "../../../features/skills/repositories/skillRepository";
 import type { Skill } from "../../../features/skills/types/skill";
 import type {
-    CreateSkillInput,
-    DeleteSkillInput,
-    UpdateSkillInput,
+    CreateSkillsInput,
+    DeleteSkillsInput,
+    UpdateSkillsInput,
 } from "../../../features/skills/types/skillInput";
 import type { SkillLevel } from "../../../features/skills/types/skillLevel";
 import db from "../db";
@@ -22,12 +22,6 @@ type SkillRow = {
     tech_category: string;
 };
 
-/**
- * skills / skill_techs / techs の結合結果を、言語単位の Skill に集約する。
- *
- * @param rows 結合結果のレコード一覧
- * @returns techs 配列を持つスキル一覧
- */
 function toSkills(rows: SkillRow[]): Skill[] {
     const skillsById = new Map<string, Skill>();
 
@@ -55,7 +49,7 @@ function toSkills(rows: SkillRow[]): Skill[] {
         });
     }
 
-    return [...skillsById.values()];
+    return Array.from(skillsById.values());
 }
 
 function skillSelect() {
@@ -72,15 +66,7 @@ function skillSelect() {
     };
 }
 
-/**
- * Drizzle を用いて skills / skill_techs / techs テーブルからスキル情報を取得する Repository 実装。
- */
 class DrizzleSkillRepository implements SkillRepository {
-    /**
-     * 全ユーザーのスキル情報を取得する。
-     *
-     * @returns すべてのスキル一覧
-     */
     async findAll(): Promise<Skill[]> {
         const rows = await db
             .select(skillSelect())
@@ -91,152 +77,120 @@ class DrizzleSkillRepository implements SkillRepository {
         return toSkills(rows);
     }
 
-    /**
-     * 指定ユーザーに紐づくスキル情報を取得する。
-     *
-     * @param userId 検索対象のユーザー ID
-     * @returns 指定ユーザーのスキル一覧
-     */
-    async findByUserId(userId: string): Promise<Skill[]> {
+    async findBySkillId(skillId: string): Promise<Skill | null> {
         const rows = await db
             .select(skillSelect())
             .from(skillsTable)
             .innerJoin(skillTechsTable, eq(skillsTable.skill_id, skillTechsTable.skill_id))
             .innerJoin(techsTable, eq(skillTechsTable.tech_id, techsTable.tech_id))
-            .where(eq(skillsTable.user_id, userId));
+            .where(eq(skillsTable.skill_id, skillId));
 
-        return toSkills(rows);
+        const skills = toSkills(rows);
+
+        return skills[0] ?? null;
     }
 
-    /**
-     * 1 言語分のスキル情報を登録し、紐づく複数技術もまとめて登録する。
-     *
-     * @param input 登録対象のスキル情報
-     * @returns 登録後のスキル情報
-     */
-    async create(input: CreateSkillInput): Promise<Skill> {
+    async createSkills(input: CreateSkillsInput): Promise<Skill[]> {
         return db.transaction(async (tx) => {
             const inserted = await tx
                 .insert(skillsTable)
-                .values({
-                    user_id: input.userId,
-                    language: input.language,
-                    experience_months: input.experienceMonths,
-                    level: input.level,
-                    detail: input.detail,
-                })
+                .values(
+                    input.skills.map((skill) => ({
+                        user_id: input.userId,
+                        language: skill.language,
+                        experience_months: skill.experienceMonths,
+                        level: skill.level,
+                        detail: skill.detail,
+                    })),
+                )
                 .returning({
                     skill_id: skillsTable.skill_id,
                 });
 
             if (inserted.length === 0) {
-                throw new Error("Failed to create skill.");
+                throw new Error("Failed to create skills.");
             }
 
             await tx.insert(skillTechsTable).values(
-                input.techIds.map((techId) => ({
-                    skill_id: inserted[0].skill_id,
-                    tech_id: techId,
-                })),
+                inserted.flatMap((insertedSkill, index) =>
+                    input.skills[index].techIds.map((techId) => ({
+                        skill_id: insertedSkill.skill_id,
+                        tech_id: techId,
+                    })),
+                ),
             );
 
-            const created = await tx
-                .select(skillSelect())
-                .from(skillsTable)
-                .innerJoin(skillTechsTable, eq(skillsTable.skill_id, skillTechsTable.skill_id))
-                .innerJoin(techsTable, eq(skillTechsTable.tech_id, techsTable.tech_id))
-                .where(eq(skillsTable.skill_id, inserted[0].skill_id));
+            const insertedIds = new Set(inserted.map((skill) => skill.skill_id));
+            const createdSkills = await Promise.all(
+                Array.from(insertedIds).map((skillId) => this.findBySkillId(skillId)),
+            );
 
-            if (created.length === 0) {
-                throw new Error("Created skill could not be loaded.");
-            }
-
-            return toSkills(created)[0];
+            return createdSkills.filter((skill): skill is Skill => skill !== null);
         });
     }
 
-    /**
-     * スキル本体を更新し、紐づく技術一覧も入れ替える。
-     *
-     * @param input 更新対象のスキル情報
-     * @returns 更新後のスキル情報
-     */
-    async update(input: UpdateSkillInput): Promise<Skill> {
+    async updateSkills(input: UpdateSkillsInput): Promise<Skill[]> {
         return db.transaction(async (tx) => {
-            const updatedResult = await tx
-                .update(skillsTable)
-                .set({
-                    language: input.language,
-                    experience_months: input.experienceMonths,
-                    level: input.level,
-                    detail: input.detail,
-                    updated_at: sql`(CURRENT_TIMESTAMP)`,
-                })
-                .where(
-                    and(
-                        eq(skillsTable.skill_id, input.skillId),
-                        eq(skillsTable.user_id, input.userId),
-                    ),
-                );
+            for (const skill of input.skills) {
+                const updatedResult = await tx
+                    .update(skillsTable)
+                    .set({
+                        language: skill.language,
+                        experience_months: skill.experienceMonths,
+                        level: skill.level,
+                        detail: skill.detail,
+                        updated_at: sql`(CURRENT_TIMESTAMP)`,
+                    })
+                    .where(
+                        and(
+                            eq(skillsTable.skill_id, skill.skillId),
+                            eq(skillsTable.user_id, input.userId),
+                        ),
+                    );
 
-            if (updatedResult.rowsAffected === 0) {
-                throw new Error("Skill not found.");
+                if (updatedResult.rowsAffected === 0) {
+                    throw new Error("Skill not found.");
+                }
+
+                await tx
+                    .delete(skillTechsTable)
+                    .where(eq(skillTechsTable.skill_id, skill.skillId));
+
+                await tx.insert(skillTechsTable).values(
+                    skill.techIds.map((techId) => ({
+                        skill_id: skill.skillId,
+                        tech_id: techId,
+                    })),
+                );
             }
 
-            await tx
-                .delete(skillTechsTable)
-                .where(eq(skillTechsTable.skill_id, input.skillId));
-
-            await tx.insert(skillTechsTable).values(
-                input.techIds.map((techId) => ({
-                    skill_id: input.skillId,
-                    tech_id: techId,
-                })),
+            const updatedSkills = await Promise.all(
+                input.skills.map((skill) => this.findBySkillId(skill.skillId)),
             );
 
-            const updated = await tx
-                .select(skillSelect())
-                .from(skillsTable)
-                .innerJoin(skillTechsTable, eq(skillsTable.skill_id, skillTechsTable.skill_id))
-                .innerJoin(techsTable, eq(skillTechsTable.tech_id, techsTable.tech_id))
-                .where(
-                    and(
-                        eq(skillsTable.skill_id, input.skillId),
-                        eq(skillsTable.user_id, input.userId),
-                    ),
-                );
-
-            if (updated.length === 0) {
-                throw new Error("Updated skill could not be loaded.");
-            }
-
-            return toSkills(updated)[0];
+            return updatedSkills.filter((skill): skill is Skill => skill !== null);
         });
     }
 
-    /**
-     * スキル情報を物理削除する。
-     * 紐づく skill_techs も合わせて削除する。
-     *
-     * @param input 削除対象の識別情報
-     */
-    async delete(input: DeleteSkillInput): Promise<void> {
+    async deleteSkills(input: DeleteSkillsInput): Promise<void> {
         await db.transaction(async (tx) => {
-            await tx
-                .delete(skillTechsTable)
-                .where(eq(skillTechsTable.skill_id, input.skillId));
+            for (const skillId of input.skillIds) {
+                await tx
+                    .delete(skillTechsTable)
+                    .where(eq(skillTechsTable.skill_id, skillId));
 
-            const deletedResult = await tx
-                .delete(skillsTable)
-                .where(
-                    and(
-                        eq(skillsTable.skill_id, input.skillId),
-                        eq(skillsTable.user_id, input.userId),
-                    ),
-                );
+                const deletedResult = await tx
+                    .delete(skillsTable)
+                    .where(
+                        and(
+                            eq(skillsTable.skill_id, skillId),
+                            eq(skillsTable.user_id, input.userId),
+                        ),
+                    );
 
-            if (deletedResult.rowsAffected === 0) {
-                throw new Error("Skill not found.");
+                if (deletedResult.rowsAffected === 0) {
+                    throw new Error("Skill not found.");
+                }
             }
         });
     }

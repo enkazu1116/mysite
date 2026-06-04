@@ -1,8 +1,10 @@
 import { z } from "zod";
 import {
     type CreateSkillInput,
-    type DeleteSkillInput,
+    type CreateSkillsInput,
+    type DeleteSkillsInput,
     type UpdateSkillInput,
+    type UpdateSkillsInput,
 } from "../types/skillInput";
 import { SkillLevel } from "../types/skillLevel";
 import { skillValidationMessages } from "./messages";
@@ -26,8 +28,7 @@ const techIdSchema = z.uuid({
     error: () => skillValidationMessages.techIdInvalid,
 });
 
-const skillMutationSchema = z.object({
-    userId: userIdSchema,
+const skillFormSchema = z.object({
     language: z
         .string()
         .trim()
@@ -64,16 +65,32 @@ const skillMutationSchema = z.object({
         ),
 });
 
-const createSkillSchema = skillMutationSchema satisfies z.ZodType<CreateSkillInput>;
+const createSkillSchema = skillFormSchema satisfies z.ZodType<CreateSkillInput>;
 
-const updateSkillSchema = skillMutationSchema.extend({
+const updateSkillSchema = skillFormSchema.extend({
     skillId: skillIdSchema,
 }) satisfies z.ZodType<UpdateSkillInput>;
 
-const deleteSkillSchema = z.object({
+const createSkillsSchema = z.object({
     userId: userIdSchema,
-    skillId: skillIdSchema,
-}) satisfies z.ZodType<DeleteSkillInput>;
+    skills: z
+        .array(createSkillSchema)
+        .min(1, skillValidationMessages.skillsRequired),
+}) satisfies z.ZodType<CreateSkillsInput>;
+
+const updateSkillsSchema = z.object({
+    userId: userIdSchema,
+    skills: z
+        .array(updateSkillSchema)
+        .min(1, skillValidationMessages.skillsRequired),
+}) satisfies z.ZodType<UpdateSkillsInput>;
+
+const deleteSkillsSchema = z.object({
+    userId: userIdSchema,
+    skillIds: z
+        .array(skillIdSchema)
+        .min(1, skillValidationMessages.skillIdsRequired),
+}) satisfies z.ZodType<DeleteSkillsInput>;
 
 /**
  * スキル登録・更新時の入力値をバックエンド側で検証する。
@@ -82,11 +99,8 @@ const deleteSkillSchema = z.object({
  * @param input 検証対象のスキル入力
  * @returns バリデーションエラーメッセージ一覧
  */
-function validateSkillMutationInput(
-    input: CreateSkillInput | UpdateSkillInput,
-): string[] {
-    const schema = "skillId" in input ? updateSkillSchema : createSkillSchema;
-    const result = schema.safeParse(input);
+function validateCreateSkillsInput(input: CreateSkillsInput): string[] {
+    const result = createSkillsSchema.safeParse(input);
 
     if (result.success) {
         return [];
@@ -101,8 +115,24 @@ function validateSkillMutationInput(
  * @param input 検証対象の削除入力
  * @returns バリデーションエラーメッセージ一覧
  */
-function validateDeleteSkillInput(input: DeleteSkillInput): string[] {
-    const result = deleteSkillSchema.safeParse(input);
+function validateUpdateSkillsInput(input: UpdateSkillsInput): string[] {
+    const result = updateSkillsSchema.safeParse(input);
+
+    if (result.success) {
+        return [];
+    }
+
+    return result.error.issues.map((issue) => issue.message);
+}
+
+/**
+ * スキル削除時の入力値を Zod スキーマで検証する。
+ *
+ * @param input 検証対象の削除入力
+ * @returns バリデーションエラーメッセージ一覧
+ */
+function validateDeleteSkillsInput(input: DeleteSkillsInput): string[] {
+    const result = deleteSkillsSchema.safeParse(input);
 
     if (result.success) {
         return [];
@@ -116,8 +146,11 @@ export {
     MAX_DETAIL_LENGTH,
     MAX_LANGUAGE_LENGTH,
     createSkillSchema,
-    deleteSkillSchema,
+    createSkillsSchema,
+    deleteSkillsSchema,
+    updateSkillsSchema,
     updateSkillSchema,
-    validateDeleteSkillInput,
-    validateSkillMutationInput,
+    validateCreateSkillsInput,
+    validateDeleteSkillsInput,
+    validateUpdateSkillsInput,
 };

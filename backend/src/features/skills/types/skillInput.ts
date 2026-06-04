@@ -1,8 +1,7 @@
 import type { SkillId } from "./skill";
 import type { SkillLevel } from "./skillLevel";
 
-type SkillMutationInput = {
-    userId: string;
+type SkillFormInput = {
     language: string;
     techIds: string[];
     experienceMonths: number;
@@ -10,20 +9,32 @@ type SkillMutationInput = {
     detail: string;
 };
 
-type CreateSkillInput = SkillMutationInput;
+type CreateSkillInput = SkillFormInput;
 
-type UpdateSkillInput = SkillMutationInput & {
+type UpdateSkillInput = SkillFormInput & {
     skillId: SkillId;
 };
 
-type DeleteSkillInput = {
+type CreateSkillsInput = {
     userId: string;
-    skillId: SkillId;
+    skills: CreateSkillInput[];
+};
+
+type UpdateSkillsInput = {
+    userId: string;
+    skills: UpdateSkillInput[];
+};
+
+type DeleteSkillsInput = {
+    userId: string;
+    skillIds: SkillId[];
 };
 
 export type {
     CreateSkillInput,
-    DeleteSkillInput,
-    SkillMutationInput,
+    CreateSkillsInput,
+    DeleteSkillsInput,
+    SkillFormInput,
     UpdateSkillInput,
+    UpdateSkillsInput,
 };
