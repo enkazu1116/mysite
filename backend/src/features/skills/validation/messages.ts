@@ -2,6 +2,8 @@ const skillValidationMessages = {
     userIdInvalid: "ユーザーIDの形式が不正です。",
     skillIdInvalid: "スキルIDの形式が不正です。",
     techIdInvalid: "技術IDの形式が不正です。",
+    skillsRequired: "スキルは1件以上入力してください。",
+    skillIdsRequired: "削除対象のスキルIDは1件以上指定してください。",
     techIdsRequired: "使用技術は1件以上選択してください。",
     languageRequired: "言語は必須です。",
     languageMax: (max: number) =>
