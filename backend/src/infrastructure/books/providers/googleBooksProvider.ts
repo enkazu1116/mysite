@@ -1,23 +1,6 @@
-import type { BookSearchProvider } from "../types/bookSearchProvider";
-import type { BookSearchResult } from "../types/bookSearchResult";
-
-type GoogleBooksResponse = {
-    items?: Array<{
-        id: string;
-        volumeInfo?: {
-            title?: string;
-            authors?: string[];
-            publisher?: string;
-            publishedDate?: string;
-            description?: string;
-            pageCount?: number;
-            imageLinks?: {
-                thumbnail?: string;
-            };
-            infoLink?: string;
-        };
-    }>;
-};
+import type { BookSearchProvider } from "../../../features/books/types/bookSearchProvider";
+import type { BookSearchResult } from "../../../features/books/types/bookSearchResult";
+import type { GoogleBooksResponse } from "../types/googleBooksResponse";
 
 class GoogleBooksProvider implements BookSearchProvider {
     async searchBooks(query: string): Promise<BookSearchResult[]> {
@@ -47,6 +30,4 @@ class GoogleBooksProvider implements BookSearchProvider {
     }
 }
 
-const googleBooksProvider: BookSearchProvider = new GoogleBooksProvider();
-
-export { googleBooksProvider, GoogleBooksProvider };
+export { GoogleBooksProvider };
