@@ -1,3 +1,5 @@
+import { Button, ButtonGroup } from "@heroui/react";
+
 type Props = {
   isPending: boolean;
   canPreviousPage: boolean;
@@ -18,35 +20,35 @@ export function PaginationControls({
   onLastPage,
 }: Props) {
   return (
-    <div className="flex w-full items-center justify-end gap-1.5 sm:ml-auto sm:w-auto">
-      <button
-        onClick={onFirstPage}
-        disabled={isPending || !canPreviousPage}
-        className="rounded-md border border-gray-300 px-1.5 py-0.5 text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+    <ButtonGroup size="sm" variant="outline" className="sm:ml-auto">
+      <Button
+        onPress={onFirstPage}
+        isDisabled={isPending || !canPreviousPage}
+        aria-label="最初のページ"
       >
         &lt;&lt;
-      </button>
-      <button
-        onClick={onPreviousPage}
-        disabled={isPending || !canPreviousPage}
-        className="rounded-md border border-gray-300 px-1.5 py-0.5 text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+      </Button>
+      <Button
+        onPress={onPreviousPage}
+        isDisabled={isPending || !canPreviousPage}
+        aria-label="前のページ"
       >
         &lt;
-      </button>
-      <button
-        onClick={onNextPage}
-        disabled={isPending || !canNextPage}
-        className="rounded-md border border-gray-300 px-1.5 py-0.5 text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+      </Button>
+      <Button
+        onPress={onNextPage}
+        isDisabled={isPending || !canNextPage}
+        aria-label="次のページ"
       >
         &gt;
-      </button>
-      <button
-        onClick={onLastPage}
-        disabled={isPending || !canNextPage}
-        className="rounded-md border border-gray-300 px-1.5 py-0.5 text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+      </Button>
+      <Button
+        onPress={onLastPage}
+        isDisabled={isPending || !canNextPage}
+        aria-label="最後のページ"
       >
         &gt;&gt;
-      </button>
-    </div>
+      </Button>
+    </ButtonGroup>
   );
 }

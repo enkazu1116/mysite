@@ -1,5 +1,7 @@
+import { EmptyState, Typography } from "@heroui/react";
 import { ProjectCard } from "./components/Card";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
+import { ErrorState, LoadingState } from "../../components/status";
 
 export default function Projects() {
   const query = useProjectsQuery();
@@ -7,7 +9,7 @@ export default function Projects() {
   if (query.isLoading) {
     return (
       <main className="flex-1 px-4 pb-4 pt-0.5">
-        <p>Loading...</p>
+        <LoadingState />
       </main>
     );
   }
@@ -15,12 +17,10 @@ export default function Projects() {
   if (query.error) {
     return (
       <main className="flex-1 px-4 pb-4 pt-0.5">
-        <div>
-          <p>Error: {query.error.message}</p>
-          <button type="button" onClick={() => void query.refetch()}>
-            Retry
-          </button>
-        </div>
+        <ErrorState
+          message={query.error.message}
+          onRetry={() => void query.refetch()}
+        />
       </main>
     );
   }
@@ -29,14 +29,19 @@ export default function Projects() {
   if (projects.length === 0) {
     return (
       <main className="flex-1 px-4 pb-4 pt-0.5">
-        <p>プロジェクトがありません。</p>
+        <EmptyState className="py-12">
+          <p>プロジェクトがありません。</p>
+        </EmptyState>
       </main>
     );
   }
 
   return (
     <main className="flex-1 px-4 pb-4 pt-0.5">
-      <div className="flex flex-wrap gap-4">
+      <Typography.Heading level={2} className="mb-4 text-left">
+        Projects
+      </Typography.Heading>
+      <div className="flex flex-wrap justify-center gap-4">
         {projects.map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}

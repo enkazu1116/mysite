@@ -1,5 +1,18 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import {
+  Alert,
+  Button,
+  Card,
+  EmptyState,
+  Form,
+  Input,
+  Label,
+  Link,
+  Spinner,
+  TextField,
+  Typography,
+} from "@heroui/react";
 import { fetchBooks } from "./api/fetchBooks";
 import type { Book } from "./types/book";
 
@@ -36,56 +49,77 @@ export default function Books() {
 
   return (
     <main className="flex-1 px-4 pb-4 pt-0.5">
-      <form onSubmit={(event) => void handleSubmit(event)} className="mb-6 flex gap-2">
-        <input
-          className="w-full max-w-md rounded border px-3 py-2"
-          type="text"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="本のタイトルを入力"
-        />
-        <button
-          type="submit"
-          className="rounded bg-purple-600 px-4 py-2 text-white disabled:opacity-50"
-          disabled={isLoading}
-        >
-          検索
-        </button>
-      </form>
+      <Typography.Heading level={2} className="mb-4 text-left">
+        Books
+      </Typography.Heading>
 
-      {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
+      <Form onSubmit={(event) => void handleSubmit(event)} className="mb-6 flex flex-wrap items-end gap-2">
+        <TextField
+          value={title}
+          onChange={setTitle}
+          className="w-full max-w-md"
+          isDisabled={isLoading}
+        >
+          <Label>本のタイトル</Label>
+          <Input placeholder="本のタイトルを入力" />
+        </TextField>
+        <Button type="submit" isPending={isLoading}>
+          検索
+        </Button>
+      </Form>
+
+      {isLoading && (
+        <div className="flex items-center gap-2 py-4">
+          <Spinner size="sm" />
+          <span className="text-sm text-gray-500">検索中...</span>
+        </div>
+      )}
+
+      {error && (
+        <Alert status="danger" className="mb-4 max-w-lg text-left">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>エラー</Alert.Title>
+            <Alert.Description>{error}</Alert.Description>
+          </Alert.Content>
+        </Alert>
+      )}
 
       {!isLoading && !error && searchedTitle && books.length === 0 && (
-        <p>「{searchedTitle}」の検索結果はありません。</p>
+        <EmptyState className="py-8">
+          <p>「{searchedTitle}」の検索結果はありません。</p>
+        </EmptyState>
       )}
 
       {books.length > 0 && (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {books.map((book) => (
-            <a
-              key={book.id}
-              href={book.infoLink || "#"}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded border p-3 transition hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {book.thumbnail ? (
-                <img
-                  src={book.thumbnail}
-                  alt={book.title}
-                  className="mx-auto mb-2 h-40 object-contain"
-                />
-              ) : (
-                <div className="mx-auto mb-2 flex h-40 items-center justify-center bg-gray-100 text-xs text-gray-500">
-                  No Image
-                </div>
-              )}
-              <p className="line-clamp-2 text-sm font-semibold">{book.title}</p>
-              <p className="mt-1 text-xs text-gray-500">
-                {book.authors.length > 0 ? book.authors.join(", ") : "著者不明"}
-              </p>
-            </a>
+            <Card key={book.id} className="text-left">
+              <Card.Content className="p-3">
+                <Link
+                  href={book.infoLink || "#"}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block no-underline"
+                >
+                  {book.thumbnail ? (
+                    <img
+                      src={book.thumbnail}
+                      alt={book.title}
+                      className="mx-auto mb-2 h-40 object-contain"
+                    />
+                  ) : (
+                    <div className="mx-auto mb-2 flex h-40 items-center justify-center rounded-md bg-gray-100 text-xs text-gray-500 dark:bg-gray-800">
+                      No Image
+                    </div>
+                  )}
+                  <Card.Title className="line-clamp-2 text-sm">{book.title}</Card.Title>
+                  <Typography type="body-xs" color="muted" className="mt-1">
+                    {book.authors.length > 0 ? book.authors.join(", ") : "著者不明"}
+                  </Typography>
+                </Link>
+              </Card.Content>
+            </Card>
           ))}
         </div>
       )}
