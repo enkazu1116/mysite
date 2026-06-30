@@ -1,17 +1,10 @@
-import { Hono } from "hono";
+import { app } from "./app";
 
-import { booksRouter, userBooksRouter } from "./features/books/router/router";
-import { skillsRouter } from "./features/skills/router/router";
+const port = Number(process.env.PORT) || 3000;
 
-const app = new Hono();
+console.log(`Server running on http://localhost:${port}`);
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-});
-
-app.route("/users", userRoutes);
-app.route("/skills", skillsRouter);
-app.route("/books", booksRouter);
-app.route("/user-books", userBooksRouter);
-
-export default app;
+export default {
+    port,
+    fetch: app.fetch,
+};

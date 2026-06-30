@@ -1,11 +1,11 @@
-import type { Skill } from "../types/skill";
+import { client } from "../../../lib/api-client";
 
-// APIからデータを取得するロジックを定義
-export const fetchSkills = async (): Promise<Skill[]> => {
-  const response = await fetch("/api/skills");
+export const fetchSkills = async () => {
+  const response = await client.skills.$get();
+
   if (!response.ok) {
     throw new Error(`Failed to fetch skills: ${response.status}`);
   }
-  
+
   return response.json();
 };

@@ -1,5 +1,11 @@
 {
   "name": "backend",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./app": "./src/app.ts",
+    "./rpc": "./src/app.ts"
+  },
   "scripts": {
     "dev": "infisical run -- bun run --hot src/index.ts",
     "db:push": "infisical run -- drizzle-kit push",
