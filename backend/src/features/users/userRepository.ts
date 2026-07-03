@@ -1,16 +1,12 @@
 import { eq } from "drizzle-orm";
 import db from "../../infrastructure/drizzle/db";
 import { usersTable } from "../../infrastructure/drizzle/schema";
+import type {
+    CreateUserInput,
+    UpdateUserInput,
+} from "./validation/userValidation";
 
-export type CreateUserInput = {
-    user_name: string;
-    profile?: string | null;
-};
-
-export type UpdateUserInput = {
-    user_name?: string;
-    profile?: string | null;
-};
+export type { CreateUserInput, UpdateUserInput };
 
 export async function createUser(input: CreateUserInput) {
     const [user] = await db.insert(usersTable).values(input).returning();
