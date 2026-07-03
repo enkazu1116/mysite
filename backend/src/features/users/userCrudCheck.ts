@@ -3,7 +3,7 @@ import {
     deleteUser,
     findUserById,
     updateUser,
-} from "./userRepository";
+} from "./repositories/usersRepository";
 
 export async function runUserCrudCheck() {
     const suffix = Date.now();

@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
-import db from "../../infrastructure/drizzle/db";
-import { usersTable } from "../../infrastructure/drizzle/schema";
+import db from "../../../infrastructure/drizzle/db";
+import { usersTable } from "../../../infrastructure/drizzle/schema";
 import type {
     CreateUserInput,
     UpdateUserInput,
-} from "./validation/userValidation";
+} from "../validation/userValidation";
 
 export type { CreateUserInput, UpdateUserInput };
 

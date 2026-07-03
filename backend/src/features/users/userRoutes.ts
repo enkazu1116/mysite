@@ -7,7 +7,7 @@ import {
     findUserById,
     listUsers,
     updateUser,
-} from "./userRepository";
+} from "./repositories/usersRepository";
 import {
     createUserSchema,
     updateUserSchema,
