@@ -1,11 +1,23 @@
 import type { Context } from "hono";
 import { z } from "zod";
 
+import { iso8601DateTimeSchema } from "../../../infrastructure/drizzle/types/iso8601DateTime";
+import type { UserRecord } from "../types/userRecord";
 import { userValidationMessages } from "./messages";
 
 const MAX_USER_NAME_LENGTH = 100;
 
 const profileSchema = z.union([z.string(), z.null()]);
+
+const userRecordSchema = z.object({
+    userId: z.uuid({
+        error: () => userValidationMessages.userIdInvalid,
+    }),
+    name: z.string(),
+    profile: profileSchema,
+    createdAt: iso8601DateTimeSchema,
+    updatedAt: iso8601DateTimeSchema,
+}) satisfies z.ZodType<UserRecord>;
 
 const createUserSchema = z.object({
     user_name: z
@@ -64,6 +76,7 @@ export {
     createUserSchema,
     updateUserSchema,
     userIdParamSchema,
+    userRecordSchema,
     userValidationHook,
 };
 export type { CreateUserInput, UpdateUserInput };
