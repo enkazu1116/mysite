@@ -1,3 +1,8 @@
+import { Label, ListBox, NumberField, Select } from "@heroui/react";
+import type { Key } from "react";
+
+const PAGE_SIZE_OPTIONS = [5, 10, 15] as const;
+
 type Props = {
   pageIndex: number;
   pageSize: number;
@@ -14,38 +19,49 @@ export function PaginationInputs({
   onPageSizeChange,
 }: Props) {
   return (
-    <>
-      <label className="flex items-center gap-1.5">
-        <span className="text-gray-600 dark:text-gray-300">ページ移動</span>
-        <input
-          type="number"
-          defaultValue={pageIndex + 1}
-          onChange={(e) => {
-            const page = e.target.value ? Number(e.target.value) - 1 : 0;
-            if (page >= 0 && page < pageCount) {
-              onPageIndexChange(page);
-            }
-          }}
-          min={1}
-          max={pageCount}
-          className="w-16 rounded-md border border-gray-300 bg-white px-1.5 py-0.5 text-right outline-none focus:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-        />
-      </label>
+    <div className="flex flex-wrap items-end gap-3">
+      <NumberField
+        value={pageIndex + 1}
+        minValue={1}
+        maxValue={Math.max(pageCount, 1)}
+        onChange={(value) => {
+          if (value >= 1 && value <= pageCount) {
+            onPageIndexChange(value - 1);
+          }
+        }}
+        className="w-28"
+      >
+        <Label>ページ移動</Label>
+        <NumberField.Group>
+          <NumberField.Input className="text-right" />
+        </NumberField.Group>
+      </NumberField>
 
-      <label className="flex items-center gap-1.5">
-        <span className="text-gray-600 dark:text-gray-300">表示件数</span>
-        <select
-          value={pageSize}
-          onChange={(e) => {
-            onPageSizeChange(Number(e.target.value));
-          }}
-          className="rounded-md border border-gray-300 bg-white px-1.5 py-0.5 outline-none focus:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-        >
-          {[5, 10, 15].map((item) => (
-            <option key={item} value={item}>{item}件</option>
-          ))}
-        </select>
-      </label>
-    </>
+      <Select
+        selectedKey={String(pageSize)}
+        onSelectionChange={(key: Key | null) => {
+          if (key != null) {
+            onPageSizeChange(Number(key));
+          }
+        }}
+        className="w-32"
+      >
+        <Label>表示件数</Label>
+        <Select.Trigger>
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            {PAGE_SIZE_OPTIONS.map((item) => (
+              <ListBox.Item key={item} id={String(item)} textValue={`${item}件`}>
+                {item}件
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            ))}
+          </ListBox>
+        </Select.Popover>
+      </Select>
+    </div>
   );
 }
