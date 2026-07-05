@@ -1,7 +1,7 @@
 # Issue17 User Domain機能 戻り値の定義
 ## 戻り値の定義の検討
 ### 課題
-Promise<string | null>
+`Promise<string | null>`
 検索処理でUserが見つからない場合にnullで表現している。
 型が使えるのに関わらず、表現性が下がっている。
 またバグの温床になりかねない。

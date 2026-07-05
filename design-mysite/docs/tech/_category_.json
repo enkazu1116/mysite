@@ -1,0 +1,8 @@
+{
+  "label": "技術ノート",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "実装方針・技術選定・課題の記録"
+  }
+}

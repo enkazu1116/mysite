@@ -1,0 +1,8 @@
+{
+  "label": "DB設計",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "テーブル定義・カラム仕様"
+  }
+}
