@@ -7,8 +7,8 @@ import type {
     UpdateUserBookInput,
 } from "../../../features/books/types/bookInput";
 import type { UserBook } from "../../../features/books/types/userBook";
-import { GoogleBooksProvider } from "../../../features/books/providers/googleBooksProvider";
 import type { ReadingStatus } from "../../../features/books/types/readingStatus";
+import { GoogleBooksProvider } from "../../books/providers/googleBooksProvider";
 import db from "../db";
 import { booksTable, userBooksTable } from "../schema";
 
