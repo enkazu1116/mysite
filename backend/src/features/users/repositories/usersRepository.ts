@@ -47,7 +47,7 @@ interface UsersRepository {
      *
      * @param userId 削除対象のユーザー ID
      */
-    deleteUser(userId: UUID): Promise<void>;
+    deleteUser(userId: UUID): Promise<UserRecord | null>;
 }
 
 export type { UsersRepository}

@@ -11,17 +11,21 @@ import type { Skill } from "../types/skill";
 // 列定義
 const columnHelper = createColumnHelper<Skill>();
 const columns = [
-  columnHelper.accessor("id", {
+  columnHelper.accessor("skillId", {
     cell: (info) => info.getValue(),
     header: "ID",
   }),
-  columnHelper.accessor("skill", {
+  columnHelper.accessor("language", {
     cell: (info) => info.getValue(),
-    header: "Skill",
+    header: "Language",
   }),
   columnHelper.accessor("level", {
     cell: (info) => info.getValue(),
     header: "Level",
+  }),
+  columnHelper.accessor("experienceMonths", {
+    cell: (info) => info.getValue(),
+    header: "Experience (months)",
   }),
 ];
 

@@ -20,6 +20,7 @@ export function ProjectCard({ project }: Props) {
           </span>
         </Card.Description>
       </Card.Header>
+
       <Card.Footer className="justify-start text-left">
         <Link
           className="justify-start"
