@@ -1,5 +1,11 @@
 {
   "name": "backend",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./app": "./src/app.ts",
+    "./rpc": "./src/app.ts"
+  },
   "scripts": {
     "dev": "infisical run -- bun run --hot src/index.ts",
     "db:push": "infisical run -- drizzle-kit push",
@@ -14,7 +20,7 @@
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.18",
     "uuid": "^14.0.0",
-    "zod": "^4.1.5"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/bun": "latest",
