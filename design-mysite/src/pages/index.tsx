@@ -37,9 +37,9 @@ function ProjectOverview() {
           プロジェクト概要
         </Heading>
         <p className={styles.overviewText}>
-          自身の簡単な自己紹介と、参画してきたプロジェクトや読んできた本を紹介するサイト。
-          静的なページではなく、自分専用のミニ CMS + 公開 API として運用する。
-          設計・DB・技術的課題はすべてこのサイトで管理する。
+          自己プロフィール・技術スキル・読書記録・参画プロジェクト・自身のポートフォリオを<br />
+          まとめたサイト。自分専用の管理画面を用意し、そこから随時更新を可能なものとする。<br />
+          設計・技術的課題・ノートもここで管理する。
         </p>
       </div>
     </section>
@@ -48,8 +48,8 @@ function ProjectOverview() {
 
 function QuickLinks() {
   const links = [
-    {label: 'DB設計', to: '/docs/category/db設計'},
-    {label: '技術ノート', to: '/docs/category/技術ノート'},
+    {label: 'ドメイン設計', to: '/docs/category/ドメイン設計'},
+    {label: '技術ノート', to: '/docs/tech/tech_index'},
   ];
 
   return (

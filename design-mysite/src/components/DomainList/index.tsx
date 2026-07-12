@@ -20,7 +20,7 @@ const domains: DomainItem[] = [
     title: 'Users',
     description:
       'プロフィール・自己紹介文の管理。システム開発者向けのコアドメイン。',
-    link: '/docs/design/users_domain_design',
+    link: '/docs/design/User/user_index',
     status: 'in-progress',
   },
   {
@@ -28,7 +28,7 @@ const domains: DomainItem[] = [
     title: 'Books',
     description:
       '書籍検索・読書状態（未読 / 読書中 / 読了）の管理。外部 API は backend で隠蔽。',
-    link: '/docs/design/books_domain_design',
+    link: '/docs/design/Books/books_index',
     status: 'done',
   },
   {
@@ -36,7 +36,7 @@ const domains: DomainItem[] = [
     title: 'Skills',
     description:
       '技術スキル・経験月数・レベルの管理。ポートフォリオ公開用の読み取り API。',
-    link: '/docs/design/skills_domain_design',
+    link: '/docs/design/Skills/skills_index',
     status: 'in-progress',
   },
 ];

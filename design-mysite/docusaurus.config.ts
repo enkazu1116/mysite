@@ -3,8 +3,8 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'mysite 設計',
-  tagline: '自己紹介・参画プロジェクト・読書記録を手軽に運用するサイト',
+  title: 'mysite',
+  tagline: '自己プロフィールをまとめたサイトを手軽に運用する',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -44,6 +44,11 @@ const config: Config = {
     colorMode: {
       respectPrefersColorScheme: true,
     },
+    docs: {
+      sidebar: {
+        hideable: true,
+      },
+    },
     navbar: {
       title: 'mysite 設計',
       logo: {
@@ -69,12 +74,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: '/docs/category/db設計',
-          label: 'DB設計',
-          position: 'left',
-        },
-        {
-          to: '/docs/category/技術ノート',
+          to: '/docs/tech/tech_index',
           label: '技術ノート',
           position: 'left',
         },
@@ -95,12 +95,8 @@ const config: Config = {
               to: '/docs/category/ドメイン設計',
             },
             {
-              label: 'DB設計',
-              to: '/docs/category/db設計',
-            },
-            {
               label: '技術ノート',
-              to: '/docs/category/技術ノート',
+              to: '/docs/tech/tech_index',
             },
           ],
         },
