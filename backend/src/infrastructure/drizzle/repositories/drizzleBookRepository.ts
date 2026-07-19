@@ -8,6 +8,7 @@ import type {
 } from "../../../features/books/types/bookInput";
 import type { UserBook } from "../../../features/books/types/userBook";
 import type { ReadingStatus } from "../../../features/books/types/readingStatus";
+import { nowInstant, type Temporal } from "../../../util/temporal/instant";
 import { GoogleBooksProvider } from "../../books/providers/googleBooksProvider";
 import db from "../db";
 import { booksTable, userBooksTable } from "../schema";
@@ -73,7 +74,7 @@ class DrizzleBookRepository implements BookRepository {
                 .update(userBooksTable)
                 .set({
                     status: input.status,
-                    updated_at: new Date(),
+                    updated_at: nowInstant(),
                 })
                 .where(eq(userBooksTable.user_book_id, existingUserBook.user_book_id))
                 .returning();
@@ -136,9 +137,9 @@ class DrizzleBookRepository implements BookRepository {
 
     async updateUserBook(input: UpdateUserBookInput): Promise<UserBook> {
         const updateValues: Partial<typeof userBooksTable.$inferInsert> & {
-            updated_at: Date;
+            updated_at: Temporal.Instant;
         } = {
-            updated_at: new Date(),
+            updated_at: nowInstant(),
         };
 
         if (input.status !== undefined) {

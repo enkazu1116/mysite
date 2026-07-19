@@ -1,3 +1,4 @@
+import type { Temporal } from "../../../util/temporal/instant";
 import type { Book } from "./book";
 import type { ReadingStatus } from "./readingStatus";
 
@@ -8,10 +9,10 @@ type UserBook = {
     status: ReadingStatus;
     currentPage: number | null;
     note: string | null;
-    startedAt: Date | null;
-    finishedAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
+    startedAt: Temporal.Instant | null;
+    finishedAt: Temporal.Instant | null;
+    createdAt: Temporal.Instant;
+    updatedAt: Temporal.Instant;
     book: Book;
 };
 

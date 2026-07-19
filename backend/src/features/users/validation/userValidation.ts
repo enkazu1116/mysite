@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { UUID } from "../../../util/uuid/uuidBrandedType";
+import { instantSchema } from "../../../util/temporal/instantSchema";
 import type { CreateUserInput, UpdateUserInput } from "../types/userInput";
 import type { UserRecord } from "../types/usersModel";
 
@@ -8,8 +9,8 @@ const userSchema = z.object({
     name: z.string(),
     bio: z.string().nullable(),
     iconUrl: z.string().nullable(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
+    createdAt: instantSchema,
+    updatedAt: instantSchema,
 }) satisfies z.ZodType<UserRecord>;
 
 const createUserSchema = z.object({

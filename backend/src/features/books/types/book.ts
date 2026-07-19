@@ -1,3 +1,5 @@
+import type { Temporal } from "../../../util/temporal/instant";
+
 type Book = {
     bookId: string;
     source: string;
@@ -10,8 +12,8 @@ type Book = {
     pageCount: number | null;
     thumbnailUrl: string | null;
     infoLink: string | null;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: Temporal.Instant;
+    updatedAt: Temporal.Instant;
 };
 
 export type { Book };

@@ -3,6 +3,7 @@ import type { CreateUserInput, UpdateUserInput } from "../types/userInput";
 import type { UserRecord } from "../types/usersModel";
 import { generateUuid } from "../../../util/uuid/generateUuid";
 import type { UUID } from "../../../util/uuid/uuidBrandedType";
+import { nowInstant } from "../../../util/temporal/instant";
 import {
     validateCreateUserInput,
     validateUpdateUserInput,
@@ -25,7 +26,7 @@ class UserUseCase {
             throw new Error(errors.join("\n"));
         }
 
-        const now = new Date();
+        const now = nowInstant();
 
         return this.usersRepository.createUser({
             id: generateUuid(),
@@ -57,7 +58,7 @@ class UserUseCase {
             name: input.name ?? existing.name,
             bio: input.bio !== undefined ? input.bio : existing.bio,
             iconUrl: input.iconUrl !== undefined ? input.iconUrl : existing.iconUrl,
-            updatedAt: new Date(),
+            updatedAt: nowInstant(),
         });
     }
 

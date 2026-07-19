@@ -6,6 +6,7 @@ import type {
     UpdateUserBookInput,
 } from "../types/bookInput";
 import { readingStatuses } from "../types/readingStatus";
+import { nullableInstantSchema } from "../../../util/temporal/instantSchema";
 import { bookValidationMessages } from "./messages";
 
 const readingStatusSchema = z.enum(readingStatuses, {
@@ -13,7 +14,7 @@ const readingStatusSchema = z.enum(readingStatuses, {
 });
 
 const nullableStringSchema = z.union([z.string(), z.null()]);
-const nullableDateSchema = z.union([z.date(), z.null()]);
+const nullableDateSchema = nullableInstantSchema;
 
 const bookSearchResultSchema = z.object({
     source: z.literal("google_books", {
