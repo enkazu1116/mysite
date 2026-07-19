@@ -5,12 +5,14 @@ import type { UUID } from "../../../util/uuid/uuidBrandedType";
 import db from "../db";
 import { usersTable } from "../schema";
 
-type UserRow = typeof usersTable.$inferSelect;
+type UsersTableRow = typeof usersTable.$inferSelect;
 
-function mapRow(row: UserRow): UserRecord {
+function mapRow(row: UsersTableRow): UserRecord {
     return {
         id: row.user_id as UUID,
         name: row.user_name,
+        bio: row.profile ?? null,
+        iconUrl: null,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
     };
@@ -46,6 +48,7 @@ class DrizzleUsersRepository implements UsersRepository {
             .values({
                 user_id: user.id,
                 user_name: user.name,
+                profile: user.bio,
             })
             .returning();
 
@@ -61,6 +64,7 @@ class DrizzleUsersRepository implements UsersRepository {
             .update(usersTable)
             .set({
                 user_name: user.name,
+                profile: user.bio,
                 updated_at: user.updatedAt,
             })
             .where(eq(usersTable.user_id, user.id))

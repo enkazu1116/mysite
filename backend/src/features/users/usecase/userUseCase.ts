@@ -30,6 +30,8 @@ class UserUseCase {
         return this.usersRepository.createUser({
             id: generateUuid(),
             name: input.name,
+            bio: input.bio ?? null,
+            iconUrl: input.iconUrl ?? null,
             createdAt: now,
             updatedAt: now,
         });
@@ -53,6 +55,8 @@ class UserUseCase {
         return this.usersRepository.updateUser({
             ...existing,
             name: input.name ?? existing.name,
+            bio: input.bio !== undefined ? input.bio : existing.bio,
+            iconUrl: input.iconUrl !== undefined ? input.iconUrl : existing.iconUrl,
             updatedAt: new Date(),
         });
     }
