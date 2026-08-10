@@ -28,6 +28,8 @@
 | user_name | `name: string` | 1〜30 文字。境界で trim + max |
 | bio | `bio: string \| null` | 未設定は `null`。設定時は 200 文字以内 |
 | icon_url | `iconUrl: string \| null` | 未設定は `null`。実体ではなく参照文字列 |
+| github_url | `githubUrl: string \| null` | 未設定は `null`。プロフィール参照用 URL |
+| article_url | `articleUrl: string \| null` | 未設定は `null`。記事サイト参照用 URL |
 | created_at | `createdAt: Temporal.Instant` | `AuditMetadata` |
 | updated_at | `updatedAt: Temporal.Instant` | `AuditMetadata` |
 
@@ -37,4 +39,6 @@
 |------------|--------|
 | name | 必須。30 文字以内。 |
 | bio | 任意。200 文字以内。 |
-| iconUrl | 任意。空文字はNull変換 |
+| iconUrl | 任意。空文字は `null` 変換 |
+| githubUrl | 任意。空文字は `null` 変換 |
+| articleUrl | 任意。空文字は `null` 変換 |

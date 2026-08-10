@@ -6,6 +6,8 @@ export interface UserCore {
     name: string;
     bio: string | null;
     iconUrl: string | null;
+    githubUrl: string | null;
+    articleUrl: string | null;
 }
 
-export interface UserRecord extends UserCore, AuditMetadata {}
+export interface UserRow extends UserCore, AuditMetadata {}

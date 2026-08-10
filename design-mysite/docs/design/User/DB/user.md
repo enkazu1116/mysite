@@ -19,6 +19,8 @@
 | user_name | ユーザー名 |  |  | Not Null, Unique | varchar(30) |  |
 | bio | 自己紹介文 |  |  |  | TEXT | アプリ側で200文字以内 |
 | icon_url | アイコン参照 |  |  |  | TEXT | NULL可|
+| github_url | GitHubのURL参照 | | | TEXT | NULL可 |
+| article_url | 記事サイトのURL参照 | | | TEXT | NULL可 |
 | created_at | 作成日時 |  |  | Not Null | TEXT | Drizzle Custom Type(Date) |
 | updated_at | 更新日時 |  |  | Not Null | TEXT | Drizzle Custom Type(Date) |
 

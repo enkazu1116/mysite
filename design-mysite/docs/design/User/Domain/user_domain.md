@@ -19,6 +19,8 @@
 | user_name | ユーザーの名前 |
 | bio | 自己紹介文 |
 | icon_url | 未設定時:デフォルト画像使用 |
+| github_url | GitHubのURL |
+| article_url | 記事サイトのURL |
 
 **AuditMetadata**
 | フィールド | 説明 | 

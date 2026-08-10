@@ -1,25 +1,27 @@
 import { eq } from "drizzle-orm";
 import type { UsersRepository } from "../../../features/users/repositories/usersRepository";
-import type { UserRecord } from "../../../features/users/types/usersModel";
+import type { UserRow } from "../../../features/users/types/usersModel";
 import type { UUID } from "../../../util/uuid/uuidBrandedType";
 import db from "../db";
 import { usersTable } from "../schema";
 
 type UsersTableRow = typeof usersTable.$inferSelect;
 
-function mapRow(row: UsersTableRow): UserRecord {
+function mapRow(row: UsersTableRow): UserRow {
     return {
         id: row.user_id as UUID,
         name: row.user_name,
-        bio: row.profile ?? null,
-        iconUrl: null,
+        bio: row.bio ?? null,
+        iconUrl: row.icon_url ?? null,
+        githubUrl: row.github_url ?? null,
+        articleUrl: row.article_url ?? null,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
     };
 }
 
 class DrizzleUsersRepository implements UsersRepository {
-    async findByUserId(userId: UUID): Promise<UserRecord | null> {
+    async findByUserId(userId: UUID): Promise<UserRow | null> {
         const [row] = await db
             .select()
             .from(usersTable)
@@ -28,7 +30,7 @@ class DrizzleUsersRepository implements UsersRepository {
         return row ? mapRow(row) : null;
     }
 
-    async findByUserName(userName: string): Promise<UserRecord | null> {
+    async findByUserName(userName: string): Promise<UserRow | null> {
         const [row] = await db
             .select()
             .from(usersTable)
@@ -37,18 +39,21 @@ class DrizzleUsersRepository implements UsersRepository {
         return row ? mapRow(row) : null;
     }
 
-    async findAll(): Promise<UserRecord[]> {
+    async findAll(): Promise<UserRow[]> {
         const rows = await db.select().from(usersTable);
         return rows.map(mapRow);
     }
 
-    async createUser(user: UserRecord): Promise<UserRecord> {
+    async createUser(user: UserRow): Promise<UserRow> {
         const [row] = await db
             .insert(usersTable)
             .values({
                 user_id: user.id,
                 user_name: user.name,
-                profile: user.bio,
+                bio: user.bio,
+                icon_url: user.iconUrl,
+                github_url: user.githubUrl,
+                article_url: user.articleUrl,
             })
             .returning();
 
@@ -59,12 +64,15 @@ class DrizzleUsersRepository implements UsersRepository {
         return mapRow(row);
     }
 
-    async updateUser(user: UserRecord): Promise<UserRecord> {
+    async updateUser(user: UserRow): Promise<UserRow> {
         const [row] = await db
             .update(usersTable)
             .set({
                 user_name: user.name,
-                profile: user.bio,
+                bio: user.bio,
+                icon_url: user.iconUrl,
+                github_url: user.githubUrl,
+                article_url: user.articleUrl,
                 updated_at: user.updatedAt,
             })
             .where(eq(usersTable.user_id, user.id))
@@ -77,7 +85,7 @@ class DrizzleUsersRepository implements UsersRepository {
         return mapRow(row);
     }
 
-    async deleteUser(userId: UUID): Promise<UserRecord | null> {
+    async deleteUser(userId: UUID): Promise<UserRow | null> {
         const [row] = await db
             .delete(usersTable)
             .where(eq(usersTable.user_id, userId))
