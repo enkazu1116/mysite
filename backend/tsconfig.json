@@ -15,5 +15,4 @@
     "jsxImportSource": "hono/jsx"
   },
   "include": ["src"],
-  "exclude": ["src/**/_test_/**", "src/**/*.test.ts"]
 }
