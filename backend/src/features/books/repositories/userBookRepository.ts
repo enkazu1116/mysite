@@ -1,17 +1,18 @@
-import type { BookSearchResult } from "../types/bookSearchResult";
 import type {
     CreateUserBookInput,
     ListUserBooksInput,
     UpdateUserBookInput,
-} from "../types/bookInput";
+} from "../commands/userBookCommands";
 import type { UserBook } from "../types/userBook";
 
-interface BookRepository {
-    searchBooks(query: string): Promise<BookSearchResult[]>;
+/**
+ * ユーザーが選択した読む本の情報を管理するインターフェース
+ */
+interface UserBookRepository {
     saveUserBook(input: CreateUserBookInput): Promise<UserBook>;
     listUserBooks(input: ListUserBooksInput): Promise<UserBook[]>;
     findUserBookById(userBookId: string): Promise<UserBook | null>;
     updateUserBook(input: UpdateUserBookInput): Promise<UserBook>;
 }
 
-export type { BookRepository };
+export type { UserBookRepository };

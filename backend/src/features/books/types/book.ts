@@ -1,5 +1,8 @@
 import type { Temporal } from "../../../util/temporal/instant";
 
+/**
+ * Book Domain Object
+ */
 type Book = {
     bookId: string;
     source: string;

@@ -2,6 +2,10 @@ import type { Temporal } from "../../../util/temporal/instant";
 import type { Book } from "./book";
 import type { ReadingStatus } from "./readingStatus";
 
+/**
+ * ユーザーが実際に読む本の情報
+ * 読書ステータスと進捗・章メモをもつ
+ */
 type UserBook = {
     userBookId: string;
     userId: string;

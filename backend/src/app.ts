@@ -1,7 +1,10 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-import { booksRouter, userBooksRouter } from "./features/books/router/router";
+import { bookOutputRouter } from "./features/books/router/bookOutputRouter";
+import { booksSearchRouter } from "./features/books/router/booksSearchRouter";
+import { chapterMemoRouter } from "./features/books/router/chapterMemoRouter";
+import { userBooksRouter } from "./features/books/router/userBooksRouter";
 import { skillsRouter } from "./features/skills/router/router";
 import { userRoutes } from "./features/users/router/router";
 
@@ -23,8 +26,10 @@ function resolveCorsOrigin(): string | string[] {
 const api = new Hono()
     .route("/skills", skillsRouter)
     .route("/users", userRoutes)
-    .route("/books", booksRouter)
-    .route("/user-books", userBooksRouter);
+    .route("/books", booksSearchRouter)
+    .route("/user-books", userBooksRouter)
+    .route("/user-books", chapterMemoRouter)
+    .route("/user-books", bookOutputRouter);
 
 const app = new Hono()
     .use(
