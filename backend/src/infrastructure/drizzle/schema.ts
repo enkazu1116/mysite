@@ -116,3 +116,32 @@ export const userBooksTable = sqliteTable(
         ),
     }),
 );
+
+/**
+ * ユーザー読書本に紐づく章ごとのメモを保持するテーブル。
+ */
+export const bookChapterMemosTable = sqliteTable("book_chapter_memos_table", {
+    chapter_memo_id: uuid("chapter_memo_id").$defaultFn(() => uuidv7()).notNull().primaryKey(),
+    user_book_id: uuid("user_book_id")
+        .notNull()
+        .references(() => userBooksTable.user_book_id),
+    chapter_title: text("chapter_title"),
+    chapter_order: integer("chapter_order").notNull(),
+    memo: text("memo"),
+    created_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
+    updated_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+/**
+ * ユーザーが本の内容を説明するアウトプットを保持するテーブル。
+ */
+export const bookOutputsTable = sqliteTable("book_outputs_table", {
+    book_output_id: uuid("book_output_id").$defaultFn(() => uuidv7()).notNull().primaryKey(),
+    user_book_id: uuid("user_book_id")
+        .notNull()
+        .references(() => userBooksTable.user_book_id),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    created_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
+    updated_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
+});

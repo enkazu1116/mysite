@@ -1,15 +1,14 @@
 import { and, eq } from "drizzle-orm";
-import type { BookRepository } from "../../../features/books/repositories/bookRepository";
-import type { BookSearchResult } from "../../../features/books/types/bookSearchResult";
+import type { BookSearchResult } from "../../../features/books/adapters/bookSearchAdapter";
 import type {
     CreateUserBookInput,
     ListUserBooksInput,
     UpdateUserBookInput,
-} from "../../../features/books/types/bookInput";
-import type { UserBook } from "../../../features/books/types/userBook";
+} from "../../../features/books/commands/userBookCommands";
+import type { UserBookRepository } from "../../../features/books/repositories/userBookRepository";
 import type { ReadingStatus } from "../../../features/books/types/readingStatus";
+import type { UserBook } from "../../../features/books/types/userBook";
 import { nowInstant, type Temporal } from "../../../util/temporal/instant";
-import { GoogleBooksProvider } from "../../books/providers/googleBooksProvider";
 import db from "../db";
 import { booksTable, userBooksTable } from "../schema";
 
@@ -50,13 +49,7 @@ function mapUserBookRow(
     };
 }
 
-class DrizzleBookRepository implements BookRepository {
-    private readonly provider = new GoogleBooksProvider();
-
-    async searchBooks(query: string): Promise<BookSearchResult[]> {
-        return this.provider.searchBooks(query);
-    }
-
+class DrizzleUserBookRepository implements UserBookRepository {
     async saveUserBook(input: CreateUserBookInput): Promise<UserBook> {
         const existingBook = await this.findBookBySource(
             input.book.source,
@@ -233,4 +226,4 @@ class DrizzleBookRepository implements BookRepository {
     }
 }
 
-export { DrizzleBookRepository };
+export { DrizzleUserBookRepository };

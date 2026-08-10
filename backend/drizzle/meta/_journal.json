@@ -15,6 +15,20 @@
       "when": 1778262687231,
       "tag": "0001_skill_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786320000000,
+      "tag": "0002_book_outputs",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1786400000000,
+      "tag": "0003_chapter_memo_optional_fields",
+      "breakpoints": true
     }
   ]
 }
