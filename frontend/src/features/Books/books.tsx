@@ -1,127 +1,91 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
+import { useMemo } from "react";
 import {
   Alert,
-  Button,
-  Card,
+  Chip,
   EmptyState,
-  Form,
-  Input,
-  Label,
-  Link,
   Spinner,
-  TextField,
-  Typography,
 } from "@heroui/react";
-import { fetchBooks } from "./api/fetchBooks";
-import type { Book } from "./types/book";
+import { motion, useReducedMotion } from "motion/react";
+import { BookShelfKanban } from "./components/shelf/BookShelfKanban";
+import {
+  useBooksUserIdQuery,
+  useUserBooksQuery,
+} from "./hooks/useBooksQueries";
+import type { UserBook } from "./types/book";
+import { getErrorMessage } from "../../utils/getErrorMessage";
+
+function sortByUpdatedAtDesc(books: UserBook[]) {
+  return [...books].sort(
+    (a, b) =>
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+  );
+}
 
 export default function Books() {
-  const [title, setTitle] = useState("");
-  const [books, setBooks] = useState<Book[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [searchedTitle, setSearchedTitle] = useState("");
+  const booksUser = useBooksUserIdQuery();
+  const userBooks = useUserBooksQuery(booksUser.data);
+  const reduceMotion = useReducedMotion();
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const query = title.trim();
-    if (!query) {
-      setBooks([]);
-      setSearchedTitle("");
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await fetchBooks(query);
-      setBooks(result);
-      setSearchedTitle(query);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "本の取得に失敗しました。");
-      setBooks([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const visibleBooks = useMemo(
+    () => sortByUpdatedAtDesc(userBooks.data ?? []),
+    [userBooks.data],
+  );
+  const error = booksUser.error ?? userBooks.error;
 
   return (
-    <main className="flex-1 px-4 pb-4 pt-0.5">
-      <Typography.Heading level={2} className="mb-4 text-left">
-        Books
-      </Typography.Heading>
-
-      <Form onSubmit={(event) => void handleSubmit(event)} className="mb-6 flex flex-wrap items-end gap-2">
-        <TextField
-          value={title}
-          onChange={setTitle}
-          className="w-full max-w-md"
-          isDisabled={isLoading}
+    <main className="surface-library flex-1 px-4 pb-10 pt-6 sm:px-6">
+      <section className="mx-auto mb-8 max-w-7xl text-left">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
         >
-          <Label>本のタイトル</Label>
-          <Input placeholder="本のタイトルを入力" />
-        </TextField>
-        <Button type="submit" isPending={isLoading}>
-          検索
-        </Button>
-      </Form>
-
-      {isLoading && (
-        <div className="flex items-center gap-2 py-4">
-          <Spinner size="sm" />
-          <span className="text-sm text-gray-500">検索中...</span>
-        </div>
-      )}
+          <h1 className="font-display m-0 text-4xl font-semibold tracking-tight text-[var(--lib-ink)] sm:text-5xl">
+            Books
+          </h1>
+          <p className="mt-2 max-w-xl text-base text-[var(--lib-ink-muted)]">
+            状態ごとの棚。列内は出版社順。カバーから詳細へ進めます。
+          </p>
+        </motion.div>
+      </section>
 
       {error && (
-        <Alert status="danger" className="mb-4 max-w-lg text-left">
+        <Alert status="danger" className="mx-auto mb-4 max-w-7xl text-left">
           <Alert.Indicator />
           <Alert.Content>
             <Alert.Title>エラー</Alert.Title>
-            <Alert.Description>{error}</Alert.Description>
+            <Alert.Description>
+              {getErrorMessage(error, "Books の取得に失敗しました。")}
+            </Alert.Description>
           </Alert.Content>
         </Alert>
       )}
 
-      {!isLoading && !error && searchedTitle && books.length === 0 && (
-        <EmptyState className="py-8">
-          <p>「{searchedTitle}」の検索結果はありません。</p>
+      {userBooks.isLoading && (
+        <div className="mx-auto flex max-w-7xl items-center gap-2 py-10 text-[var(--lib-ink-muted)]">
+          <Spinner size="sm" />
+          <span className="text-sm">本棚を取得中...</span>
+        </div>
+      )}
+
+      {!userBooks.isLoading && visibleBooks.length === 0 && (
+        <EmptyState className="lib-panel mx-auto max-w-7xl border-dashed py-12">
+          <p className="text-[var(--lib-ink-muted)]">登録済みの本はありません。</p>
         </EmptyState>
       )}
 
-      {books.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {books.map((book) => (
-            <Card key={book.id} className="text-left">
-              <Card.Content className="p-3">
-                <Link
-                  href={book.infoLink || "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block no-underline"
-                >
-                  {book.thumbnail ? (
-                    <img
-                      src={book.thumbnail}
-                      alt={book.title}
-                      className="mx-auto mb-2 h-40 object-contain"
-                    />
-                  ) : (
-                    <div className="mx-auto mb-2 flex h-40 items-center justify-center rounded-md bg-gray-100 text-xs text-gray-500 dark:bg-gray-800">
-                      No Image
-                    </div>
-                  )}
-                  <Card.Title className="line-clamp-2 text-sm">{book.title}</Card.Title>
-                  <Typography type="body-xs" color="muted" className="mt-1">
-                    {book.authors.length > 0 ? book.authors.join(", ") : "著者不明"}
-                  </Typography>
-                </Link>
-              </Card.Content>
-            </Card>
-          ))}
-        </div>
+      {visibleBooks.length > 0 && (
+        <section className="mx-auto max-w-7xl text-left">
+          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-display m-0 text-xl font-semibold text-[var(--lib-ink)]">
+              本棚
+            </h2>
+            <Chip size="sm" className="bg-[var(--lib-accent-soft)] text-[var(--lib-ink)]">
+              {visibleBooks.length}冊
+            </Chip>
+          </div>
+          <BookShelfKanban books={visibleBooks} />
+        </section>
       )}
     </main>
   );
