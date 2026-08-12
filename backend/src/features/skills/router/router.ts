@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { DrizzleSkillRepository } from "../../../infrastructure/drizzle/repositories/drizzleSkillRepository";
+import { DrizzleSkillRepository } from "../../../infrastructure/drizzle/repositories/skills/drizzleSkillRepository";
 import { SkillUseCase } from "../usecase/skillUseCase";
 
 const skillUseCase = new SkillUseCase(new DrizzleSkillRepository());
