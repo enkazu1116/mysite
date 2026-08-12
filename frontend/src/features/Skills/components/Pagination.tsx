@@ -1,9 +1,11 @@
 import type { Table } from "@tanstack/react-table";
 import { Spinner, Surface } from "@heroui/react";
 import { useTransition } from "react";
-import { PaginationControls } from "./PaginationControls";
-import { PaginationInputs } from "./PaginationInputs";
-import { PaginationSummary } from "./PaginationSummary";
+import {
+  PaginationControls,
+  PaginationInputs,
+  PaginationSummary,
+} from "../../../components/pagination";
 
 type Props<T> = {
   table: Table<T>;

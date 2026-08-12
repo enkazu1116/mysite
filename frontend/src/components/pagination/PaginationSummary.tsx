@@ -7,7 +7,12 @@ type Props = {
   rowLength: number;
 };
 
-export function PaginationSummary({ pageIndex, pageCount, pageSize, rowLength }: Props) {
+export function PaginationSummary({
+  pageIndex,
+  pageCount,
+  pageSize,
+  rowLength,
+}: Props) {
   const start = rowLength === 0 ? 0 : pageIndex * pageSize + 1;
   const end = Math.min((pageIndex + 1) * pageSize, rowLength);
 
