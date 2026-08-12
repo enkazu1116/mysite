@@ -5,6 +5,13 @@ import Content from './components/content';
 import Skills from './features/Skills/skills';
 import Projects from './features/Projects/projects';
 import Books from './features/Books/books';
+import BookDetail from './features/Books/BookDetail';
+import { BookMemosPage } from './features/Books/pages/BookMemosPage';
+import { BookOutputsPage } from './features/Books/pages/BookOutputsPage';
+import { UserBookMemosPage } from './features/Books/pages/UserBookMemosPage';
+import { UserBookOutputsPage } from './features/Books/pages/UserBookOutputsPage';
+import Users from './features/Users/users';
+import UserBooksManagerPage from './features/Books/pages/UserBooksManagerPage';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { RouterProvider } from '@heroui/react';
@@ -25,7 +32,14 @@ function AppRoutes() {
                         <Route path="/" element={<Content />} />
                         <Route path="/skills" element={<Skills />} />
                         <Route path="/projects" element={<Projects />} />
+                        <Route path="/users" element={<Users />} />
+                        <Route path="/users/:userId/books" element={<UserBooksManagerPage />} />
+                        <Route path="/users/:userId/books/:userBookId/memos" element={<UserBookMemosPage />} />
+                        <Route path="/users/:userId/books/:userBookId/outputs" element={<UserBookOutputsPage />} />
                         <Route path="/books" element={<Books />} />
+                        <Route path="/books/:userBookId" element={<BookDetail />} />
+                        <Route path="/books/:userBookId/memos" element={<BookMemosPage />} />
+                        <Route path="/books/:userBookId/outputs" element={<BookOutputsPage />} />
                     </Routes>
                 </Suspense>
             </ErrorBoundary>
