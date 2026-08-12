@@ -1,61 +1,38 @@
 import { and, eq } from "drizzle-orm";
-import type { BookSearchResult } from "../../../features/books/adapters/bookSearchAdapter";
 import type {
     CreateUserBookInput,
     ListUserBooksInput,
     UpdateUserBookInput,
-} from "../../../features/books/commands/userBookCommands";
-import type { UserBookRepository } from "../../../features/books/repositories/userBookRepository";
-import type { ReadingStatus } from "../../../features/books/types/readingStatus";
-import type { UserBook } from "../../../features/books/types/userBook";
-import { nowInstant, type Temporal } from "../../../util/temporal/instant";
-import db from "../db";
-import { booksTable, userBooksTable } from "../schema";
-
-function mapBookRow(row: typeof booksTable.$inferSelect) {
-    return {
-        bookId: row.book_id,
-        source: row.source,
-        sourceBookId: row.source_book_id,
-        title: row.title,
-        authors: JSON.parse(row.authors_json) as string[],
-        publisher: row.publisher,
-        publishedDate: row.published_date,
-        description: row.description,
-        pageCount: row.page_count,
-        thumbnailUrl: row.thumbnail_url,
-        infoLink: row.info_link,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
-    };
-}
-
-function mapUserBookRow(
-    userBookRow: typeof userBooksTable.$inferSelect,
-    bookRow: typeof booksTable.$inferSelect,
-): UserBook {
-    return {
-        userBookId: userBookRow.user_book_id,
-        userId: userBookRow.user_id,
-        bookId: userBookRow.book_id,
-        status: userBookRow.status as ReadingStatus,
-        currentPage: userBookRow.current_page,
-        note: userBookRow.note,
-        startedAt: userBookRow.started_at,
-        finishedAt: userBookRow.finished_at,
-        createdAt: userBookRow.created_at,
-        updatedAt: userBookRow.updated_at,
-        book: mapBookRow(bookRow),
-    };
-}
+} from "../../../../features/books/commands/userBookCommands";
+import type { UserBookRepository } from "../../../../features/books/repositories/userBookRepository";
+import type { UserBook } from "../../../../features/books/types/userBook";
+import { userBookPersistenceMessages } from "../../../../util/messages/persistence/books/userBook";
+import { nowInstant, type Temporal } from "../../../../util/temporal/instant";
+import { mapUserBookRow } from "../../mappers/books/userBookMapper";
+import db from "../../db";
+import { booksTable, bookChapterMemosTable, bookOutputsTable, userBooksTable, usersTable } from "../../schema";
+import { DrizzleBookCatalogRepository } from "./drizzleBookCatalogRepository";
 
 class DrizzleUserBookRepository implements UserBookRepository {
+    constructor(
+        private readonly bookCatalog = new DrizzleBookCatalogRepository(),
+    ) {}
+
     async saveUserBook(input: CreateUserBookInput): Promise<UserBook> {
-        const existingBook = await this.findBookBySource(
-            input.book.source,
-            input.book.sourceBookId,
-        );
-        const persistedBook = existingBook ?? (await this.createBook(input.book));
+        const persistedBook =
+            (await this.bookCatalog.findBySource(
+                input.book.source,
+                input.book.sourceBookId,
+            )) ?? (await this.bookCatalog.createFromSearchResult(input.book));
+
+        const [userRow] = await db
+            .select({ userId: usersTable.user_id })
+            .from(usersTable)
+            .where(eq(usersTable.user_id, input.userId));
+
+        if (!userRow) {
+            throw new Error(userBookPersistenceMessages.userNotFound);
+        }
 
         const existingUserBook = await this.findUserBookRow(
             input.userId,
@@ -73,7 +50,7 @@ class DrizzleUserBookRepository implements UserBookRepository {
                 .returning();
 
             if (!updatedUserBook) {
-                throw new Error("Failed to update user book.");
+                throw new Error(userBookPersistenceMessages.updateFailed);
             }
 
             return mapUserBookRow(updatedUserBook, persistedBook);
@@ -89,7 +66,7 @@ class DrizzleUserBookRepository implements UserBookRepository {
             .returning();
 
         if (!createdUserBook) {
-            throw new Error("Failed to create user book.");
+            throw new Error(userBookPersistenceMessages.createFailed);
         }
 
         return mapUserBookRow(createdUserBook, persistedBook);
@@ -158,57 +135,41 @@ class DrizzleUserBookRepository implements UserBookRepository {
             .returning();
 
         if (!updatedUserBook) {
-            throw new Error("User book not found.");
+            throw new Error(userBookPersistenceMessages.userBookNotFound);
         }
 
-        const [book] = await db
-            .select()
-            .from(booksTable)
-            .where(eq(booksTable.book_id, updatedUserBook.book_id));
+        const book = await this.bookCatalog.findById(updatedUserBook.book_id);
 
         if (!book) {
-            throw new Error("Book not found.");
+            throw new Error(userBookPersistenceMessages.bookNotFound);
         }
 
         return mapUserBookRow(updatedUserBook, book);
     }
 
-    private async findBookBySource(source: string, sourceBookId: string) {
-        const [book] = await db
-            .select()
-            .from(booksTable)
-            .where(
-                and(
-                    eq(booksTable.source, source),
-                    eq(booksTable.source_book_id, sourceBookId),
-                ),
-            );
-
-        return book ?? null;
-    }
-
-    private async createBook(book: BookSearchResult) {
-        const [createdBook] = await db
-            .insert(booksTable)
-            .values({
-                source: book.source,
-                source_book_id: book.sourceBookId,
-                title: book.title,
-                authors_json: JSON.stringify(book.authors),
-                publisher: book.publisher,
-                published_date: book.publishedDate,
-                description: book.description,
-                page_count: book.pageCount,
-                thumbnail_url: book.thumbnailUrl,
-                info_link: book.infoLink,
-            })
-            .returning();
-
-        if (!createdBook) {
-            throw new Error("Failed to create book.");
+    async deleteUserBook(userBookId: string): Promise<UserBook> {
+        const existing = await this.findUserBookById(userBookId);
+        if (!existing) {
+            throw new Error(userBookPersistenceMessages.userBookNotFound);
         }
 
-        return createdBook;
+        await db
+            .delete(bookChapterMemosTable)
+            .where(eq(bookChapterMemosTable.user_book_id, userBookId));
+        await db
+            .delete(bookOutputsTable)
+            .where(eq(bookOutputsTable.user_book_id, userBookId));
+
+        const [deleted] = await db
+            .delete(userBooksTable)
+            .where(eq(userBooksTable.user_book_id, userBookId))
+            .returning({ user_book_id: userBooksTable.user_book_id });
+
+        if (!deleted) {
+            throw new Error(userBookPersistenceMessages.deleteFailed);
+        }
+
+        return existing;
     }
 
     private async findUserBookRow(userId: string, bookId: string) {

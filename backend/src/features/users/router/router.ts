@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { DrizzleUsersRepository } from "../../../infrastructure/drizzle/repositories/drizzleUsersRepository";
+import { DrizzleUsersRepository } from "../../../infrastructure/drizzle/repositories/users/drizzleUsersRepository";
+import { userPersistenceMessages } from "../../../util/messages/persistence/users";
 import { UserUseCase } from "../usecase/userUseCase";
 
 const userUseCase = new UserUseCase(new DrizzleUsersRepository());
@@ -40,7 +41,7 @@ const userRoutes = new Hono()
 
         if (!user) {
             // 存在しないIDの場合は404: Not Foundを返す
-            return c.json({ message: "ユーザーが見つかりませんでした。" }, 404);
+            return c.json({ message: userPersistenceMessages.notFound }, 404);
         }
 
         return c.json({ user });
@@ -60,7 +61,7 @@ const userRoutes = new Hono()
 
             if (!user) {
                 // 存在しないIDの場合は404: Not Foundを返す
-                return c.json({ message: "ユーザーが見つかりませんでした。" }, 404);
+                return c.json({ message: userPersistenceMessages.notFound }, 404);
             }
 
             return c.json({ user });
@@ -84,7 +85,7 @@ const userRoutes = new Hono()
 
         if (!user) {
             // 存在しないIDの場合は404: Not Foundを返す
-            return c.json({ message: "ユーザーが見つかりませんでした。" }, 404);
+            return c.json({ message: userPersistenceMessages.notFound }, 404);
         }
 
         return c.json({ user });

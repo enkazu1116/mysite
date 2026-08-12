@@ -2,37 +2,27 @@ import { eq } from "drizzle-orm";
 import type {
     CreateBookOutputInput,
     UpdateBookOutputInput,
-} from "../../../features/books/commands/bookOutputCommands";
-import type { BookOutputRepository } from "../../../features/books/repositories/bookOutputRepository";
-import type { BookOutput } from "../../../features/books/types/bookOutput";
-import { nowInstant, type Temporal } from "../../../util/temporal/instant";
-import db from "../db";
-import { bookOutputsTable } from "../schema";
-
-function mapOutputRow(row: typeof bookOutputsTable.$inferSelect): BookOutput {
-    return {
-        bookOutputId: row.book_output_id,
-        userBookId: row.user_book_id,
-        title: row.title,
-        body: row.body,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
-    };
-}
+} from "../../../../features/books/commands/bookOutputCommands";
+import { bookOutputPersistenceMessages } from "../../../../util/messages/persistence/books/bookOutput";
+import type { BookOutputRepository } from "../../../../features/books/repositories/bookOutputRepository";
+import type { BookOutput } from "../../../../features/books/types/bookOutput";
+import { nowInstant, type Temporal } from "../../../../util/temporal/instant";
+import {
+    mapOutputRow,
+    toBookOutputInsertValues,
+} from "../../mappers/books/bookOutputMapper";
+import db from "../../db";
+import { bookOutputsTable } from "../../schema";
 
 class DrizzleBookOutputRepository implements BookOutputRepository {
     async createOutput(input: CreateBookOutputInput): Promise<BookOutput> {
         const [createdOutput] = await db
             .insert(bookOutputsTable)
-            .values({
-                user_book_id: input.userBookId,
-                title: input.title,
-                body: input.body,
-            })
+            .values(toBookOutputInsertValues(input))
             .returning();
 
         if (!createdOutput) {
-            throw new Error("Failed to create output.");
+            throw new Error(bookOutputPersistenceMessages.createFailed);
         }
 
         return mapOutputRow(createdOutput);
@@ -60,6 +50,12 @@ class DrizzleBookOutputRepository implements BookOutputRepository {
         if (input.body !== undefined) {
             updateValues.body = input.body;
         }
+        if (input.chapterTitle !== undefined) {
+            updateValues.chapter_title = input.chapterTitle;
+        }
+        if (input.chapterOrder !== undefined) {
+            updateValues.chapter_order = input.chapterOrder;
+        }
 
         const [updatedOutput] = await db
             .update(bookOutputsTable)
@@ -68,7 +64,7 @@ class DrizzleBookOutputRepository implements BookOutputRepository {
             .returning();
 
         if (!updatedOutput) {
-            throw new Error("Output not found.");
+            throw new Error(bookOutputPersistenceMessages.notFound);
         }
 
         return mapOutputRow(updatedOutput);

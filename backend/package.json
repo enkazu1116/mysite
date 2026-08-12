@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "infisical run -- bun run --hot src/index.ts",
+    "start": "bun run src/index.ts",
     "db:push": "infisical run -- drizzle-kit push",
     "db:generate": "infisical run -- drizzle-kit generate",
     "db:migrate": "infisical run -- drizzle-kit migrate",

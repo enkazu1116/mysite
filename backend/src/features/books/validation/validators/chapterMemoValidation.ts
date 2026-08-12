@@ -1,9 +1,11 @@
 import type {
     CreateBookChapterMemoInput,
+    DeleteBookChapterMemoInput,
     UpdateBookChapterMemoInput,
 } from "../../commands/chapterMemoCommands";
 import {
     createBookChapterMemoSchema,
+    deleteBookChapterMemoSchema,
     updateBookChapterMemoSchema,
 } from "../schemas/chapterMemoSchemas";
 import { toErrorMessages } from "../utils/toErrorMessages";
@@ -26,7 +28,17 @@ function validateUpdateBookChapterMemoInput(
     return toErrorMessages(updateBookChapterMemoSchema.safeParse(input));
 }
 
+/**
+ * 章メモの削除入力を検証する。
+ */
+function validateDeleteBookChapterMemoInput(
+    input: DeleteBookChapterMemoInput,
+): string[] {
+    return toErrorMessages(deleteBookChapterMemoSchema.safeParse(input));
+}
+
 export {
     validateCreateBookChapterMemoInput,
     validateUpdateBookChapterMemoInput,
+    validateDeleteBookChapterMemoInput,
 };

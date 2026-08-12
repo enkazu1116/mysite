@@ -8,7 +8,7 @@ describe("router.ts (正常系)HTTP エンドポイント", () => {
 
     beforeAll(async () => {
         mock.module(
-            "../../../infrastructure/drizzle/repositories/drizzleSkillRepository",
+            "../../../infrastructure/drizzle/repositories/skills/drizzleSkillRepository",
             () => ({
                 DrizzleSkillRepository: class MockDrizzleSkillRepository {
                     findAll = findAll;

@@ -11,6 +11,7 @@ interface BookChapterMemoRepository {
     createChapterMemo(input: CreateBookChapterMemoInput): Promise<BookChapterMemo>;
     listChapterMemos(userBookId: string): Promise<BookChapterMemo[]>;
     updateChapterMemo(input: UpdateBookChapterMemoInput): Promise<BookChapterMemo>;
+    deleteChapterMemo(chapterMemoId: string): Promise<BookChapterMemo>;
 }
 
 export type { BookChapterMemoRepository };

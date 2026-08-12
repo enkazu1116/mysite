@@ -1,70 +1,15 @@
 import { and, eq, sql } from "drizzle-orm";
-import type { SkillRepository } from "../../../features/skills/repositories/skillRepository";
-import type { Skill } from "../../../features/skills/types/skill";
+import { skillPersistenceMessages } from "../../../../util/messages/persistence/skills";
+import type { SkillRepository } from "../../../../features/skills/repositories/skillRepository";
+import type { Skill } from "../../../../features/skills/types/skill";
 import type {
     CreateSkillsInput,
     DeleteSkillsInput,
     UpdateSkillsInput,
-} from "../../../features/skills/types/skillInput";
-import type { SkillLevel } from "../../../features/skills/types/skillLevel";
-import db from "../db";
-import { skillTechsTable, skillsTable, techsTable } from "../schema";
-
-type SkillRow = {
-    skill_id: string;
-    user_id: string;
-    language: string;
-    experience_months: number;
-    level: number;
-    detail: string;
-    tech_id: string;
-    tech_name: string;
-    tech_category: string;
-};
-
-function toSkills(rows: SkillRow[]): Skill[] {
-    const skillsById = new Map<string, Skill>();
-
-    for (const row of rows) {
-        const tech = {
-            techId: row.tech_id,
-            name: row.tech_name,
-            category: row.tech_category,
-        };
-
-        const existing = skillsById.get(row.skill_id);
-        if (existing) {
-            existing.techs.push(tech);
-            continue;
-        }
-
-        skillsById.set(row.skill_id, {
-            userId: row.user_id,
-            skillId: row.skill_id,
-            language: row.language,
-            techs: [tech],
-            experienceMonths: row.experience_months,
-            level: row.level as SkillLevel,
-            detail: row.detail,
-        });
-    }
-
-    return Array.from(skillsById.values());
-}
-
-function skillSelect() {
-    return {
-        skill_id: skillsTable.skill_id,
-        user_id: skillsTable.user_id,
-        language: skillsTable.language,
-        experience_months: skillsTable.experience_months,
-        level: skillsTable.level,
-        detail: skillsTable.detail,
-        tech_id: techsTable.tech_id,
-        tech_name: techsTable.name,
-        tech_category: techsTable.category,
-    };
-}
+} from "../../../../features/skills/types/skillInput";
+import { skillSelect, toSkills } from "../../mappers/skills/skillMapper";
+import db from "../../db";
+import { skillTechsTable, skillsTable, techsTable } from "../../schema";
 
 class DrizzleSkillRepository implements SkillRepository {
     async findAll(): Promise<Skill[]> {
@@ -108,7 +53,7 @@ class DrizzleSkillRepository implements SkillRepository {
                 });
 
             if (inserted.length === 0) {
-                throw new Error("Failed to create skills.");
+                throw new Error(skillPersistenceMessages.createFailed);
             }
 
             await tx.insert(skillTechsTable).values(
@@ -149,7 +94,7 @@ class DrizzleSkillRepository implements SkillRepository {
                     );
 
                 if (updatedResult.rowsAffected === 0) {
-                    throw new Error("Skill not found.");
+                    throw new Error(skillPersistenceMessages.notFound);
                 }
 
                 await tx
@@ -189,7 +134,7 @@ class DrizzleSkillRepository implements SkillRepository {
                     );
 
                 if (deletedResult.rowsAffected === 0) {
-                    throw new Error("Skill not found.");
+                    throw new Error(skillPersistenceMessages.notFound);
                 }
             }
         });
