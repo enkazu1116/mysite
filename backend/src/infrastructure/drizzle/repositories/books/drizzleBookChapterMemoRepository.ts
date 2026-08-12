@@ -1,27 +1,18 @@
 import { eq } from "drizzle-orm";
+import { chapterMemoPersistenceMessages } from "../../../../util/messages/persistence/books/chapterMemo";
 import type {
     CreateBookChapterMemoInput,
     UpdateBookChapterMemoInput,
-} from "../../../features/books/commands/chapterMemoCommands";
-import type { BookChapterMemoRepository } from "../../../features/books/repositories/bookChapterMemoRepository";
-import type { BookChapterMemo } from "../../../features/books/types/bookChapterMemo";
-import { nowInstant, type Temporal } from "../../../util/temporal/instant";
-import db from "../db";
-import { bookChapterMemosTable } from "../schema";
-
-function mapChapterMemoRow(
-    row: typeof bookChapterMemosTable.$inferSelect,
-): BookChapterMemo {
-    return {
-        chapterMemoId: row.chapter_memo_id,
-        userBookId: row.user_book_id,
-        chapterTitle: row.chapter_title ?? undefined,
-        chapterOrder: row.chapter_order,
-        memo: row.memo ?? undefined,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
-    };
-}
+} from "../../../../features/books/commands/chapterMemoCommands";
+import type { BookChapterMemoRepository } from "../../../../features/books/repositories/bookChapterMemoRepository";
+import type { BookChapterMemo } from "../../../../features/books/types/bookChapterMemo";
+import { nowInstant, type Temporal } from "../../../../util/temporal/instant";
+import {
+    mapChapterMemoRow,
+    toChapterMemoInsertValues,
+} from "../../mappers/books/chapterMemoMapper";
+import db from "../../db";
+import { bookChapterMemosTable } from "../../schema";
 
 class DrizzleBookChapterMemoRepository implements BookChapterMemoRepository {
     async createChapterMemo(
@@ -29,16 +20,11 @@ class DrizzleBookChapterMemoRepository implements BookChapterMemoRepository {
     ): Promise<BookChapterMemo> {
         const [createdMemo] = await db
             .insert(bookChapterMemosTable)
-            .values({
-                user_book_id: input.userBookId,
-                chapter_title: input.chapterTitle ?? null,
-                chapter_order: input.chapterOrder,
-                memo: input.memo ?? null,
-            })
+            .values(toChapterMemoInsertValues(input))
             .returning();
 
         if (!createdMemo) {
-            throw new Error("Failed to create chapter memo.");
+            throw new Error(chapterMemoPersistenceMessages.createFailed);
         }
 
         return mapChapterMemoRow(createdMemo);
@@ -79,10 +65,23 @@ class DrizzleBookChapterMemoRepository implements BookChapterMemoRepository {
             .returning();
 
         if (!updatedMemo) {
-            throw new Error("Chapter memo not found.");
+            throw new Error(chapterMemoPersistenceMessages.notFound);
         }
 
         return mapChapterMemoRow(updatedMemo);
+    }
+
+    async deleteChapterMemo(chapterMemoId: string): Promise<BookChapterMemo> {
+        const [deletedMemo] = await db
+            .delete(bookChapterMemosTable)
+            .where(eq(bookChapterMemosTable.chapter_memo_id, chapterMemoId))
+            .returning();
+
+        if (!deletedMemo) {
+            throw new Error(chapterMemoPersistenceMessages.notFound);
+        }
+
+        return mapChapterMemoRow(deletedMemo);
     }
 }
 
