@@ -62,6 +62,8 @@ const defaultChapterMemo: BookChapterMemo = {
 const defaultBookOutput: BookOutput = {
     bookOutputId: defaultBookOutputId,
     userBookId: defaultUserBookId,
+    chapterTitle: "Chapter 1",
+    chapterOrder: 1,
     title: "DDD explanation",
     body: "DDD keeps business rules close to the domain model.",
     createdAt: defaultInstant,
@@ -78,6 +80,7 @@ function createMockUserBookRepository(
             Promise.resolve(userBookId === defaultUserBookId ? defaultUserBook : null),
         ),
         updateUserBook: mock(() => Promise.resolve(defaultUserBook)),
+        deleteUserBook: mock(() => Promise.resolve(defaultUserBook)),
         ...overrides,
     };
 }
@@ -89,6 +92,7 @@ function createMockBookChapterMemoRepository(
         createChapterMemo: mock(() => Promise.resolve(defaultChapterMemo)),
         listChapterMemos: mock(() => Promise.resolve([defaultChapterMemo])),
         updateChapterMemo: mock(() => Promise.resolve(defaultChapterMemo)),
+        deleteChapterMemo: mock(() => Promise.resolve(defaultChapterMemo)),
         ...overrides,
     };
 }

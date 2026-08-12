@@ -94,6 +94,16 @@ class UserBookUseCase {
 
         return this.userBookRepository.updateUserBook(input);
     }
+
+    /**
+     * ユーザー本を削除する
+     *
+     * @param userBookId
+     * @returns
+     */
+    async deleteUserBook(userBookId: string): Promise<UserBook> {
+        return this.userBookRepository.deleteUserBook(userBookId);
+    }
 }
 
 export { UserBookUseCase };

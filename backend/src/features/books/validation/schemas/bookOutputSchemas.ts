@@ -5,6 +5,12 @@ import type {
 } from "../../commands/bookOutputCommands";
 import { bookOutputValidationMessages } from "../messages/bookOutputMessages";
 
+const optionalChapterTitleSchema = z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => (value && value.length > 0 ? value : undefined));
+
 /**
  * アウトプット作成用のスキーマ定義
  */
@@ -12,6 +18,11 @@ const createBookOutputSchema = z.object({
     userBookId: z.uuid({
         error: () => bookOutputValidationMessages.userBookIdInvalid,
     }),
+    chapterTitle: optionalChapterTitleSchema,
+    chapterOrder: z
+        .number()
+        .int()
+        .min(0, bookOutputValidationMessages.chapterOrderInvalid),
     title: z
         .string()
         .trim()
@@ -29,6 +40,12 @@ const updateBookOutputSchema = z.object({
     bookOutputId: z.uuid({
         error: () => bookOutputValidationMessages.bookOutputIdInvalid,
     }),
+    chapterTitle: optionalChapterTitleSchema,
+    chapterOrder: z
+        .number()
+        .int()
+        .min(0, bookOutputValidationMessages.chapterOrderInvalid)
+        .optional(),
     title: z
         .string()
         .trim()

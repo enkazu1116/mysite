@@ -18,4 +18,15 @@ type UpdateBookChapterMemoInput = {
     memo?: string;
 };
 
-export type { CreateBookChapterMemoInput, UpdateBookChapterMemoInput };
+/**
+ * 本の章メモを削除するための入力データ
+ */
+type DeleteBookChapterMemoInput = {
+    chapterMemoId: string;
+};
+
+export type {
+    CreateBookChapterMemoInput,
+    UpdateBookChapterMemoInput,
+    DeleteBookChapterMemoInput,
+};

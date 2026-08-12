@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { DrizzleBookOutputRepository } from "../../../infrastructure/drizzle/repositories/drizzleBookOutputRepository";
+import { DrizzleBookOutputRepository } from "../../../infrastructure/drizzle/repositories/books/drizzleBookOutputRepository";
+import { bookOutputPersistenceMessages } from "../../../util/messages/persistence/books/bookOutput";
 import { BookOutputUseCase } from "../usecase/bookOutputUseCase";
 
 const bookOutputUseCase = new BookOutputUseCase(new DrizzleBookOutputRepository());
@@ -75,7 +76,8 @@ const bookOutputRouter = new Hono()
                 error instanceof Error
                     ? error.message
                     : "アウトプットの更新に失敗しました。";
-            const statusCode = message === "アウトプットが見つかりません。" ? 404 : 400;
+            const statusCode =
+                message === bookOutputPersistenceMessages.notFound ? 404 : 400;
             return c.json({ message }, statusCode);
         }
     });

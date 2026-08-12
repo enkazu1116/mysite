@@ -117,6 +117,19 @@ describe("bookChapterMemoUseCase.ts / BookChapterMemoUseCase", () => {
         );
         expect(result).toEqual(defaultChapterMemo);
     });
+
+    test("deleteChapterMemo (正常系) 章メモを削除する", async () => {
+        const bookChapterMemoRepository = createMockBookChapterMemoRepository();
+        const useCase = new BookChapterMemoUseCase(bookChapterMemoRepository);
+        const input = { chapterMemoId: defaultChapterMemo.chapterMemoId };
+
+        const result = await useCase.deleteChapterMemo(input);
+
+        expect(bookChapterMemoRepository.deleteChapterMemo).toHaveBeenCalledWith(
+            input.chapterMemoId,
+        );
+        expect(result).toEqual(defaultChapterMemo);
+    });
 });
 
 /**
@@ -130,6 +143,8 @@ describe("bookOutputUseCase.ts / BookOutputUseCase", () => {
         const useCase = new BookOutputUseCase(bookOutputRepository);
         const input = {
             userBookId: defaultUserBookId,
+            chapterTitle: "Chapter 1",
+            chapterOrder: 1,
             title: "DDD explanation",
             body: "Explain aggregate boundaries in my own words.",
         };
@@ -149,6 +164,7 @@ describe("bookOutputUseCase.ts / BookOutputUseCase", () => {
         await expect(
             useCase.createOutput({
                 userBookId: defaultUserBookId,
+                chapterOrder: 1,
                 title: "DDD explanation",
                 body: "",
             }),

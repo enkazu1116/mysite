@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type {
     CreateBookChapterMemoInput,
+    DeleteBookChapterMemoInput,
     UpdateBookChapterMemoInput,
 } from "../../commands/chapterMemoCommands";
 import { chapterMemoValidationMessages } from "../messages/chapterMemoMessages";
@@ -56,4 +57,17 @@ const updateBookChapterMemoSchema = z.object({
     memo: optionalChapterMemoSchema,
 }) satisfies z.ZodType<UpdateBookChapterMemoInput>;
 
-export { createBookChapterMemoSchema, updateBookChapterMemoSchema };
+/**
+ * 章メモの削除用スキーマ定義
+ */
+const deleteBookChapterMemoSchema = z.object({
+    chapterMemoId: z.uuid({
+        error: () => chapterMemoValidationMessages.chapterMemoIdInvalid,
+    }),
+}) satisfies z.ZodType<DeleteBookChapterMemoInput>;
+
+export {
+    createBookChapterMemoSchema,
+    updateBookChapterMemoSchema,
+    deleteBookChapterMemoSchema,
+};

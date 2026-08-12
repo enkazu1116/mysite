@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { GoogleBooksProvider } from "../../../infrastructure/books/providers/googleBooksProvider";
-import { DrizzleUserBookRepository } from "../../../infrastructure/drizzle/repositories/drizzleUserBookRepository";
+import { DrizzleUserBookRepository } from "../../../infrastructure/drizzle/repositories/books/drizzleUserBookRepository";
 import { UserBookUseCase } from "../usecase/userBookUseCase";
 
 const userBookUseCase = new UserBookUseCase(

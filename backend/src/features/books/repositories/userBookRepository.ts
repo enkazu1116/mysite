@@ -13,6 +13,7 @@ interface UserBookRepository {
     listUserBooks(input: ListUserBooksInput): Promise<UserBook[]>;
     findUserBookById(userBookId: string): Promise<UserBook | null>;
     updateUserBook(input: UpdateUserBookInput): Promise<UserBook>;
+    deleteUserBook(userBookId: string): Promise<UserBook>;
 }
 
 export type { UserBookRepository };

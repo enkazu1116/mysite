@@ -5,6 +5,7 @@ import type {
 import {
     GOOGLE_BOOKS_MAX_RESULTS,
     GOOGLE_BOOKS_VOLUMES_URL,
+    GOOGLE_BOOKS_API_KEY,
 } from "../constants/googleBooksApi";
 import { googleBooksResponseSchema } from "../types/googleBooksResponse";
 
@@ -17,6 +18,7 @@ function buildGoogleBooksSearchUrl(query: string): string {
     const params = new URLSearchParams({
         q: `intitle:${query}`,
         maxResults: String(GOOGLE_BOOKS_MAX_RESULTS),
+        key: GOOGLE_BOOKS_API_KEY,
     });
 
     return `${GOOGLE_BOOKS_VOLUMES_URL}?${params.toString()}`;

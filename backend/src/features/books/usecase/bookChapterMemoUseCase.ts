@@ -1,11 +1,13 @@
 import type {
     CreateBookChapterMemoInput,
+    DeleteBookChapterMemoInput,
     UpdateBookChapterMemoInput,
 } from "../commands/chapterMemoCommands";
 import type { BookChapterMemoRepository } from "../repositories/bookChapterMemoRepository";
 import type { BookChapterMemo } from "../types/bookChapterMemo";
 import {
     validateCreateBookChapterMemoInput,
+    validateDeleteBookChapterMemoInput,
     validateUpdateBookChapterMemoInput,
 } from "../validation/validators/chapterMemoValidation";
 import { validateUpdateUserBookInput } from "../validation/validators/userBookValidation";
@@ -67,6 +69,25 @@ class BookChapterMemoUseCase {
         }
 
         return this.bookChapterMemoRepository.updateChapterMemo(input);
+    }
+
+    /**
+     * 章メモを削除する
+     *
+     * @param input
+     * @returns
+     */
+    async deleteChapterMemo(
+        input: DeleteBookChapterMemoInput,
+    ): Promise<BookChapterMemo> {
+        const errors = validateDeleteBookChapterMemoInput(input);
+        if (errors.length > 0) {
+            throw new Error(errors.join("\n"));
+        }
+
+        return this.bookChapterMemoRepository.deleteChapterMemo(
+            input.chapterMemoId,
+        );
     }
 }
 

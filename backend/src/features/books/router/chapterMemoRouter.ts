@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { DrizzleBookChapterMemoRepository } from "../../../infrastructure/drizzle/repositories/drizzleBookChapterMemoRepository";
+import { DrizzleBookChapterMemoRepository } from "../../../infrastructure/drizzle/repositories/books/drizzleBookChapterMemoRepository";
+import { chapterMemoPersistenceMessages } from "../../../util/messages/persistence/books/chapterMemo";
 import { BookChapterMemoUseCase } from "../usecase/bookChapterMemoUseCase";
 
 const bookChapterMemoUseCase = new BookChapterMemoUseCase(
@@ -78,7 +79,24 @@ const chapterMemoRouter = new Hono()
                     ? error.message
                     : "章メモの更新に失敗しました。";
             const statusCode =
-                message === "章メモが見つかりません。" ? 404 : 400;
+                message === chapterMemoPersistenceMessages.notFound ? 404 : 400;
+            return c.json({ message }, statusCode);
+        }
+    })
+    .delete("/chapter-memos/:chapterMemoId", async (c) => {
+        try {
+            const chapterMemo = await bookChapterMemoUseCase.deleteChapterMemo({
+                chapterMemoId: c.req.param("chapterMemoId"),
+            });
+
+            return c.json({ chapterMemo });
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "章メモの削除に失敗しました。";
+            const statusCode =
+                message === chapterMemoPersistenceMessages.notFound ? 404 : 400;
             return c.json({ message }, statusCode);
         }
     });

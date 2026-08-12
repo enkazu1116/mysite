@@ -1,7 +1,8 @@
 import { Hono } from "hono";
 import { GoogleBooksProvider } from "../../../infrastructure/books/providers/googleBooksProvider";
-import { DrizzleUserBookRepository } from "../../../infrastructure/drizzle/repositories/drizzleUserBookRepository";
+import { DrizzleUserBookRepository } from "../../../infrastructure/drizzle/repositories/books/drizzleUserBookRepository";
 import { readingStatuses, type ReadingStatus } from "../types/readingStatus";
+import { userBookPersistenceMessages } from "../../../util/messages/persistence/books/userBook";
 import { UserBookUseCase } from "../usecase/userBookUseCase";
 
 const userBookUseCase = new UserBookUseCase(
@@ -69,7 +70,7 @@ const userBooksRouter = new Hono()
 
         if (!userBook) {
             // 存在しない ID の場合は 404: Not Found を返す
-            return c.json({ message: "ユーザー本が見つかりませんでした。" }, 404);
+            return c.json({ message: userBookPersistenceMessages.userBookNotFound }, 404);
         }
 
         return c.json({ userBook });
@@ -95,7 +96,29 @@ const userBooksRouter = new Hono()
                 error instanceof Error
                     ? error.message
                     : "ユーザー本の更新に失敗しました。";
-            const statusCode = message === "本が見つかりません。" ? 404 : 400;
+            const statusCode =
+                message === userBookPersistenceMessages.bookNotFound ||
+                message === userBookPersistenceMessages.userBookNotFound
+                    ? 404
+                    : 400;
+            return c.json({ message }, statusCode);
+        }
+    })
+    .delete("/:userBookId", async (c) => {
+        try {
+            const userBook = await userBookUseCase.deleteUserBook(
+                c.req.param("userBookId"),
+            );
+            return c.json({ userBook });
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "ユーザー本の削除に失敗しました。";
+            const statusCode =
+                message === userBookPersistenceMessages.userBookNotFound
+                    ? 404
+                    : 400;
             return c.json({ message }, statusCode);
         }
     });

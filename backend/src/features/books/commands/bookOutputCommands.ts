@@ -3,6 +3,8 @@
  */
 type CreateBookOutputInput = {
     userBookId: string;
+    chapterTitle?: string;
+    chapterOrder: number;
     title: string;
     body: string;
 };
@@ -12,6 +14,8 @@ type CreateBookOutputInput = {
  */
 type UpdateBookOutputInput = {
     bookOutputId: string;
+    chapterTitle?: string;
+    chapterOrder?: number;
     title?: string;
     body?: string;
 };

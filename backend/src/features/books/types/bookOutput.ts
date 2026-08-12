@@ -7,6 +7,8 @@ import type { Temporal } from "../../../util/temporal/instant";
 type BookOutput = {
     bookOutputId: string;
     userBookId: string;
+    chapterTitle?: string;
+    chapterOrder: number;
     title: string;
     body: string;
     createdAt: Temporal.Instant;
