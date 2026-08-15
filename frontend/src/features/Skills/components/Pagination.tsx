@@ -1,5 +1,6 @@
 import type { Table } from "@tanstack/react-table";
-import { Spinner, Surface } from "@heroui/react";
+import { Spinner } from "@heroui/react/spinner";
+import { Surface } from "@heroui/react/surface";
 import { useTransition } from "react";
 import {
   PaginationControls,
@@ -54,7 +55,7 @@ export function Pagination<T>({ table }: Props<T>) {
         />
 
         {isPending && (
-          <span className="inline-flex items-center gap-1.5 text-[11px] text-gray-500">
+          <span className="inline-flex items-center gap-1.5 text-[11px] text-[var(--lib-ink-muted)]">
             <Spinner size="sm" />
             ページ切替中...
           </span>

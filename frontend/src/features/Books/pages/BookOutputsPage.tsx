@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Alert } from "@heroui/react";
 import { useParams } from "react-router";
 import { ChapterDetailsPanel } from "../components/chapter/shared/ChapterDetailsPanel";
 import { ChapterWorkspace } from "../components/chapter/shared/ChapterWorkspace";
@@ -10,24 +9,15 @@ import {
   useUserBookQuery,
 } from "../hooks/useBooksQueries";
 import { useChapterSelection } from "../hooks/useChapterSelection";
-import { getErrorMessage } from "../../../utils/getErrorMessage";
+import { QueryErrorAlert } from "../../../components/status";
 
 export function BookOutputsPage() {
   const { userBookId } = useParams<{ userBookId: string }>();
   const userBook = useUserBookQuery(userBookId);
   const outputs = useBookOutputsQuery(userBookId);
-
-  const sorted = useMemo(
+  const groupedOutputs = useMemo(
     () =>
-      [...(outputs.data ?? [])]
-        .map((output) => ({
-          ...output,
-          chapterOrder: output.chapterOrder ?? 0,
-        }))
-        .sort(
-          (a, b) =>
-            a.chapterOrder - b.chapterOrder || a.title.localeCompare(b.title),
-        ),
+      (outputs.data ?? []).toSorted((a, b) => a.title.localeCompare(b.title)),
     [outputs.data],
   );
   const {
@@ -35,7 +25,7 @@ export function BookOutputsPage() {
     selectedChapterOrder,
     setSelectedChapterOrder,
     selectedItems,
-  } = useChapterSelection(sorted);
+  } = useChapterSelection(groupedOutputs);
 
   return (
     <PageShell
@@ -44,20 +34,10 @@ export function BookOutputsPage() {
       title="アウトプット"
       subtitle={userBook.data?.book.title}
     >
-      {(userBook.error || outputs.error) && (
-        <Alert status="danger" className="mb-3 text-left">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>エラー</Alert.Title>
-            <Alert.Description>
-              {getErrorMessage(
-                userBook.error ?? outputs.error,
-                "アウトプットの取得に失敗しました。",
-              )}
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
+      <QueryErrorAlert
+        error={userBook.error ?? outputs.error}
+        fallback="アウトプットの取得に失敗しました。"
+      />
 
       <ChapterWorkspace
         groups={groups}

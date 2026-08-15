@@ -1,4 +1,5 @@
-import { ListBox, Select } from "@heroui/react";
+import { ListBox } from "@heroui/react/list-box";
+import { Select } from "@heroui/react/select";
 import type { Key } from "react";
 
 export function ChapterSelectDropdown<T>({

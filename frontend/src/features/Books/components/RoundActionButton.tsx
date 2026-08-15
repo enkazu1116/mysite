@@ -1,4 +1,4 @@
-import { Button } from "@heroui/react";
+import { Button } from "@heroui/react/button";
 import type { ReactNode } from "react";
 
 export function RoundActionButton({
@@ -22,7 +22,6 @@ export function RoundActionButton({
       size="sm"
       isIconOnly
       aria-label={label}
-      title={label}
       isPending={isPending}
       onPress={onPress}
       className={`h-10 w-10 shrink-0 rounded-full bg-[var(--lib-accent)] text-[var(--lib-accent-fg)] ${className ?? ""}`}

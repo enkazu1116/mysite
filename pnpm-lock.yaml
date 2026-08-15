@@ -50,9 +50,6 @@ importers:
 
   frontend:
     dependencies:
-      '@fontsource/newsreader':
-        specifier: ^5.3.0
-        version: 5.3.0
       '@fontsource/source-sans-3':
         specifier: ^5.3.0
         version: 5.3.0
@@ -827,9 +824,6 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
-
-  '@fontsource/newsreader@5.3.0':
-    resolution: {integrity: sha512-AFR6ZKY89GNL+9qBI2P2+66NhD5bhOj/v6fsLnFYLM4E0JnMB1yKb+Ro8cA64i1hwAWoBfTq5CHJGWH1toLDkw==}
 
   '@fontsource/source-sans-3@5.3.0':
     resolution: {integrity: sha512-VrWixSgF93kOVSEkwjs9ImnAbxrBew4PgcnaJYEitG9TyJSwxjFUNJIgzB1XFP/acyAWcTDg7+sWe7JI8LTB9w==}
@@ -3379,8 +3373,6 @@ snapshots:
       levn: 0.4.1
 
   '@exodus/bytes@1.15.1': {}
-
-  '@fontsource/newsreader@5.3.0': {}
 
   '@fontsource/source-sans-3@5.3.0': {}
 

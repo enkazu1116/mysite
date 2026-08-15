@@ -1,39 +1,32 @@
 import { useMemo } from "react";
-import {
-  Alert,
-  Chip,
-  EmptyState,
-  Spinner,
-} from "@heroui/react";
+import { Chip } from "@heroui/react/chip";
+import { EmptyState } from "@heroui/react/empty-state";
+import { Spinner } from "@heroui/react/spinner";
 import { motion, useReducedMotion } from "motion/react";
+import { LibrarySurface } from "../../components/LibrarySurface.tsx";
+import { QueryErrorAlert } from "../../components/status";
 import { BookShelfKanban } from "./components/shelf/BookShelfKanban";
-import {
-  useBooksUserIdQuery,
-  useUserBooksQuery,
-} from "./hooks/useBooksQueries";
+import { useUserBooksQuery } from "./hooks/useBooksQueries";
 import type { UserBook } from "./types/book";
-import { getErrorMessage } from "../../utils/getErrorMessage";
 
 function sortByUpdatedAtDesc(books: UserBook[]) {
-  return [...books].sort(
+  return books.toSorted(
     (a, b) =>
       new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
   );
 }
 
 export default function Books() {
-  const booksUser = useBooksUserIdQuery();
-  const userBooks = useUserBooksQuery(booksUser.data);
+  const userBooks = useUserBooksQuery();
   const reduceMotion = useReducedMotion();
 
   const visibleBooks = useMemo(
     () => sortByUpdatedAtDesc(userBooks.data ?? []),
     [userBooks.data],
   );
-  const error = booksUser.error ?? userBooks.error;
 
   return (
-    <main className="surface-library flex-1 px-4 pb-10 pt-6 sm:px-6">
+    <LibrarySurface className="px-4 pb-10 pt-6 sm:px-6">
       <section className="mx-auto mb-8 max-w-7xl text-left">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 8 }}
@@ -49,17 +42,11 @@ export default function Books() {
         </motion.div>
       </section>
 
-      {error && (
-        <Alert status="danger" className="mx-auto mb-4 max-w-7xl text-left">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>エラー</Alert.Title>
-            <Alert.Description>
-              {getErrorMessage(error, "Books の取得に失敗しました。")}
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
+      <QueryErrorAlert
+        error={userBooks.error}
+        fallback="Books の取得に失敗しました。"
+        className="mx-auto mb-4 max-w-7xl text-left"
+      />
 
       {userBooks.isLoading && (
         <div className="mx-auto flex max-w-7xl items-center gap-2 py-10 text-[var(--lib-ink-muted)]">
@@ -87,6 +74,6 @@ export default function Books() {
           <BookShelfKanban books={visibleBooks} />
         </section>
       )}
-    </main>
+    </LibrarySurface>
   );
 }

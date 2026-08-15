@@ -2,23 +2,6 @@
 @import "@heroui/styles";
 
 :root {
-  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
-  font-size: 18px;
-  line-height: 1.45;
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-/* Personal library surfaces (Users + Books only) */
-.surface-library {
   --lib-paper: #eef1f4;
   --lib-paper-elevated: #f7f9fb;
   --lib-ink: #1a2332;
@@ -31,15 +14,24 @@
   --lib-shelf: #9aa8b5;
 
   font-family: "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.45;
+  letter-spacing: 0.18px;
   color: var(--lib-ink);
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   background-color: var(--lib-paper);
-  background-image:
-    radial-gradient(ellipse 120% 80% at 0% 0%, rgb(15 110 106 / 0.06), transparent 55%),
-    radial-gradient(ellipse 90% 60% at 100% 10%, rgb(26 35 50 / 0.04), transparent 50%);
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
 }
 
-.dark .surface-library,
-.surface-library.dark {
+.dark,
+.surface-site.dark {
   --lib-paper: #12181f;
   --lib-paper-elevated: #1a222c;
   --lib-ink: #e8eef4;
@@ -49,14 +41,10 @@
   --lib-accent-fg: #062422;
   --lib-accent-soft: #163836;
   --lib-shelf: #4a5a6a;
-
-  background-image:
-    radial-gradient(ellipse 120% 80% at 0% 0%, rgb(60 186 180 / 0.08), transparent 55%),
-    radial-gradient(ellipse 90% 60% at 100% 10%, rgb(232 238 244 / 0.03), transparent 50%);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not(.light) .surface-library {
+  :root:not(.light) {
     --lib-paper: #12181f;
     --lib-paper-elevated: #1a222c;
     --lib-ink: #e8eef4;
@@ -66,25 +54,43 @@
     --lib-accent-fg: #062422;
     --lib-accent-soft: #163836;
     --lib-shelf: #4a5a6a;
+  }
+}
 
+.surface-site {
+  color: var(--lib-ink);
+  background-color: var(--lib-paper);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 0% 0%, rgb(15 110 106 / 0.06), transparent 55%),
+    radial-gradient(ellipse 90% 60% at 100% 10%, rgb(26 35 50 / 0.04), transparent 50%);
+}
+
+.dark .surface-site {
+  background-image:
+    radial-gradient(ellipse 120% 80% at 0% 0%, rgb(60 186 180 / 0.08), transparent 55%),
+    radial-gradient(ellipse 90% 60% at 100% 10%, rgb(232 238 244 / 0.03), transparent 50%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) .surface-site {
     background-image:
       radial-gradient(ellipse 120% 80% at 0% 0%, rgb(60 186 180 / 0.08), transparent 55%),
       radial-gradient(ellipse 90% 60% at 100% 10%, rgb(232 238 244 / 0.03), transparent 50%);
   }
 }
 
-.surface-library .font-display {
-  font-family: Newsreader, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+.font-display {
+  font-family: "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
   font-optical-sizing: auto;
 }
 
-.surface-library .lib-panel {
+.lib-panel {
   background-color: var(--lib-paper-elevated);
   border: 1px solid var(--lib-line);
   border-radius: var(--lib-radius);
 }
 
-.surface-library .lib-cta {
+.lib-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -100,32 +106,32 @@
   transition: filter 0.15s ease, transform 0.15s ease;
 }
 
-.surface-library .lib-cta:hover {
+.lib-cta:hover {
   filter: brightness(1.06);
 }
 
-.surface-library .lib-cta:focus-visible {
+.lib-cta:focus-visible {
   outline: 2px solid var(--lib-accent);
   outline-offset: 2px;
 }
 
-.surface-library .lib-cta-muted {
+.lib-cta-muted {
   background-color: var(--lib-line);
   color: var(--lib-ink-muted);
   cursor: not-allowed;
 }
 
-.surface-library .lib-link {
+.lib-link {
   color: var(--lib-accent);
   font-weight: 600;
   text-decoration: none;
 }
 
-.surface-library .lib-link:hover {
+.lib-link:hover {
   text-decoration: underline;
 }
 
-.surface-library .lib-back {
+.lib-back {
   display: inline-flex;
   height: 2rem;
   width: 2rem;
@@ -136,13 +142,18 @@
   text-decoration: none;
 }
 
-.surface-library .lib-back:hover {
+.lib-back:hover {
   background-color: var(--lib-accent-soft);
   color: var(--lib-ink);
 }
 
+.skill-row {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 2.75rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .surface-library .lib-cta {
+  .lib-cta {
     transition: none;
   }
 }
@@ -152,12 +163,14 @@
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
-  min-height: 100svh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  background-color: var(--lib-paper);
 }
 
 body {
   margin: 0;
+  background-color: var(--lib-paper);
 }

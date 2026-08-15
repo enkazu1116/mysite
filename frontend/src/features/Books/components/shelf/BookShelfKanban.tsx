@@ -1,4 +1,4 @@
-import { Chip } from "@heroui/react";
+import { Chip } from "@heroui/react/chip";
 import {
   readingStatusLabel,
   readingStatusToneClass,
@@ -18,7 +18,7 @@ function publisherKey(book: UserBook) {
 }
 
 function sortByPublisherThenUpdatedAt(books: UserBook[]) {
-  return [...books].sort((a, b) => {
+  return books.toSorted((a, b) => {
     const byPublisher = publisherKey(a).localeCompare(publisherKey(b), "ja");
     if (byPublisher !== 0) {
       return byPublisher;
@@ -27,13 +27,25 @@ function sortByPublisherThenUpdatedAt(books: UserBook[]) {
   });
 }
 
+function groupByStatus(books: UserBook[]) {
+  const grouped: Record<ReadingStatus, UserBook[]> = {
+    unread: [],
+    reading: [],
+    finished: [],
+  };
+  for (const book of books) {
+    grouped[book.status].push(book);
+  }
+  return grouped;
+}
+
 export function BookShelfKanban({ books }: { books: UserBook[] }) {
+  const grouped = groupByStatus(books);
+
   return (
     <div className="grid min-w-0 gap-8 md:grid-cols-3 md:gap-6">
       {statusColumns.map((column) => {
-        const columnBooks = sortByPublisherThenUpdatedAt(
-          books.filter((book) => book.status === column.id),
-        );
+        const columnBooks = sortByPublisherThenUpdatedAt(grouped[column.id]);
 
         return (
           <section key={column.id} className="min-w-0 text-left">

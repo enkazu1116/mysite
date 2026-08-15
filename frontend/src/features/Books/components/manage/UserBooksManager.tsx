@@ -1,12 +1,11 @@
-import { useEffect, useMemo, useState, useTransition } from "react";
-import { Alert } from "@heroui/react";
+import { useMemo, useState, useTransition } from "react";
 import {
   useCreateUserBookMutation,
   useDeleteUserBookMutation,
   useUserBooksQuery,
 } from "../../hooks/useBooksQueries";
 import type { ReadingStatus, UserBook } from "../../types/book";
-import { getErrorMessage } from "../../../../utils/getErrorMessage";
+import { QueryErrorAlert } from "../../../../components/status";
 import { UserBooksSearch } from "./UserBooksSearch";
 import {
   UserBooksList,
@@ -22,7 +21,7 @@ const readingStatusSortOrder: Record<ReadingStatus, number> = {
 };
 
 function sortRegisteredBooks(books: UserBook[]) {
-  return [...books].sort((a, b) => {
+  return books.toSorted((a, b) => {
     const byStatus =
       readingStatusSortOrder[a.status] - readingStatusSortOrder[b.status];
     if (byStatus !== 0) {
@@ -38,7 +37,7 @@ export function UserBooksManager({
   userId,
   canEdit = true,
 }: {
-  userId: string;
+  userId?: string;
   canEdit?: boolean;
 }) {
   const [expandedUserBookId, setExpandedUserBookId] = useState<string | null>(
@@ -50,7 +49,7 @@ export function UserBooksManager({
   const [isPaging, startPagingTransition] = useTransition();
   const userBooks = useUserBooksQuery(userId);
   const createUserBook = useCreateUserBookMutation(userId);
-  const deleteUserBook = useDeleteUserBookMutation(userId);
+  const deleteUserBook = useDeleteUserBookMutation();
 
   const filteredBooks = useMemo(() => {
     const sorted = sortRegisteredBooks(userBooks.data ?? []);
@@ -60,10 +59,11 @@ export function UserBooksManager({
     return sorted.filter((book) => book.status === statusFilter);
   }, [userBooks.data, statusFilter]);
   const pageCount = Math.max(1, Math.ceil(filteredBooks.length / pageSize));
+  const safePageIndex = Math.min(pageIndex, pageCount - 1);
   const visibleBooks = useMemo(() => {
-    const start = pageIndex * pageSize;
+    const start = safePageIndex * pageSize;
     return filteredBooks.slice(start, start + pageSize);
-  }, [filteredBooks, pageIndex, pageSize]);
+  }, [filteredBooks, safePageIndex, pageSize]);
   const registeredSourceBookIds = useMemo(
     () =>
       new Set(
@@ -74,12 +74,6 @@ export function UserBooksManager({
   const error =
     userBooks.error ?? createUserBook.error ?? deleteUserBook.error;
   const totalCount = userBooks.data?.length ?? 0;
-
-  useEffect(() => {
-    if (pageIndex > pageCount - 1) {
-      setPageIndex(Math.max(0, pageCount - 1));
-    }
-  }, [pageIndex, pageCount]);
 
   const handleStatusFilterChange = (next: StatusFilter) => {
     startPagingTransition(() => {
@@ -106,17 +100,10 @@ export function UserBooksManager({
 
   return (
     <section className="mx-auto mb-6 max-w-4xl text-left">
-      {error && (
-        <Alert status="danger" className="mb-3 text-left">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>エラー</Alert.Title>
-            <Alert.Description>
-              {getErrorMessage(error, "Books 管理の処理に失敗しました。")}
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
+      <QueryErrorAlert
+        error={error}
+        fallback="Books 管理の処理に失敗しました。"
+      />
 
       {canEdit ? (
         <div className="mb-6" data-books-search-section>
@@ -135,7 +122,7 @@ export function UserBooksManager({
       )}
 
       <UserBooksList
-        userId={userId}
+        userId={userId ?? ""}
         canEdit={canEdit}
         isLoading={userBooks.isLoading}
         totalCount={totalCount}
@@ -153,7 +140,7 @@ export function UserBooksManager({
         isDeletingUserBookId={
           deleteUserBook.isPending ? (deleteUserBook.variables ?? null) : null
         }
-        pageIndex={pageIndex}
+        pageIndex={safePageIndex}
         pageSize={pageSize}
         pageCount={pageCount}
         isPaging={isPaging}

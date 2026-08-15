@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button, Card, Typography } from "@heroui/react";
+import { Button } from "@heroui/react/button";
 import type { CalendarEvent } from "../types/profile";
 
 type Props = {
@@ -75,11 +75,11 @@ export function MonthCalendar({ events }: Props) {
   }
 
   return (
-    <Card className="text-left">
-      <Card.Header className="flex flex-col gap-2 pb-2 sm:flex-row sm:items-center sm:justify-between">
-        <Typography.Heading level={3} className="text-base">
+    <section className="lib-panel p-4 text-left">
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h3 className="font-display m-0 text-base font-semibold text-[var(--lib-ink)]">
           {year}年{month + 1}月
-        </Typography.Heading>
+        </h3>
         <div className="flex gap-1">
           <Button size="sm" variant="ghost" onPress={goToPreviousMonth} aria-label="前の月">
             ‹
@@ -91,70 +91,68 @@ export function MonthCalendar({ events }: Props) {
             ›
           </Button>
         </div>
-      </Card.Header>
-      <Card.Content className="px-3 pb-4">
-        <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
-          {WEEKDAYS.map((day) => (
-            <div key={day} className="py-1">
-              {day}
-            </div>
+      </div>
+      <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-[var(--lib-ink-muted)]">
+        {WEEKDAYS.map((day) => (
+          <div key={day} className="py-1">
+            {day}
+          </div>
+        ))}
+      </div>
+      <div className="space-y-1">
+        {weeks.map((week, weekIndex) => (
+          <div key={`week-${weekIndex}`} className="grid grid-cols-7 gap-1">
+            {week.map((day, dayIndex) => {
+              if (day === null) {
+                return <div key={`empty-${weekIndex}-${dayIndex}`} className="h-8" />;
+              }
+
+              const cellDate = new Date(year, month, day);
+              const dateKey = toDateKey(cellDate);
+              const hasEvent = eventsByDate.has(dateKey);
+              const isToday = isSameDay(cellDate, today);
+
+              return (
+                <div
+                  key={dateKey}
+                  className={`relative mx-auto flex h-8 w-8 items-center justify-center rounded-[var(--lib-radius)] text-sm ${
+                    isToday
+                      ? "bg-[var(--lib-accent)] font-semibold text-[var(--lib-accent-fg)]"
+                      : hasEvent
+                        ? "bg-[var(--lib-accent-soft)] font-medium"
+                        : ""
+                  }`}
+                  title={
+                    hasEvent
+                      ? eventsByDate
+                          .get(dateKey)
+                          ?.map((event) => event.label)
+                          .join("、")
+                      : undefined
+                  }
+                >
+                  {day}
+                  {hasEvent && !isToday ? (
+                    <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-[var(--lib-accent)]" />
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {monthEvents.length > 0 ? (
+        <ul className="mt-4 space-y-1 border-t border-[var(--lib-line)] pt-3 text-sm">
+          {monthEvents.map((event) => (
+            <li key={`${event.date}-${event.label}`}>
+              <span className="text-[var(--lib-ink-muted)]">{event.date.slice(5)}</span>
+              {" - "}
+              {event.label}
+            </li>
           ))}
-        </div>
-        <div className="space-y-1">
-          {weeks.map((week, weekIndex) => (
-            <div key={`week-${weekIndex}`} className="grid grid-cols-7 gap-1">
-              {week.map((day, dayIndex) => {
-                if (day === null) {
-                  return <div key={`empty-${weekIndex}-${dayIndex}`} className="h-8" />;
-                }
-
-                const cellDate = new Date(year, month, day);
-                const dateKey = toDateKey(cellDate);
-                const hasEvent = eventsByDate.has(dateKey);
-                const isToday = isSameDay(cellDate, today);
-
-                return (
-                  <div
-                    key={dateKey}
-                    className={`relative mx-auto flex h-8 w-8 items-center justify-center rounded-md text-sm ${
-                      isToday
-                        ? "bg-blue-600 font-semibold text-white"
-                        : hasEvent
-                          ? "bg-gray-100 font-medium dark:bg-gray-800"
-                          : ""
-                    }`}
-                    title={
-                      hasEvent
-                        ? eventsByDate
-                            .get(dateKey)
-                            ?.map((event) => event.label)
-                            .join("、")
-                        : undefined
-                    }
-                  >
-                    {day}
-                    {hasEvent && !isToday && (
-                      <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-blue-500" />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-
-        {monthEvents.length > 0 && (
-          <ul className="mt-4 space-y-1 border-t border-gray-200 pt-3 text-sm dark:border-gray-700">
-            {monthEvents.map((event) => (
-              <li key={`${event.date}-${event.label}`}>
-                <span className="text-gray-500 dark:text-gray-400">{event.date.slice(5)}</span>
-                {" — "}
-                {event.label}
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card.Content>
-    </Card>
+        </ul>
+      ) : null}
+    </section>
   );
 }

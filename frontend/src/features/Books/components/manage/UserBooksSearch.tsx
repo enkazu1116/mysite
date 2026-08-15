@@ -1,13 +1,10 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import {
-  Alert,
-  Button,
-  Form,
-  Input,
-  Label,
-  TextField,
-} from "@heroui/react";
+import { Button } from "@heroui/react/button";
+import { Form } from "@heroui/react/form";
+import { Input } from "@heroui/react/input";
+import { Label } from "@heroui/react/label";
+import { TextField } from "@heroui/react/textfield";
 import {
   BookmarkPlusIcon,
   CheckIcon,
@@ -15,7 +12,7 @@ import {
 } from "../../../../components/icons";
 import { useBookSearchQuery } from "../../hooks/useBooksQueries";
 import type { BookSearchResult } from "../../types/book";
-import { getErrorMessage } from "../../../../utils/getErrorMessage";
+import { QueryErrorAlert } from "../../../../components/status";
 
 const SEARCH_RESULT_LIMIT = 12;
 
@@ -64,7 +61,6 @@ export function UserBooksSearch({
           size="sm"
           isIconOnly
           aria-label="検索"
-          title="検索"
           isPending={search.isFetching}
           className="bg-[var(--lib-accent)] text-[var(--lib-accent-fg)]"
         >
@@ -72,17 +68,11 @@ export function UserBooksSearch({
         </Button>
       </Form>
 
-      {search.error && (
-        <Alert status="danger" className="mt-2 text-left">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>検索エラー</Alert.Title>
-            <Alert.Description>
-              {getErrorMessage(search.error, "本の検索に失敗しました。")}
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
+      <QueryErrorAlert
+        error={search.error}
+        fallback="本の検索に失敗しました。"
+        className="mt-2 text-left"
+      />
 
       {query && !search.isFetching && results.length === 0 && !search.error && (
         <p className="mt-2 m-0 border border-dashed border-[var(--lib-line)] px-2 py-1.5 text-xs text-[var(--lib-ink-muted)]">
@@ -128,7 +118,6 @@ export function UserBooksSearch({
                   variant="secondary"
                   isIconOnly
                   aria-label={isRegistered ? "登録済み" : "登録"}
-                  title={isRegistered ? "登録済み" : "登録"}
                   isPending={isRegistering && !isRegistered}
                   isDisabled={isRegistered}
                   onPress={() => {

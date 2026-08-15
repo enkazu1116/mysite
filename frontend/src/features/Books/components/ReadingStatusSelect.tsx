@@ -1,4 +1,6 @@
-import { Label, ListBox, Select } from "@heroui/react";
+import { Label } from "@heroui/react/label";
+import { ListBox } from "@heroui/react/list-box";
+import { Select } from "@heroui/react/select";
 import type { Key } from "react";
 import type { ReadingStatus } from "../types/book";
 

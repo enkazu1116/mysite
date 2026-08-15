@@ -1,13 +1,12 @@
-import {
-  Avatar,
-  Chip,
-  Input,
-  Label,
-  TextField,
-  Typography,
-} from "@heroui/react";
+import { Avatar } from "@heroui/react/avatar";
+import { Chip } from "@heroui/react/chip";
+import { Input } from "@heroui/react/input";
+import { Label } from "@heroui/react/label";
+import { TextField } from "@heroui/react/textfield";
+import { Typography } from "@heroui/react/typography";
 import { motion, useReducedMotion } from "motion/react";
 import { Link as RouterLink } from "react-router";
+import { LibrarySurface } from "../../components/LibrarySurface.tsx";
 import { useBooksUserIdQuery } from "../Books/hooks/useBooksQueries";
 import { users } from "./data/usersData";
 import type { UserStatus } from "./types/users";
@@ -35,7 +34,7 @@ export default function Users() {
     : null;
 
   return (
-    <main className="surface-library flex-1 px-4 pb-10 pt-6 sm:px-6">
+    <LibrarySurface className="px-4 pb-10 pt-6 sm:px-6">
       <section className="mx-auto mb-8 max-w-3xl text-left">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 8 }}
@@ -151,6 +150,6 @@ export default function Users() {
           ))}
         </ul>
       </section>
-    </main>
+    </LibrarySurface>
   );
 }

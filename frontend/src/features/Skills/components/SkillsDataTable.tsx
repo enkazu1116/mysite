@@ -1,5 +1,5 @@
 import { flexRender, type Table as TanstackTable } from "@tanstack/react-table";
-import { Table } from "@heroui/react";
+import { Table } from "@heroui/react/table";
 import type { Skill } from "../types/skill";
 
 type Props = {
@@ -24,7 +24,7 @@ export function SkillsDataTable({ table }: Props) {
           </Table.Header>
           <Table.Body>
             {table.getRowModel().rows.map((row) => (
-              <Table.Row key={row.id}>
+              <Table.Row key={row.id} className="skill-row">
                 {row.getVisibleCells().map((cell) => (
                   <Table.Cell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
