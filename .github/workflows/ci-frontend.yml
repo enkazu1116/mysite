@@ -24,18 +24,18 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      # package.json の packageManager (pnpm@11.0.0) を Corepack で使う
-      # pnpm/action-setup の version 指定と二重になって ERR になるのを避ける
+      # version は書かない（package.json の packageManager: pnpm@11.0.0 を使う）
+      # @v5 = Action 自体のランタイムが Node 24（@v4 の Node 20 非推奨回避）
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: pnpm
-
-      - name: Enable Corepack
-        run: corepack enable
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
