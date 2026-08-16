@@ -17,6 +17,7 @@
     "test:integration:ci": "bun test --timeout 60000 src/features/books/_integration_",
     "db:push": "infisical run -- drizzle-kit push",
     "db:push:ci": "drizzle-kit push",
+    "db:ensure-skills": "bun run scripts/ensureSkillsSchema.ts",
     "db:generate": "infisical run -- drizzle-kit generate",
     "db:migrate": "infisical run -- drizzle-kit migrate",
     "db:studio": "infisical run -- drizzle-kit studio",
