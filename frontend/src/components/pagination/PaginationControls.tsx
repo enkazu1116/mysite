@@ -1,4 +1,5 @@
-import { Button, ButtonGroup } from "@heroui/react";
+import { Button } from "@heroui/react/button";
+import { ButtonGroup } from "@heroui/react/button-group";
 
 type Props = {
   isPending: boolean;

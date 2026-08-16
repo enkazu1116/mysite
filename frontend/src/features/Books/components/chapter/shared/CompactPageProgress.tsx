@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useUpdateUserBookMutation } from "../../../hooks/useBooksQueries";
 import type { UserBook } from "../../../types/book";
 import { getErrorMessage } from "../../../../../utils/getErrorMessage";
@@ -8,12 +8,6 @@ export function CompactPageProgress({ userBook }: { userBook: UserBook }) {
   const [pageText, setPageText] = useState(
     userBook.currentPage == null ? "" : String(userBook.currentPage),
   );
-
-  useEffect(() => {
-    setPageText(
-      userBook.currentPage == null ? "" : String(userBook.currentPage),
-    );
-  }, [userBook]);
 
   const saveIfChanged = () => {
     const trimmed = pageText.trim();
@@ -63,16 +57,16 @@ export function CompactPageProgress({ userBook }: { userBook: UserBook }) {
         }}
         className="h-7 w-14 rounded border border-gray-300 bg-transparent px-1.5 text-center text-xs outline-none focus:border-gray-500 dark:border-gray-700"
       />
-      {userBook.book.pageCount != null && (
+      {userBook.book.pageCount != null ? (
         <span className="text-[11px] text-gray-500">
           / {userBook.book.pageCount}
         </span>
-      )}
-      {updateUserBook.error && (
+      ) : null}
+      {updateUserBook.error ? (
         <span className="text-[11px] text-red-600">
           {getErrorMessage(updateUserBook.error, "保存失敗")}
         </span>
-      )}
+      ) : null}
     </div>
   );
 }

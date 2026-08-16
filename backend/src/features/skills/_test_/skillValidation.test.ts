@@ -127,7 +127,7 @@ describe("skillValidation.ts / 入力バリデーション", () => {
                 },
                 skillValidationMessages.detailMax(MAX_DETAIL_LENGTH),
             ],
-        ] as const)(
+        ])(
             "%s なら %s を含む",
             (_label, input, expectedMessage) => {
                 const errors = validateCreateSkillsInput(input);
@@ -168,7 +168,7 @@ describe("skillValidation.ts / 入力バリデーション", () => {
                 { ...validUpdateSkillsInput, skills: [] },
                 skillValidationMessages.skillsRequired,
             ],
-        ] as const)("%s なら %s を含む", (_label, input, expectedMessage) => {
+        ])("%s なら %s を含む", (_label, input, expectedMessage) => {
             const errors = validateUpdateSkillsInput(input);
 
             expect(errors).toContain(expectedMessage);
@@ -201,7 +201,7 @@ describe("skillValidation.ts / 入力バリデーション", () => {
                 },
                 skillValidationMessages.skillIdInvalid,
             ],
-        ] as const)("%s なら %s を含む", (_label, input, expectedMessage) => {
+        ])("%s なら %s を含む", (_label, input, expectedMessage) => {
             const errors = validateDeleteSkillsInput(input);
 
             expect(errors).toContain(expectedMessage);

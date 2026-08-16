@@ -1,4 +1,7 @@
-import { Label, ListBox, NumberField, Select } from "@heroui/react";
+import { Label } from "@heroui/react/label";
+import { ListBox } from "@heroui/react/list-box";
+import { NumberField } from "@heroui/react/number-field";
+import { Select } from "@heroui/react/select";
 import type { Key } from "react";
 
 const PAGE_SIZE_OPTIONS = [5, 10, 15] as const;

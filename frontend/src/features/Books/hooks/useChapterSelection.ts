@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { groupByChapterOrder } from "../components/chapter/shared/groupByChapterOrder";
 
 export function useChapterSelection<T extends { chapterOrder: number }>(
@@ -8,25 +8,20 @@ export function useChapterSelection<T extends { chapterOrder: number }>(
     number | null
   >(null);
   const groups = useMemo(() => groupByChapterOrder(items), [items]);
+  const resolvedChapterOrder =
+    selectedChapterOrder != null &&
+    groups.some((group) => group.chapterOrder === selectedChapterOrder)
+      ? selectedChapterOrder
+      : (groups[0]?.chapterOrder ?? null);
   const selectedItems =
-    selectedChapterOrder == null
+    resolvedChapterOrder == null
       ? []
-      : (groups.find((g) => g.chapterOrder === selectedChapterOrder)?.items ??
-        []);
-
-  useEffect(() => {
-    if (
-      selectedChapterOrder != null &&
-      groups.some((g) => g.chapterOrder === selectedChapterOrder)
-    ) {
-      return;
-    }
-    setSelectedChapterOrder(groups[0]?.chapterOrder ?? null);
-  }, [groups, selectedChapterOrder]);
+      : (groups.find((group) => group.chapterOrder === resolvedChapterOrder)
+          ?.items ?? []);
 
   return {
     groups,
-    selectedChapterOrder,
+    selectedChapterOrder: resolvedChapterOrder,
     setSelectedChapterOrder,
     selectedItems,
   };

@@ -1,6 +1,4 @@
-import { useMemo, useState } from "react";
-import type { FormEvent } from "react";
-import { Alert, EmptyState } from "@heroui/react";
+import { EmptyState } from "@heroui/react/empty-state";
 import { useParams } from "react-router";
 import { ChapterCreateCard } from "../components/chapter/shared/ChapterCreateCard";
 import { ChapterDetailsPanel } from "../components/chapter/shared/ChapterDetailsPanel";
@@ -11,11 +9,10 @@ import { MemoCreateForm } from "../components/chapter/memos/MemoCreateForm";
 import { MemoDetailEditor } from "../components/chapter/memos/MemoDetailEditor";
 import {
   useChapterMemosQuery,
-  useCreateChapterMemoMutation,
   useUserBookQuery,
 } from "../hooks/useBooksQueries";
 import { useChapterSelection } from "../hooks/useChapterSelection";
-import { getErrorMessage } from "../../../utils/getErrorMessage";
+import { QueryErrorAlert } from "../../../components/status";
 
 export function UserBookMemosPage() {
   const { userId, userBookId } = useParams<{
@@ -24,47 +21,12 @@ export function UserBookMemosPage() {
   }>();
   const userBook = useUserBookQuery(userBookId);
   const memos = useChapterMemosQuery(userBookId);
-  const createMemo = useCreateChapterMemoMutation();
-  const [chapterTitle, setChapterTitle] = useState("");
-  const [chapterOrder, setChapterOrder] = useState(1);
-  const [memoBody, setMemoBody] = useState("");
-
-  const sorted = useMemo(
-    () =>
-      [...(memos.data ?? [])].sort((a, b) => a.chapterOrder - b.chapterOrder),
-    [memos.data],
-  );
   const {
     groups,
     selectedChapterOrder,
     setSelectedChapterOrder,
     selectedItems,
-  } = useChapterSelection(sorted);
-
-  const handleCreate = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!userBookId) {
-      return;
-    }
-    createMemo.mutate(
-      {
-        userBookId,
-        payload: {
-          chapterTitle: chapterTitle.trim() || undefined,
-          chapterOrder,
-          memo: memoBody.trim() || undefined,
-        },
-      },
-      {
-        onSuccess: (created) => {
-          setChapterTitle("");
-          setMemoBody("");
-          setChapterOrder((value) => value + 1);
-          setSelectedChapterOrder(created.chapterOrder);
-        },
-      },
-    );
-  };
+  } = useChapterSelection(memos.data ?? []);
 
   if (!userId || !userBookId) {
     return (
@@ -82,24 +44,17 @@ export function UserBookMemosPage() {
       subtitle={userBook.data?.book.title}
       headerAction={
         userBook.data ? (
-          <CompactPageProgress userBook={userBook.data} />
+          <CompactPageProgress
+            key={userBook.data.userBookId}
+            userBook={userBook.data}
+          />
         ) : null
       }
     >
-      {(userBook.error || memos.error || createMemo.error) && (
-        <Alert status="danger" className="mb-3 text-left">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>エラー</Alert.Title>
-            <Alert.Description>
-              {getErrorMessage(
-                userBook.error ?? memos.error ?? createMemo.error,
-                "メモの取得に失敗しました。",
-              )}
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
+      <QueryErrorAlert
+        error={userBook.error ?? memos.error}
+        fallback="メモの取得に失敗しました。"
+      />
 
       <ChapterWorkspace
         groups={groups}
@@ -110,14 +65,8 @@ export function UserBookMemosPage() {
         createSlot={
           <ChapterCreateCard>
             <MemoCreateForm
-              chapterTitle={chapterTitle}
-              setChapterTitle={setChapterTitle}
-              chapterOrder={chapterOrder}
-              setChapterOrder={setChapterOrder}
-              memoBody={memoBody}
-              setMemoBody={setMemoBody}
-              onSubmit={handleCreate}
-              isPending={createMemo.isPending}
+              userBookId={userBookId}
+              onCreated={setSelectedChapterOrder}
             />
           </ChapterCreateCard>
         }

@@ -1,21 +1,16 @@
-import {
-  Alert,
-  Form,
-  Input,
-  Label,
-  NumberField,
-  TextField,
-} from "@heroui/react";
+import { Form } from "@heroui/react/form";
+import { Label } from "@heroui/react/label";
 import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SaveIcon, TrashIcon } from "../../../../../components/icons";
+import { QueryErrorAlert } from "../../../../../components/status";
 import {
   useDeleteChapterMemoMutation,
   useUpdateChapterMemoMutation,
 } from "../../../hooks/useBooksQueries";
 import type { BookChapterMemo } from "../../../types/book";
-import { getErrorMessage } from "../../../../../utils/getErrorMessage";
 import { RoundActionButton } from "../../RoundActionButton";
+import { ChapterFields } from "../shared/ChapterFields";
 
 export function MemoDetailEditor({
   memo,
@@ -29,12 +24,6 @@ export function MemoDetailEditor({
   const [chapterTitle, setChapterTitle] = useState(memo.chapterTitle ?? "");
   const [chapterOrder, setChapterOrder] = useState(memo.chapterOrder);
   const [memoBody, setMemoBody] = useState(memo.memo ?? "");
-
-  useEffect(() => {
-    setChapterTitle(memo.chapterTitle ?? "");
-    setChapterOrder(memo.chapterOrder);
-    setMemoBody(memo.memo ?? "");
-  }, [memo]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -67,26 +56,12 @@ export function MemoDetailEditor({
       className="grid gap-2 rounded-md border border-gray-200 p-3 dark:border-gray-800"
       data-memo-detail-form
     >
-      <div className="grid gap-1.5 sm:grid-cols-[1fr_5.5rem]">
-        <TextField value={chapterTitle} onChange={setChapterTitle}>
-          <Label className="text-xs">章タイトル</Label>
-          <Input className="text-sm" />
-        </TextField>
-        <NumberField
-          value={chapterOrder}
-          minValue={0}
-          onChange={(value) => {
-            if (Number.isFinite(value) && value >= 0) {
-              setChapterOrder(value);
-            }
-          }}
-        >
-          <Label className="text-xs">章順</Label>
-          <NumberField.Group className="!grid-cols-[minmax(0,1fr)] [grid-template-columns:minmax(0,1fr)]">
-            <NumberField.Input />
-          </NumberField.Group>
-        </NumberField>
-      </div>
+      <ChapterFields
+        chapterTitle={chapterTitle}
+        onChapterTitleChange={setChapterTitle}
+        chapterOrder={chapterOrder}
+        onChapterOrderChange={setChapterOrder}
+      />
       <div className="grid gap-1">
         <Label className="text-xs">章メモ</Label>
         <textarea
@@ -96,20 +71,11 @@ export function MemoDetailEditor({
           className="min-h-28 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm outline-none focus:border-gray-500 dark:border-gray-700 dark:bg-gray-950"
         />
       </div>
-      {(updateMemo.error || deleteMemo.error) && (
-        <Alert status="danger" className="text-left">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>エラー</Alert.Title>
-            <Alert.Description>
-              {getErrorMessage(
-                updateMemo.error ?? deleteMemo.error,
-                "メモの操作に失敗しました。",
-              )}
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
+      <QueryErrorAlert
+        error={updateMemo.error ?? deleteMemo.error}
+        fallback="メモの操作に失敗しました。"
+        className="text-left"
+      />
       <div className="flex justify-end gap-2">
         <RoundActionButton
           type="button"

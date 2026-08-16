@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Alert, Button, Chip } from "@heroui/react";
+import { Button } from "@heroui/react/button";
+import { Chip } from "@heroui/react/chip";
 import { Link as RouterLink } from "react-router";
 import {
   ChevronDownIcon,
@@ -14,7 +14,7 @@ import {
 } from "../ReadingStatusSelect";
 import { useUpdateUserBookMutation } from "../../hooks/useBooksQueries";
 import type { ReadingStatus, UserBook } from "../../types/book";
-import { getErrorMessage } from "../../../../utils/getErrorMessage";
+import { QueryErrorAlert } from "../../../../components/status";
 
 export function RegisteredBookRow({
   book,
@@ -34,16 +34,10 @@ export function RegisteredBookRow({
   isDeleting: boolean;
 }) {
   const updateUserBook = useUpdateUserBookMutation(book.userId);
-  const [status, setStatus] = useState<ReadingStatus>(book.status);
   const authors =
     book.book.authors.length > 0 ? book.book.authors.join(", ") : "著者不明";
 
-  useEffect(() => {
-    setStatus(book.status);
-  }, [book]);
-
   const handleStatusChange = (next: ReadingStatus) => {
-    setStatus(next);
     updateUserBook.mutate({
       userBookId: book.userBookId,
       payload: { status: next },
@@ -93,7 +87,6 @@ export function RegisteredBookRow({
             variant="danger"
             isIconOnly
             aria-label="削除"
-            title="削除"
             isPending={isDeleting}
             onPress={onDelete}
             className="shrink-0"
@@ -111,24 +104,15 @@ export function RegisteredBookRow({
           {canEdit ? (
             <div data-status-only-editor className="max-w-xs">
               <ReadingStatusSelect
-                value={status}
+                value={book.status}
                 onChange={handleStatusChange}
                 isDisabled={updateUserBook.isPending}
               />
-              {updateUserBook.error && (
-                <Alert status="danger" className="mt-2 text-left">
-                  <Alert.Indicator />
-                  <Alert.Content>
-                    <Alert.Title>保存エラー</Alert.Title>
-                    <Alert.Description>
-                      {getErrorMessage(
-                        updateUserBook.error,
-                        "読書状態の保存に失敗しました。",
-                      )}
-                    </Alert.Description>
-                  </Alert.Content>
-                </Alert>
-              )}
+              <QueryErrorAlert
+                error={updateUserBook.error}
+                fallback="読書状態の保存に失敗しました。"
+                className="mt-2 text-left"
+              />
             </div>
           ) : (
             <Chip

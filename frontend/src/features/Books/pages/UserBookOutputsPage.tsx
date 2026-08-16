@@ -1,6 +1,5 @@
-import { useMemo, useState } from "react";
-import type { FormEvent } from "react";
-import { Alert, EmptyState } from "@heroui/react";
+import { EmptyState } from "@heroui/react/empty-state";
+import { useMemo } from "react";
 import { useParams } from "react-router";
 import { ChapterCreateCard } from "../components/chapter/shared/ChapterCreateCard";
 import { ChapterDetailsPanel } from "../components/chapter/shared/ChapterDetailsPanel";
@@ -11,11 +10,10 @@ import { OutputCreateForm } from "../components/chapter/outputs/OutputCreateForm
 import { OutputDetailEditor } from "../components/chapter/outputs/OutputDetailEditor";
 import {
   useBookOutputsQuery,
-  useCreateBookOutputMutation,
   useUserBookQuery,
 } from "../hooks/useBooksQueries";
 import { useChapterSelection } from "../hooks/useChapterSelection";
-import { getErrorMessage } from "../../../utils/getErrorMessage";
+import { QueryErrorAlert } from "../../../components/status";
 
 export function UserBookOutputsPage() {
   const { userId, userBookId } = useParams<{
@@ -24,23 +22,9 @@ export function UserBookOutputsPage() {
   }>();
   const userBook = useUserBookQuery(userBookId);
   const outputs = useBookOutputsQuery(userBookId);
-  const createOutput = useCreateBookOutputMutation();
-  const [chapterTitle, setChapterTitle] = useState("");
-  const [chapterOrder, setChapterOrder] = useState(1);
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-
-  const sorted = useMemo(
+  const groupedOutputs = useMemo(
     () =>
-      [...(outputs.data ?? [])]
-        .map((output) => ({
-          ...output,
-          chapterOrder: output.chapterOrder ?? 0,
-        }))
-        .sort(
-          (a, b) =>
-            a.chapterOrder - b.chapterOrder || a.title.localeCompare(b.title),
-        ),
+      (outputs.data ?? []).toSorted((a, b) => a.title.localeCompare(b.title)),
     [outputs.data],
   );
   const {
@@ -48,34 +32,7 @@ export function UserBookOutputsPage() {
     selectedChapterOrder,
     setSelectedChapterOrder,
     selectedItems,
-  } = useChapterSelection(sorted);
-
-  const handleCreate = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!userBookId) {
-      return;
-    }
-    createOutput.mutate(
-      {
-        userBookId,
-        payload: {
-          chapterTitle: chapterTitle.trim() || undefined,
-          chapterOrder,
-          title: title.trim(),
-          body: body.trim(),
-        },
-      },
-      {
-        onSuccess: (created) => {
-          setChapterTitle("");
-          setTitle("");
-          setBody("");
-          setChapterOrder((value) => value + 1);
-          setSelectedChapterOrder(created.chapterOrder ?? chapterOrder);
-        },
-      },
-    );
-  };
+  } = useChapterSelection(groupedOutputs);
 
   if (!userId || !userBookId) {
     return (
@@ -93,24 +50,17 @@ export function UserBookOutputsPage() {
       subtitle={userBook.data?.book.title}
       headerAction={
         userBook.data ? (
-          <CompactPageProgress userBook={userBook.data} />
+          <CompactPageProgress
+            key={userBook.data.userBookId}
+            userBook={userBook.data}
+          />
         ) : null
       }
     >
-      {(userBook.error || outputs.error || createOutput.error) && (
-        <Alert status="danger" className="mb-3 text-left">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>エラー</Alert.Title>
-            <Alert.Description>
-              {getErrorMessage(
-                userBook.error ?? outputs.error ?? createOutput.error,
-                "アウトプットの取得に失敗しました。",
-              )}
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
+      <QueryErrorAlert
+        error={userBook.error ?? outputs.error}
+        fallback="アウトプットの取得に失敗しました。"
+      />
 
       <ChapterWorkspace
         groups={groups}
@@ -121,16 +71,8 @@ export function UserBookOutputsPage() {
         createSlot={
           <ChapterCreateCard>
             <OutputCreateForm
-              chapterTitle={chapterTitle}
-              setChapterTitle={setChapterTitle}
-              chapterOrder={chapterOrder}
-              setChapterOrder={setChapterOrder}
-              title={title}
-              setTitle={setTitle}
-              body={body}
-              setBody={setBody}
-              onSubmit={handleCreate}
-              isPending={createOutput.isPending}
+              userBookId={userBookId}
+              onCreated={setSelectedChapterOrder}
             />
           </ChapterCreateCard>
         }

@@ -1,4 +1,4 @@
-import { Chip } from "@heroui/react";
+import { Chip } from "@heroui/react/chip";
 import type { BookOutput } from "../../../types/book";
 
 export function OutputReadonlyDetail({ output }: { output: BookOutput }) {

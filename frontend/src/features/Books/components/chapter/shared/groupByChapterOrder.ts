@@ -8,7 +8,7 @@ export function groupByChapterOrder<T extends { chapterOrder: number }>(
     map.set(item.chapterOrder, list);
   }
   return [...map.entries()]
-    .sort((a, b) => a[0] - b[0])
+    .toSorted((a, b) => a[0] - b[0])
     .map(([chapterOrder, groupItems]) => ({
       chapterOrder,
       items: groupItems,

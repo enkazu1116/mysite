@@ -23,6 +23,7 @@ import type {
   UpdateBookOutputPayload,
   UpdateChapterMemoPayload,
   UpdateUserBookPayload,
+  UserBook,
 } from "../types/book";
 
 export const bookKeys = {
@@ -49,11 +50,10 @@ export function useBooksUserIdQuery() {
   });
 }
 
-export function useUserBooksQuery(userId: string | undefined) {
+export function useUserBooksQuery(userId?: string) {
   return useQuery({
-    queryKey: bookKeys.userBooks(userId ?? ""),
-    queryFn: () => listUserBooks(userId ?? ""),
-    enabled: Boolean(userId),
+    queryKey: bookKeys.userBooks(userId ?? "self"),
+    queryFn: () => listUserBooks(userId),
   });
 }
 
@@ -98,12 +98,7 @@ export function useCreateUserBookMutation(userId: string | undefined) {
       return createUserBook(book, status, userId);
     },
     onSuccess: () => {
-      if (!userId) {
-        return;
-      }
-      void queryClient.invalidateQueries({
-        queryKey: bookKeys.userBooks(userId),
-      });
+      void queryClient.invalidateQueries({ queryKey: ["user-books"] });
     },
   });
 }
@@ -119,6 +114,47 @@ export function useUpdateUserBookMutation(userId?: string) {
       userBookId: string;
       payload: UpdateUserBookPayload;
     }) => updateUserBook(userBookId, payload),
+    onMutate: async ({ userBookId, payload }) => {
+      await queryClient.cancelQueries({ queryKey: ["user-books"] });
+      await queryClient.cancelQueries({
+        queryKey: bookKeys.userBook(userBookId),
+      });
+      const previousLists = queryClient.getQueriesData<UserBook[]>({
+        queryKey: ["user-books"],
+      });
+      for (const [key, books] of previousLists) {
+        if (!books) {
+          continue;
+        }
+        queryClient.setQueryData(
+          key,
+          books.map((book) =>
+            book.userBookId === userBookId ? { ...book, ...payload } : book,
+          ),
+        );
+      }
+      const previousDetail = queryClient.getQueryData<UserBook>(
+        bookKeys.userBook(userBookId),
+      );
+      if (previousDetail) {
+        queryClient.setQueryData(bookKeys.userBook(userBookId), {
+          ...previousDetail,
+          ...payload,
+        });
+      }
+      return { previousLists, previousDetail, userBookId };
+    },
+    onError: (_error, _variables, context) => {
+      for (const [key, books] of context?.previousLists ?? []) {
+        queryClient.setQueryData(key, books);
+      }
+      if (context?.previousDetail) {
+        queryClient.setQueryData(
+          bookKeys.userBook(context.userBookId),
+          context.previousDetail,
+        );
+      }
+    },
     onSuccess: (userBook) => {
       void queryClient.invalidateQueries({
         queryKey: userId ? bookKeys.userBooks(userId) : ["user-books"],
@@ -130,17 +166,13 @@ export function useUpdateUserBookMutation(userId?: string) {
   });
 }
 
-export function useDeleteUserBookMutation(userId: string | undefined) {
+export function useDeleteUserBookMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (userBookId: string) => deleteUserBook(userBookId),
     onSuccess: (userBook) => {
-      if (userId) {
-        void queryClient.invalidateQueries({
-          queryKey: bookKeys.userBooks(userId),
-        });
-      }
+      void queryClient.invalidateQueries({ queryKey: ["user-books"] });
       void queryClient.removeQueries({
         queryKey: bookKeys.userBook(userBook.userBookId),
       });

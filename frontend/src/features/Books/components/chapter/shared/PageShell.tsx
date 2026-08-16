@@ -1,7 +1,8 @@
-import { Typography } from "@heroui/react";
+import { Typography } from "@heroui/react/typography";
 import type { ReactNode } from "react";
 import { Link as RouterLink } from "react-router";
 import { ArrowLeftIcon } from "../../../../../components/icons";
+import { LibrarySurface } from "../../../../../components/LibrarySurface.tsx";
 
 export function PageShell({
   backTo,
@@ -19,7 +20,7 @@ export function PageShell({
   children: ReactNode;
 }) {
   return (
-    <main className="surface-library flex-1 px-6 pb-10 pt-4 sm:px-10">
+    <LibrarySurface className="px-6 pb-10 pt-4 sm:px-10">
       <section
         className="mx-auto mb-4 flex max-w-3xl flex-wrap items-center gap-2 text-left"
         data-page-header
@@ -54,6 +55,6 @@ export function PageShell({
       <section className="mx-auto max-w-3xl" data-page-content>
         {children}
       </section>
-    </main>
+    </LibrarySurface>
   );
 }

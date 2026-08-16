@@ -1,9 +1,6 @@
-import {
-  Alert,
-  Chip,
-  EmptyState,
-  Spinner,
-} from "@heroui/react";
+import { Chip } from "@heroui/react/chip";
+import { EmptyState } from "@heroui/react/empty-state";
+import { Spinner } from "@heroui/react/spinner";
 import { motion, useReducedMotion } from "motion/react";
 import { Link as RouterLink, useParams } from "react-router";
 import {
@@ -11,9 +8,10 @@ import {
   NotebookIcon,
   StickyNotePlusIcon,
 } from "../../components/icons";
+import { LibrarySurface } from "../../components/LibrarySurface.tsx";
+import { QueryErrorAlert } from "../../components/status";
 import { readingStatusLabel, readingStatusToneClass } from "./components/ReadingStatusSelect";
 import { useUserBookQuery } from "./hooks/useBooksQueries";
-import { getErrorMessage } from "../../utils/getErrorMessage";
 
 export default function BookDetail() {
   const { userBookId } = useParams<{ userBookId: string }>();
@@ -22,7 +20,7 @@ export default function BookDetail() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <main className="surface-library flex-1 px-4 pb-10 pt-4 sm:px-6">
+    <LibrarySurface className="px-4 pb-10 pt-4 sm:px-6">
       <section className="mx-auto mb-6 max-w-5xl text-left">
         <RouterLink
           to="/books"
@@ -34,17 +32,11 @@ export default function BookDetail() {
         </RouterLink>
       </section>
 
-      {error && (
-        <Alert status="danger" className="mx-auto mb-4 max-w-5xl text-left">
-          <Alert.Indicator />
-          <Alert.Content>
-            <Alert.Title>エラー</Alert.Title>
-            <Alert.Description>
-              {getErrorMessage(error, "本の詳細取得に失敗しました。")}
-            </Alert.Description>
-          </Alert.Content>
-        </Alert>
-      )}
+      <QueryErrorAlert
+        error={error}
+        fallback="本の詳細取得に失敗しました。"
+        className="mx-auto mb-4 max-w-5xl text-left"
+      />
 
       {userBook.isLoading && (
         <div className="mx-auto flex max-w-5xl items-center gap-2 py-10 text-[var(--lib-ink-muted)]">
@@ -98,23 +90,23 @@ export default function BookDetail() {
                   >
                     {readingStatusLabel[userBook.data.status]}
                   </Chip>
-                  {userBook.data.currentPage != null && (
+                  {userBook.data.currentPage != null ? (
                     <Chip size="sm">{userBook.data.currentPage}ページ</Chip>
-                  )}
-                  {userBook.data.book.pageCount != null && (
+                  ) : null}
+                  {userBook.data.book.pageCount != null ? (
                     <Chip size="sm">全{userBook.data.book.pageCount}ページ</Chip>
-                  )}
-                  {userBook.data.book.publishedDate && (
+                  ) : null}
+                  {userBook.data.book.publishedDate ? (
                     <Chip size="sm">{userBook.data.book.publishedDate}</Chip>
-                  )}
+                  ) : null}
                   <Chip size="sm">{userBook.data.book.source}</Chip>
                 </div>
 
-                {userBook.data.book.description && (
+                {userBook.data.book.description ? (
                   <p className="mt-6 max-w-prose text-sm leading-relaxed text-[var(--lib-ink-muted)] line-clamp-6">
                     {userBook.data.book.description}
                   </p>
-                )}
+                ) : null}
 
                 <div className="mt-8 flex flex-wrap gap-3">
                   <RouterLink
@@ -138,7 +130,7 @@ export default function BookDetail() {
             </div>
           </section>
 
-          {userBook.data.note && (
+          {userBook.data.note ? (
             <section className="mx-auto mb-8 max-w-5xl text-left">
               <h2 className="font-display mb-3 text-xl font-semibold text-[var(--lib-ink)]">
                 読書メモ
@@ -149,9 +141,9 @@ export default function BookDetail() {
                 </p>
               </article>
             </section>
-          )}
+          ) : null}
         </motion.div>
       )}
-    </main>
+    </LibrarySurface>
   );
 }
