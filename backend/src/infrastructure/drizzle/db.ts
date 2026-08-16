@@ -1,4 +1,5 @@
-import { drizzle } from "drizzle-orm/libsql";
+import type { Client } from "@libsql/client";
+import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
 
 /**
  * Turso 接続情報はリポジトリに置かず、環境変数から読む。
@@ -15,7 +16,7 @@ function requireEnv(name: string): string {
     return value;
 }
 
-const db = drizzle({
+const db: LibSQLDatabase & { $client: Client } = drizzle({
     connection: {
         url: requireEnv("TURSO_DATABASE_URL"),
         authToken: requireEnv("TURSO_AUTH_TOKEN"),

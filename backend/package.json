@@ -10,6 +10,7 @@
     "dev": "infisical run -- bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
     "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "db:push": "infisical run -- drizzle-kit push",
     "db:generate": "infisical run -- drizzle-kit generate",
     "db:migrate": "infisical run -- drizzle-kit migrate",
@@ -33,6 +34,7 @@
     "eslint": "^10.8.1",
     "globals": "^17.11.0",
     "tsx": "^4.21.0",
+    "typescript": "~5.9.0",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.8"
   }

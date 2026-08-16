@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Lint
+  lint-typecheck:
+    name: Lint and TypeCheck
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
@@ -24,13 +24,15 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.3
-    
+
       - name: Install dependencies
         working-directory: backend
         run: bun install --frozen-lockfile
-    
+
       - name: Lint backend
         working-directory: backend
         run: bun run lint
-        
-        
+
+      - name: TypeCheck backend
+        working-directory: backend
+        run: bun run typecheck
