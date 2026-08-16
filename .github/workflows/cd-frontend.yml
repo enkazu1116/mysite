@@ -53,7 +53,7 @@ jobs:
         run: pnpm --filter frontend build
 
       - name: Deploy to Firebase Hosting
-        working-directory: frontend
-        run: npx --yes firebase-tools@15 deploy --only hosting --project "${FIREBASE_PROJECT_ID}" --non-interactive
+        # frontend の package.json に pnpm の devEngines があるため npx は使わない
+        run: pnpm dlx firebase-tools@15 deploy --only hosting --project "${FIREBASE_PROJECT_ID}" --non-interactive --config frontend/firebase.json
         env:
           FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
