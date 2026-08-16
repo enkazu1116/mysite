@@ -2,7 +2,7 @@ import { Chip } from "@heroui/react/chip";
 import {
   readingStatusLabel,
   readingStatusToneClass,
-} from "../ReadingStatusSelect";
+} from "../readingStatus";
 import type { ReadingStatus, UserBook } from "../../types/book";
 import { BookShelfIcon } from "./BookShelfIcon";
 

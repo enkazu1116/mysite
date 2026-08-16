@@ -2,13 +2,13 @@ import { ListBox } from "@heroui/react/list-box";
 import { Select } from "@heroui/react/select";
 import type { Key } from "react";
 
-export function ChapterSelectDropdown<T>({
+export function ChapterSelectDropdown({
   groups,
   selectedChapterOrder,
   onSelect,
   emptyLabel,
 }: {
-  groups: Array<{ chapterOrder: number; items: T[] }>;
+  groups: Array<{ chapterOrder: number; items: readonly unknown[] }>;
   selectedChapterOrder: number | null;
   onSelect: (chapterOrder: number) => void;
   emptyLabel: string;
@@ -30,10 +30,10 @@ export function ChapterSelectDropdown<T>({
         章選択
       </span>
       <Select
-        selectedKey={
+        value={
           selectedChapterOrder == null ? null : String(selectedChapterOrder)
         }
-        onSelectionChange={(key: Key | null) => {
+        onChange={(key: Key | null) => {
           if (key == null) {
             return;
           }

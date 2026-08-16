@@ -3,7 +3,7 @@ import { Input } from "@heroui/react/input";
 import { Label } from "@heroui/react/label";
 import { TextField } from "@heroui/react/textfield";
 import { useState } from "react";
-import type { FormEvent } from "react";
+import type { SyntheticEvent } from "react";
 import { PenSquarePlusIcon } from "../../../../../components/icons";
 import { QueryErrorAlert } from "../../../../../components/status";
 import { useCreateBookOutputMutation } from "../../../hooks/useBooksQueries";
@@ -23,7 +23,7 @@ export function OutputCreateForm({
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     createOutput.mutate(
       {
@@ -41,7 +41,7 @@ export function OutputCreateForm({
           setTitle("");
           setBody("");
           setChapterOrder((value) => value + 1);
-          onCreated?.(created.chapterOrder ?? chapterOrder);
+          onCreated?.(created.chapterOrder);
         },
       },
     );
@@ -63,7 +63,7 @@ export function OutputCreateForm({
         <Label className="text-xs">本文</Label>
         <textarea
           value={body}
-          onChange={(event) => setBody(event.target.value)}
+          onChange={(event) => { setBody(event.target.value); }}
           required
           rows={4}
           className="min-h-24 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm outline-none focus:border-gray-500 dark:border-gray-700 dark:bg-gray-950"

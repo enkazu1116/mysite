@@ -2,7 +2,7 @@ import { Form } from "@heroui/react/form";
 import { Input } from "@heroui/react/input";
 import { Label } from "@heroui/react/label";
 import { TextField } from "@heroui/react/textfield";
-import type { FormEvent } from "react";
+import type { SyntheticEvent } from "react";
 import { useState } from "react";
 import { SaveIcon } from "../../../../../components/icons";
 import { QueryErrorAlert } from "../../../../../components/status";
@@ -20,11 +20,11 @@ export function OutputDetailEditor({
 }) {
   const updateOutput = useUpdateBookOutputMutation();
   const [chapterTitle, setChapterTitle] = useState(output.chapterTitle ?? "");
-  const [chapterOrder, setChapterOrder] = useState(output.chapterOrder ?? 0);
+  const [chapterOrder, setChapterOrder] = useState(output.chapterOrder);
   const [title, setTitle] = useState(output.title);
   const [body, setBody] = useState(output.body);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     updateOutput.mutate({
       bookOutputId: output.bookOutputId,
@@ -58,7 +58,7 @@ export function OutputDetailEditor({
         <Label className="text-xs">本文</Label>
         <textarea
           value={body}
-          onChange={(event) => setBody(event.target.value)}
+          onChange={(event) => { setBody(event.target.value); }}
           rows={6}
           className="min-h-28 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm outline-none focus:border-gray-500 dark:border-gray-700 dark:bg-gray-950"
         />

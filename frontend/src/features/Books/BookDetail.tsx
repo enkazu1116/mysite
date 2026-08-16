@@ -10,7 +10,7 @@ import {
 } from "../../components/icons";
 import { LibrarySurface } from "../../components/LibrarySurface.tsx";
 import { QueryErrorAlert } from "../../components/status";
-import { readingStatusLabel, readingStatusToneClass } from "./components/ReadingStatusSelect";
+import { readingStatusLabel, readingStatusToneClass } from "./components/readingStatus";
 import { useUserBookQuery } from "./hooks/useBooksQueries";
 
 export default function BookDetail() {

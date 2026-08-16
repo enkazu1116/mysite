@@ -1,6 +1,6 @@
 import { Form } from "@heroui/react/form";
 import { Label } from "@heroui/react/label";
-import type { FormEvent } from "react";
+import type { SyntheticEvent } from "react";
 import { useState } from "react";
 import { SaveIcon, TrashIcon } from "../../../../../components/icons";
 import { QueryErrorAlert } from "../../../../../components/status";
@@ -25,7 +25,7 @@ export function MemoDetailEditor({
   const [chapterOrder, setChapterOrder] = useState(memo.chapterOrder);
   const [memoBody, setMemoBody] = useState(memo.memo ?? "");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     updateMemo.mutate({
       chapterMemoId: memo.chapterMemoId,
@@ -39,7 +39,8 @@ export function MemoDetailEditor({
   };
 
   const handleDelete = () => {
-    const label = memo.chapterTitle?.trim() || `章 #${memo.chapterOrder}`;
+    const label =
+      memo.chapterTitle?.trim() || `章 #${String(memo.chapterOrder)}`;
     const confirmed = window.confirm(`「${label}」のメモを削除しますか？`);
     if (!confirmed) {
       return;
@@ -66,7 +67,7 @@ export function MemoDetailEditor({
         <Label className="text-xs">章メモ</Label>
         <textarea
           value={memoBody}
-          onChange={(event) => setMemoBody(event.target.value)}
+          onChange={(event) => { setMemoBody(event.target.value); }}
           rows={6}
           className="min-h-28 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm outline-none focus:border-gray-500 dark:border-gray-700 dark:bg-gray-950"
         />

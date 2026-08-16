@@ -48,10 +48,10 @@ export function Pagination<T>({ table }: Props<T>) {
           isPending={isPending}
           canPreviousPage={table.getCanPreviousPage()}
           canNextPage={table.getCanNextPage()}
-          onFirstPage={() => startTransition(() => table.firstPage())}
-          onPreviousPage={() => startTransition(() => table.previousPage())}
-          onNextPage={() => startTransition(() => table.nextPage())}
-          onLastPage={() => startTransition(() => table.lastPage())}
+          onFirstPage={() => { startTransition(() => { table.firstPage(); }); }}
+          onPreviousPage={() => { startTransition(() => { table.previousPage(); }); }}
+          onNextPage={() => { startTransition(() => { table.nextPage(); }); }}
+          onLastPage={() => { startTransition(() => { table.lastPage(); }); }}
         />
 
         {isPending && (

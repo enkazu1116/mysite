@@ -9,20 +9,14 @@ import {
   PaginationSummary,
 } from "../../../../components/pagination";
 import {
-  readingStatusLabel,
   readingStatusToneClass,
-} from "../ReadingStatusSelect";
-import type { ReadingStatus, UserBook } from "../../types/book";
+  statusFilterOptions,
+  type StatusFilter,
+} from "../readingStatus";
+import type { UserBook } from "../../types/book";
 import { RegisteredBookRow } from "./RegisteredBookRow";
 
-export type StatusFilter = "all" | ReadingStatus;
-
-export const statusFilterOptions = [
-  { id: "all" as const, label: "すべて" },
-  { id: "reading" as const, label: readingStatusLabel.reading },
-  { id: "unread" as const, label: readingStatusLabel.unread },
-  { id: "finished" as const, label: readingStatusLabel.finished },
-];
+export type { StatusFilter } from "../readingStatus";
 
 type UserBooksListProps = {
   userId: string;
@@ -81,8 +75,8 @@ export function UserBooksList({
         </h2>
         <div className="flex flex-wrap items-center gap-2">
           <Select
-            selectedKey={statusFilter}
-            onSelectionChange={(key: Key | null) => {
+            value={statusFilter}
+            onChange={(key: Key | null) => {
               if (
                 key === "all" ||
                 key === "reading" ||
@@ -132,8 +126,8 @@ export function UserBooksList({
           </Select>
           <Chip size="sm">
             {statusFilter === "all"
-              ? `${totalCount}冊`
-              : `${filteredBooks.length}/${totalCount}冊`}
+              ? `${String(totalCount)}冊`
+              : `${String(filteredBooks.length)}/${String(totalCount)}冊`}
           </Chip>
         </div>
       </div>
@@ -167,8 +161,8 @@ export function UserBooksList({
                 userId={userId}
                 canEdit={canEdit}
                 isExpanded={expandedUserBookId === book.userBookId}
-                onToggle={() => onToggleExpand(book.userBookId)}
-                onDelete={() => onDelete(book)}
+                onToggle={() => { onToggleExpand(book.userBookId); }}
+                onDelete={() => { onDelete(book); }}
                 isDeleting={isDeletingUserBookId === book.userBookId}
               />
             ))}

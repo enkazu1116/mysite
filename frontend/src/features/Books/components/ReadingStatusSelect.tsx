@@ -3,22 +3,10 @@ import { ListBox } from "@heroui/react/list-box";
 import { Select } from "@heroui/react/select";
 import type { Key } from "react";
 import type { ReadingStatus } from "../types/book";
-
-export const readingStatusLabel: Record<ReadingStatus, string> = {
-  unread: "未読",
-  reading: "読書中",
-  finished: "読了",
-};
-
-/** Chip / Select 用の状態別カラー */
-export const readingStatusToneClass: Record<ReadingStatus, string> = {
-  unread:
-    "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300",
-  reading:
-    "bg-green-100 text-green-800 dark:bg-green-950/60 dark:text-green-300",
-  finished:
-    "bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300",
-};
+import {
+  readingStatusLabel,
+  readingStatusToneClass,
+} from "./readingStatus";
 
 const statusOptions = [
   { id: "unread", label: readingStatusLabel.unread },
@@ -43,8 +31,8 @@ export function ReadingStatusSelect({
 }: Props) {
   return (
     <Select
-      selectedKey={value}
-      onSelectionChange={(key: Key | null) => {
+      value={value}
+      onChange={(key: Key | null) => {
         if (key === "unread" || key === "reading" || key === "finished") {
           onChange(key);
         }

@@ -173,13 +173,13 @@ export function useDeleteUserBookMutation() {
     mutationFn: (userBookId: string) => deleteUserBook(userBookId),
     onSuccess: (userBook) => {
       void queryClient.invalidateQueries({ queryKey: ["user-books"] });
-      void queryClient.removeQueries({
+      queryClient.removeQueries({
         queryKey: bookKeys.userBook(userBook.userBookId),
       });
-      void queryClient.removeQueries({
+      queryClient.removeQueries({
         queryKey: bookKeys.chapterMemos(userBook.userBookId),
       });
-      void queryClient.removeQueries({
+      queryClient.removeQueries({
         queryKey: bookKeys.outputs(userBook.userBookId),
       });
     },

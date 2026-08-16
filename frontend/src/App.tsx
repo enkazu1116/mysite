@@ -49,7 +49,7 @@ function AppRoutes() {
   const navigate = useNavigate();
 
   return (
-    <RouterProvider navigate={navigate}>
+    <RouterProvider navigate={(...args) => { void navigate(...args); }}>
       <SiteChrome>
         <Header />
         <ErrorBoundary

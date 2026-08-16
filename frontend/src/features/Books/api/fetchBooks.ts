@@ -35,12 +35,14 @@ async function requestJson<T>(
   fallback: string,
   init?: RequestInit,
 ): Promise<T> {
+  const headers = new Headers(init?.headers);
+  if (!headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const response = await fetch(`${API_BASE}/api${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...init?.headers,
-    },
     ...init,
+    headers,
   });
 
   if (!response.ok) {
@@ -54,7 +56,9 @@ async function parseApiError(response: Response, fallback: string) {
   const errorBody = (await response.json().catch(() => null)) as
     | { message?: string }
     | null;
-  return new Error(errorBody?.message ?? `${fallback}: ${response.status}`);
+  return new Error(
+    errorBody?.message ?? `${fallback}: ${String(response.status)}`,
+  );
 }
 
 export const searchBooks = async (

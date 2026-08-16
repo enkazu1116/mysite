@@ -4,7 +4,7 @@ export const fetchSkills = async () => {
   const response = await client.skills.$get();
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch skills: ${response.status}`);
+    throw new Error(`Failed to fetch skills: ${String(response.status)}`);
   }
 
   return response.json();

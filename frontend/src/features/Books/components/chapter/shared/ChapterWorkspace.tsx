@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Spinner } from "@heroui/react/spinner";
 import { ChapterSelectDropdown } from "./ChapterSelectDropdown";
 
-export function ChapterWorkspace<T>({
+export function ChapterWorkspace({
   groups,
   selectedChapterOrder,
   onSelect,
@@ -11,7 +11,7 @@ export function ChapterWorkspace<T>({
   createSlot,
   detailSlot,
 }: {
-  groups: Array<{ chapterOrder: number; items: T[] }>;
+  groups: Array<{ chapterOrder: number; items: readonly unknown[] }>;
   selectedChapterOrder: number | null;
   onSelect: (chapterOrder: number) => void;
   emptySelectLabel: string;

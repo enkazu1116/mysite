@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
+import type { SyntheticEvent } from "react";
 import { Button } from "@heroui/react/button";
 import { Form } from "@heroui/react/form";
 import { Input } from "@heroui/react/input";
@@ -30,7 +30,7 @@ export function UserBooksSearch({
   const search = useBookSearchQuery(query, query.length > 0);
   const results = (search.data ?? []).slice(0, SEARCH_RESULT_LIMIT);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     setQuery(title.trim());
   };

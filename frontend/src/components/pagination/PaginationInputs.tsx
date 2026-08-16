@@ -41,8 +41,8 @@ export function PaginationInputs({
       </NumberField>
 
       <Select
-        selectedKey={String(pageSize)}
-        onSelectionChange={(key: Key | null) => {
+        value={String(pageSize)}
+        onChange={(key: Key | null) => {
           if (key != null) {
             onPageSizeChange(Number(key));
           }
@@ -57,7 +57,11 @@ export function PaginationInputs({
         <Select.Popover>
           <ListBox>
             {PAGE_SIZE_OPTIONS.map((item) => (
-              <ListBox.Item key={item} id={String(item)} textValue={`${item}件`}>
+              <ListBox.Item
+                key={item}
+                id={String(item)}
+                textValue={`${String(item)}件`}
+              >
                 {item}件
                 <ListBox.ItemIndicator />
               </ListBox.Item>
