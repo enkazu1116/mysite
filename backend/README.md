@@ -58,9 +58,36 @@ CI では Infisical Secrets Action（OIDC）が env を注入したあと、`db:
 
 ```sh
 docker build -t mysite-backend .
-docker run --rm -p 3000:3000 \
+docker run --rm -p 8080:8080 \
   -e TURSO_DATABASE_URL=... \
   -e TURSO_AUTH_TOKEN=... \
   -e BOOKS_API=... \
   mysite-backend
 ```
+
+## CD（Cloud Run）
+
+Workflow: `.github/workflows/cd-backend.yml`
+
+薄いデプロイ: WIF 認証 → Infisical で秘密情報取得 → `gcloud run deploy --source=.`
+
+### GitHub Variables（FE CD と共通 + BE 用）
+
+| Name | 例 |
+|---|---|
+| `FIREBASE_PROJECT_ID` | GCP プロジェクト ID（`mysite-500301` など） |
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` | WIF プロバイダ |
+| `GCP_SERVICE_ACCOUNT` | デプロイ用 SA |
+| `GCP_REGION` | `asia-northeast1` |
+| `CLOUD_RUN_SERVICE` | `mysite-backend` |
+| `INFISICAL_IDENTITY_ID` / `INFISICAL_PROJECT_SLUG` / `INFISICAL_ENV_SLUG` | 統合テストと同じ（当面 `dev` 可） |
+
+### GCP SA に必要な主なロール（目安）
+
+- Cloud Run Admin
+- Service Account User（実行 SA への actAs）
+- Cloud Build Editor
+- Artifact Registry Writer（または同等）
+- Storage 関連（ソースアップロード用）
+
+初回は Actions の `workflow_dispatch` で通す。

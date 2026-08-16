@@ -1,0 +1,90 @@
+# Backend CD: Cloud Run（gcloud CLI の薄いデプロイ）
+# 認証: Workload Identity Federation（鍵ファイルなし）
+# 秘密情報: Infisical OIDC → Cloud Run 環境変数（初回〜更新）
+name: cd-backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/cd-backend.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: cd-backend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-cloud-run:
+    name: Build and deploy Cloud Run
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    env:
+      GCP_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+      GCP_REGION: ${{ vars.GCP_REGION }}
+      CLOUD_RUN_SERVICE: ${{ vars.CLOUD_RUN_SERVICE }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Load secrets from Infisical
+        uses: Infisical/secrets-action@v1.0.16
+        with:
+          method: oidc
+          identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
+          project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
+          env-slug: ${{ vars.INFISICAL_ENV_SLUG }}
+          domain: https://app.infisical.com
+
+      - name: Ensure deploy inputs are present
+        run: |
+          missing=0
+          for name in GCP_PROJECT_ID GCP_REGION CLOUD_RUN_SERVICE \
+            TURSO_DATABASE_URL TURSO_AUTH_TOKEN BOOKS_API; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name が未設定です。"
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Deploy to Cloud Run
+        working-directory: backend
+        run: |
+          ENV_FILE="${RUNNER_TEMP}/cloud-run-env.yaml"
+          {
+            echo "TURSO_DATABASE_URL: $(printf '%s' "${TURSO_DATABASE_URL}" | jq -Rs .)"
+            echo "TURSO_AUTH_TOKEN: $(printf '%s' "${TURSO_AUTH_TOKEN}" | jq -Rs .)"
+            echo "BOOKS_API: $(printf '%s' "${BOOKS_API}" | jq -Rs .)"
+          } > "${ENV_FILE}"
+
+          gcloud run deploy "${CLOUD_RUN_SERVICE}" \
+            --source=. \
+            --project="${GCP_PROJECT_ID}" \
+            --region="${GCP_REGION}" \
+            --platform=managed \
+            --allow-unauthenticated \
+            --port=8080 \
+            --env-vars-file="${ENV_FILE}" \
+            --quiet
