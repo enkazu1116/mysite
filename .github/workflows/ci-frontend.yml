@@ -1,4 +1,4 @@
-# Frontend の速い CI（まずは Build まで）
+# Frontend の速い CI（Lint → TypeCheck → Build）
 # モノレポのため install はリポジトリルート、実行は --filter frontend
 name: ci-frontend
 
@@ -17,8 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build
+  lint-typecheck-build:
+    name: Lint, TypeCheck and Build
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
@@ -39,6 +39,13 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # 速いチェックを先に（失敗時に重い build を走らせない）
+      - name: Lint frontend
+        run: pnpm --filter frontend lint
+
+      - name: TypeCheck frontend
+        run: pnpm --filter frontend typecheck
 
       - name: Build frontend
         run: pnpm --filter frontend build

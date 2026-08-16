@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b ../backend --force && tsc -b && vite build",
+    "typecheck": "tsc -b ../backend --force && tsc -b --pretty false",
     "lint": "eslint .",
     "test": "vitest run",
     "preview": "vite preview"
