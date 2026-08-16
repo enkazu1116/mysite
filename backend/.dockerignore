@@ -2,6 +2,5 @@ node_modules
 .git
 .env
 .env.*
-!.env.example
 drizzle
 *.md
