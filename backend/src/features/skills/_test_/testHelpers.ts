@@ -1,6 +1,5 @@
 import { mock } from "bun:test";
 import type { SkillRepository } from "../repositories/skillRepository";
-import type { Skill } from "../types/skill";
 import { samleSKill_javascript, toSkill } from "./fixtures";
 
 const defaultSkill = toSkill(samleSKill_javascript);

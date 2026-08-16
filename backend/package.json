@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "infisical run -- bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
+    "lint": "eslint .",
     "db:push": "infisical run -- drizzle-kit push",
     "db:generate": "infisical run -- drizzle-kit generate",
     "db:migrate": "infisical run -- drizzle-kit migrate",
@@ -25,10 +26,14 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bun": "latest",
     "@vitest/coverage-v8": "^4.1.8",
     "drizzle-kit": "^0.31.10",
+    "eslint": "^10.8.1",
+    "globals": "^17.11.0",
     "tsx": "^4.21.0",
+    "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.8"
   }
 }
