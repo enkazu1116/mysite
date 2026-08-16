@@ -75,7 +75,7 @@ export function UserBookMemosPage() {
             title={
               selectedChapterOrder == null
                 ? "メモ"
-                : `章 #${selectedChapterOrder} のメモ`
+                : `章 #${String(selectedChapterOrder)} のメモ`
             }
             emptyLabel="章選択から選んでください。"
           >

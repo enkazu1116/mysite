@@ -50,7 +50,7 @@ export function BookOutputsPage() {
             title={
               selectedChapterOrder == null
                 ? "アウトプット"
-                : `章 #${selectedChapterOrder} のアウトプット`
+                : `章 #${String(selectedChapterOrder)} のアウトプット`
             }
             emptyLabel="章を選択してください。"
           >

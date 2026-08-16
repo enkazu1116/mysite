@@ -1,4 +1,4 @@
-FROM node:24.15.0-trixie AS base
+FROM node:24.19.0-trixie AS base
 
 # ワークスペースの指定
 WORKDIR /frontend

@@ -12,7 +12,7 @@ export function useChapterSelection<T extends { chapterOrder: number }>(
     selectedChapterOrder != null &&
     groups.some((group) => group.chapterOrder === selectedChapterOrder)
       ? selectedChapterOrder
-      : (groups[0]?.chapterOrder ?? null);
+      : (groups.at(0)?.chapterOrder ?? null);
   const selectedItems =
     resolvedChapterOrder == null
       ? []

@@ -44,7 +44,7 @@ export function BookMemosPage() {
             title={
               selectedChapterOrder == null
                 ? "メモ"
-                : `章 #${selectedChapterOrder} のメモ`
+                : `章 #${String(selectedChapterOrder)} のメモ`
             }
             emptyLabel="章を選択してください。"
           >

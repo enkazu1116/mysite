@@ -1,0 +1,49 @@
+# Frontend の速い CI（Lint → TypeCheck → Build → Unit test）
+# モノレポのため install はリポジトリルート、実行は --filter frontend
+name: ci-frontend
+
+on:
+  push:
+    paths:
+      - "frontend/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - ".github/workflows/ci-frontend.yml"
+
+concurrency:
+  group: ci-frontend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-typecheck-build-unit:
+    name: Lint, TypeCheck, Build and Unit test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # pnpm 11+ は pnpm/setup を使う（action-setup は v10 以前向け）
+      - name: Setup pnpm and Node.js
+        uses: pnpm/setup@v2
+        with:
+          runtime: node@24
+          cache: true
+          install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint frontend
+        run: pnpm --filter frontend lint
+
+      - name: TypeCheck frontend
+        run: pnpm --filter frontend typecheck
+
+      - name: Build frontend
+        run: pnpm --filter frontend build
+
+      - name: Unit test frontend
+        run: pnpm --filter frontend test

@@ -16,7 +16,9 @@ export function BookShelfIcon({
       ? userBook.book.authors.join(", ")
       : "著者不明";
   const tooltip = `${userBook.book.title}\n${authors}${
-    userBook.currentPage != null ? `\n${userBook.currentPage}ページ` : ""
+    userBook.currentPage != null
+      ? `\n${String(userBook.currentPage)}ページ`
+      : ""
   }`;
   const colInRow = itemIndex % 5;
   const tooltipPositionClass =

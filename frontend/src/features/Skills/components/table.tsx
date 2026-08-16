@@ -6,9 +6,9 @@ import { SkillsTableView } from "./SkillsTableView";
 
 export default function Table() {
   const query = useSkillsSuspenseQuery();
-  const { table } = useSkillsTable(query.skills ?? []);
+  const { table } = useSkillsTable(query.skills);
 
-  if (query.skills?.length === 0) {
+  if (query.skills.length === 0) {
     return (
       <EmptyState className="py-12">
         <p>スキルが見つかりません。</p>

@@ -8,7 +8,7 @@ export function OutputReadonlyDetail({ output }: { output: BookOutput }) {
       data-output-detail-view
     >
       <div className="flex flex-wrap items-center gap-2">
-        <Chip size="sm">#{output.chapterOrder ?? 0}</Chip>
+        <Chip size="sm">#{String(output.chapterOrder)}</Chip>
         <span className="text-xs text-gray-500">
           {output.chapterTitle || "章タイトルなし"}
         </span>

@@ -12,7 +12,7 @@ function toDateKey(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return `${String(year)}-${month}-${day}`;
 }
 
 function isSameDay(a: Date, b: Date): boolean {
@@ -101,10 +101,15 @@ export function MonthCalendar({ events }: Props) {
       </div>
       <div className="space-y-1">
         {weeks.map((week, weekIndex) => (
-          <div key={`week-${weekIndex}`} className="grid grid-cols-7 gap-1">
+          <div key={`week-${String(weekIndex)}`} className="grid grid-cols-7 gap-1">
             {week.map((day, dayIndex) => {
               if (day === null) {
-                return <div key={`empty-${weekIndex}-${dayIndex}`} className="h-8" />;
+                return (
+                  <div
+                    key={`empty-${String(weekIndex)}-${String(dayIndex)}`}
+                    className="h-8"
+                  />
+                );
               }
 
               const cellDate = new Date(year, month, day);

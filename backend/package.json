@@ -9,7 +9,15 @@
   "scripts": {
     "dev": "infisical run -- bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -b --pretty false",
+    "test": "bun test src --path-ignore-patterns '**/_integration_/**'",
+    "test:integration": "infisical run -- bun run test:integration:ci",
+    "test:integration:ci": "bun test --timeout 60000 src/features/books/_integration_",
     "db:push": "infisical run -- drizzle-kit push",
+    "db:push:ci": "drizzle-kit push",
+    "db:ensure-skills": "bun run scripts/ensureSkillsSchema.ts",
     "db:generate": "infisical run -- drizzle-kit generate",
     "db:migrate": "infisical run -- drizzle-kit migrate",
     "db:studio": "infisical run -- drizzle-kit studio",
@@ -25,10 +33,15 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bun": "latest",
     "@vitest/coverage-v8": "^4.1.8",
     "drizzle-kit": "^0.31.10",
+    "eslint": "^10.8.1",
+    "globals": "^17.11.0",
     "tsx": "^4.21.0",
+    "typescript": "~5.9.0",
+    "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.8"
   }
 }

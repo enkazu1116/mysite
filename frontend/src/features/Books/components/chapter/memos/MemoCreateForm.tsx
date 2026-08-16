@@ -1,7 +1,7 @@
 import { Form } from "@heroui/react/form";
 import { Label } from "@heroui/react/label";
 import { useState } from "react";
-import type { FormEvent } from "react";
+import type { SyntheticEvent } from "react";
 import { StickyNotePlusIcon } from "../../../../../components/icons";
 import { QueryErrorAlert } from "../../../../../components/status";
 import { useCreateChapterMemoMutation } from "../../../hooks/useBooksQueries";
@@ -20,7 +20,7 @@ export function MemoCreateForm({
   const [chapterOrder, setChapterOrder] = useState(1);
   const [memoBody, setMemoBody] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     createMemo.mutate(
       {
@@ -54,7 +54,7 @@ export function MemoCreateForm({
         <Label className="text-xs">章メモ</Label>
         <textarea
           value={memoBody}
-          onChange={(event) => setMemoBody(event.target.value)}
+          onChange={(event) => { setMemoBody(event.target.value); }}
           rows={4}
           className="min-h-24 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm outline-none focus:border-gray-500 dark:border-gray-700 dark:bg-gray-950"
         />

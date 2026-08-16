@@ -138,7 +138,7 @@ export const booksHandlers = [
       "chapterMemoId" | "userBookId" | "createdAt" | "updatedAt"
     >;
     const chapterMemoCreated: BookChapterMemo = {
-      chapterMemoId: `memo-${store.memos.length + 1}`,
+      chapterMemoId: `memo-${String(store.memos.length + 1)}`,
       userBookId: String(params.userBookId),
       chapterTitle: payload.chapterTitle,
       chapterOrder: payload.chapterOrder,
@@ -163,7 +163,7 @@ export const booksHandlers = [
       "bookOutputId" | "userBookId" | "createdAt" | "updatedAt"
     >;
     const output: BookOutput = {
-      bookOutputId: `output-${store.outputs.length + 1}`,
+      bookOutputId: `output-${String(store.outputs.length + 1)}`,
       userBookId: String(params.userBookId),
       chapterTitle: payload.chapterTitle,
       chapterOrder: payload.chapterOrder,

@@ -6,7 +6,7 @@ const GOOGLE_BOOKS_API_KEY = (() => {
     const value = process.env.BOOKS_API ?? process.env["books-api"];
     if (!value) {
         throw new Error(
-            "BOOKS_API が未設定です。Infisical または .env を確認してください。",
+            "BOOKS_API が未設定です。Infisical（開発・統合テスト）を確認してください。",
         );
     }
     return value;

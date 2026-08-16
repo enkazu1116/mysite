@@ -111,7 +111,7 @@ export function UserBooksManager({
             isRegistering={createUserBook.isPending}
             registeredSourceBookIds={registeredSourceBookIds}
             onRegister={(book) =>
-              createUserBook.mutate({ book, status: "unread" })
+              { createUserBook.mutate({ book, status: "unread" }); }
             }
           />
         </div>
@@ -132,20 +132,20 @@ export function UserBooksManager({
         onStatusFilterChange={handleStatusFilterChange}
         expandedUserBookId={expandedUserBookId}
         onToggleExpand={(userBookId) =>
-          setExpandedUserBookId((current) =>
+          { setExpandedUserBookId((current) =>
             current === userBookId ? null : userBookId,
-          )
+          ); }
         }
         onDelete={handleDelete}
         isDeletingUserBookId={
-          deleteUserBook.isPending ? (deleteUserBook.variables ?? null) : null
+          deleteUserBook.isPending ? deleteUserBook.variables : null
         }
         pageIndex={safePageIndex}
         pageSize={pageSize}
         pageCount={pageCount}
         isPaging={isPaging}
         onPageIndexChange={(nextPage) => {
-          startPagingTransition(() => setPageIndex(nextPage));
+          startPagingTransition(() => { setPageIndex(nextPage); });
         }}
         onPageSizeChange={(nextPageSize) => {
           startPagingTransition(() => {
@@ -153,19 +153,19 @@ export function UserBooksManager({
             setPageIndex(0);
           });
         }}
-        onFirstPage={() => startPagingTransition(() => setPageIndex(0))}
+        onFirstPage={() => { startPagingTransition(() => { setPageIndex(0); }); }}
         onPreviousPage={() =>
-          startPagingTransition(() =>
-            setPageIndex((current) => Math.max(0, current - 1)),
-          )
+          { startPagingTransition(() =>
+            { setPageIndex((current) => Math.max(0, current - 1)); },
+          ); }
         }
         onNextPage={() =>
-          startPagingTransition(() =>
-            setPageIndex((current) => Math.min(pageCount - 1, current + 1)),
-          )
+          { startPagingTransition(() =>
+            { setPageIndex((current) => Math.min(pageCount - 1, current + 1)); },
+          ); }
         }
         onLastPage={() =>
-          startPagingTransition(() => setPageIndex(pageCount - 1))
+          { startPagingTransition(() => { setPageIndex(pageCount - 1); }); }
         }
       />
     </section>

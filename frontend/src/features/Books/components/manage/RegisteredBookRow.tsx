@@ -9,9 +9,11 @@ import {
 } from "../../../../components/icons";
 import {
   ReadingStatusSelect,
+} from "../ReadingStatusSelect";
+import {
   readingStatusLabel,
   readingStatusToneClass,
-} from "../ReadingStatusSelect";
+} from "../readingStatus";
 import { useUpdateUserBookMutation } from "../../hooks/useBooksQueries";
 import type { ReadingStatus, UserBook } from "../../types/book";
 import { QueryErrorAlert } from "../../../../components/status";
