@@ -6,7 +6,7 @@
 
 **問題1**
 `pnpm`がベースイメージにない。
-`node:24.15.0-trixie`には、pnpmが入っていないようである。
+`node:24.19.0-trixie`には、pnpmが入っていないようである。
 
 *解決*
 1. `RUN corepack enable`を追加

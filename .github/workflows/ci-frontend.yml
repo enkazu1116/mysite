@@ -23,16 +23,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
+      # pnpm 11+ は pnpm/setup を使う（action-setup は v10 以前向け）
+      - name: Setup pnpm and Node.js
+        uses: pnpm/setup@v2
         with:
-          node-version: 22
-          cache: pnpm
+          runtime: node@24
+          cache: true
+          install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
