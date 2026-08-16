@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "tsc -b --pretty false",
+    "test": "bun test src",
     "db:push": "infisical run -- drizzle-kit push",
     "db:generate": "infisical run -- drizzle-kit generate",
     "db:migrate": "infisical run -- drizzle-kit migrate",

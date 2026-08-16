@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-typecheck-build:
-    name: Lint, TypeCheck and Build
+  lint-typecheck-build-unit:
+    name: Lint, TypeCheck, Build and Unit test
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
@@ -40,3 +40,7 @@ jobs:
       - name: Build backend
         working-directory: backend
         run: bun run build
+
+      - name: Unit test backend
+        working-directory: backend
+        run: bun run test
