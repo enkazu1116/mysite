@@ -1,4 +1,4 @@
-# Frontend の速い CI（Lint → TypeCheck → Build）
+# Frontend の速い CI（Lint → TypeCheck → Build → Unit test）
 # モノレポのため install はリポジトリルート、実行は --filter frontend
 name: ci-frontend
 
@@ -6,7 +6,6 @@ on:
   push:
     paths:
       - "frontend/**"
-      - "backend/**"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "package.json"
@@ -17,8 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-typecheck-build:
-    name: Lint, TypeCheck and Build
+  lint-typecheck-build-unit:
+    name: Lint, TypeCheck, Build and Unit test
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
@@ -26,8 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      # version は書かない（package.json の packageManager: pnpm@11.0.0 を使う）
-      # @v5 = Action 自体のランタイムが Node 24（@v4 の Node 20 非推奨回避）
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
 
@@ -40,7 +37,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 速いチェックを先に（失敗時に重い build を走らせない）
       - name: Lint frontend
         run: pnpm --filter frontend lint
 
@@ -49,3 +45,6 @@ jobs:
 
       - name: Build frontend
         run: pnpm --filter frontend build
+
+      - name: Unit test frontend
+        run: pnpm --filter frontend test
