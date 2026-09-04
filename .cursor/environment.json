@@ -1,0 +1,19 @@
+{
+  "name": "mysite (portfolio monorepo)",
+  "user": "ubuntu",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "backend",
+      "command": "bash .cursor/backend.sh"
+    },
+    {
+      "name": "frontend",
+      "command": "bash .cursor/frontend.sh"
+    }
+  ],
+  "ports": [
+    { "name": "backend", "port": 3000 },
+    { "name": "frontend", "port": 5173 }
+  ]
+}
