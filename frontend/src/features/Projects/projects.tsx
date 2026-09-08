@@ -22,7 +22,7 @@ export default function Projects() {
             Projects
           </h1>
           <p className="mt-2 max-w-xl text-base text-[var(--lib-ink-muted)]">
-            関わった仕事の記録です。
+            関わった仕事の記録です。概要・役割・課題・成果をまとめています。
           </p>
         </motion.div>
 
@@ -45,7 +45,7 @@ export default function Projects() {
           <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
             {projects.map((project, index) => (
               <ProjectCard
-                key={project.id}
+                key={project.projectId}
                 project={project}
                 featured={index === 0}
               />

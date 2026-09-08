@@ -8,9 +8,9 @@ import { motion, useReducedMotion } from "motion/react";
 import { Link as RouterLink } from "react-router";
 import { LibrarySurface } from "../../components/LibrarySurface.tsx";
 import { useBooksUserIdQuery } from "../Books/hooks/useBooksQueries";
+import { useProjectsUserIdQuery } from "../Projects/hooks/useProjectsQuery";
 import { users } from "./data/usersData";
 import type { UserStatus } from "./types/users";
-
 type ChipColor = "default" | "danger" | "accent" | "success" | "warning";
 
 const statusLabel: Record<UserStatus, string> = {
@@ -29,8 +29,12 @@ export default function Users() {
   const totalBooks = users.reduce((sum, user) => sum + user.booksCount, 0);
   const reduceMotion = useReducedMotion();
   const booksUserId = useBooksUserIdQuery();
+  const projectsUserId = useProjectsUserIdQuery();
   const booksManagePath = booksUserId.data
     ? `/users/${booksUserId.data}/books`
+    : null;
+  const projectsManagePath = projectsUserId.data
+    ? `/users/${projectsUserId.data}/projects`
     : null;
 
   return (
@@ -59,6 +63,13 @@ export default function Users() {
             </RouterLink>
           ) : (
             <span className="lib-cta lib-cta-muted">Books 管理</span>
+          )}
+          {projectsManagePath ? (
+            <RouterLink to={projectsManagePath} className="lib-cta">
+              Projects 管理
+            </RouterLink>
+          ) : (
+            <span className="lib-cta lib-cta-muted">Projects 管理</span>
           )}
         </div>
       </section>
@@ -136,10 +147,18 @@ export default function Users() {
                     <span className="text-sm text-[var(--lib-ink-muted)] opacity-50">
                       Skills 管理
                     </span>
-                    <span className="text-sm text-[var(--lib-ink-muted)] opacity-50">
-                      Projects 管理
-                    </span>
-                  </>
+                    {projectsManagePath ? (
+                      <RouterLink
+                        to={projectsManagePath}
+                        className="lib-link text-sm"
+                      >
+                        Projects 管理
+                      </RouterLink>
+                    ) : (
+                      <span className="text-sm text-[var(--lib-ink-muted)]">
+                        Projects 管理
+                      </span>
+                    )}                  </>
                 ) : (
                   <span className="text-sm text-[var(--lib-ink-muted)]">
                     閲覧のみ
