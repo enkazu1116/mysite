@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
+import type { SyntheticEvent } from "react";
 import { Button } from "@heroui/react/button";
 import { Form } from "@heroui/react/form";
 import { Input } from "@heroui/react/input";
@@ -79,7 +79,7 @@ export function ProjectForm({
     initial ? fromProject(initial) : emptyValues,
   );
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(toPayload(values));
   };
