@@ -1,5 +1,5 @@
 /**
- * Turso に skills 系テーブルが無い環境向けのガード。
+ * Turso に skills / projects 系テーブルが無い環境向けのガード。
  * drizzle-kit push が temporal-polyfill で落ちる場合の保険。
  */
 import db from "../src/infrastructure/drizzle/db";
@@ -32,10 +32,25 @@ const statements = [
     FOREIGN KEY (skill_id) REFERENCES skills_table(skill_id),
     FOREIGN KEY (tech_id) REFERENCES techs_table(tech_id)
   )`,
+  `CREATE TABLE IF NOT EXISTS projects_table (
+    project_id text PRIMARY KEY NOT NULL,
+    user_id text NOT NULL,
+    project_name text NOT NULL,
+    overview text NOT NULL,
+    my_role text NOT NULL,
+    team_size integer NOT NULL,
+    technologies text NOT NULL,
+    challenges text NOT NULL,
+    decisions text NOT NULL,
+    outcomes text NOT NULL,
+    created_at text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
+    updated_at text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users_table(user_id)
+  )`,
 ];
 
 for (const statement of statements) {
   await db.$client.execute(statement);
 }
 
-console.log("skills schema ensured");
+console.log("skills/projects schema ensured");
