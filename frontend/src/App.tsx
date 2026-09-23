@@ -10,6 +10,7 @@ import { ErrorState, LoadingState } from "./components/status";
 const Home = lazy(() => import("./features/Home/home"));
 const Skills = lazy(() => import("./features/Skills/skills"));
 const Projects = lazy(() => import("./features/Projects/projects"));
+const ProjectDetail = lazy(() => import("./features/Projects/ProjectDetail"));
 const Users = lazy(() => import("./features/Users/users"));
 const Books = lazy(() => import("./features/Books/books"));
 const BookDetail = lazy(() => import("./features/Books/BookDetail"));
@@ -60,6 +61,7 @@ function AppRoutes() {
               <Route path="/" element={<Home />} />
               <Route path="/skills" element={<Skills />} />
               <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:projectId" element={<ProjectDetail />} />
               <Route path="/users" element={<Users />} />
               <Route
                 path="/users/:userId/books"
