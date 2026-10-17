@@ -25,6 +25,18 @@ export const handlers = [
         ]);
     }),
     http.get('/api/projects', () => {
-        return HttpResponse.json(projects);
+        return HttpResponse.json({ projects });
+    }),
+    http.get('/api/projects/:projectId', ({ params }) => {
+        const project = projects.find(
+            (item) => item.projectId === params.projectId,
+        );
+        if (!project) {
+            return HttpResponse.json(
+                { message: 'プロジェクトが見つかりませんでした。' },
+                { status: 404 },
+            );
+        }
+        return HttpResponse.json({ project });
     }),
 ];

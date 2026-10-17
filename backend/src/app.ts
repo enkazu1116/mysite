@@ -5,9 +5,9 @@ import { bookOutputRouter } from "./features/books/router/bookOutputRouter";
 import { booksSearchRouter } from "./features/books/router/booksSearchRouter";
 import { chapterMemoRouter } from "./features/books/router/chapterMemoRouter";
 import { userBooksRouter } from "./features/books/router/userBooksRouter";
+import { projectsRouter } from "./features/projects/router/router";
 import { skillsRouter } from "./features/skills/router/router";
 import { userRoutes } from "./features/users/router/router";
-
 function resolveCorsOrigin(): string | string[] {
     const raw = process.env.CORS_ORIGIN?.trim();
 
@@ -26,6 +26,7 @@ function resolveCorsOrigin(): string | string[] {
 const api = new Hono()
     .route("/skills", skillsRouter)
     .route("/users", userRoutes)
+    .route("/projects", projectsRouter)
     .route("/books", booksSearchRouter)
     .route("/user-books", userBooksRouter)
     .route("/user-books", chapterMemoRouter)

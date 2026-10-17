@@ -1,14 +1,39 @@
 type Project = {
-    id: number;
-    projectName: string;
-    description: string;
-    useLanguage: string;
-    useFramework: string;
-    useDatabase: string;
-    myRole: string;
-    myAchievement: string;
-    createdAt: string;
-    updatedAt: string;
+  projectId: string;
+  userId: string;
+  projectName: string;
+  overview: string;
+  myRole: string;
+  teamSize: number;
+  technologies: string;
+  challenges: string;
+  decisions: string;
+  outcomes: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
-export type { Project };
+type CreateProjectPayload = {
+  userId: string;
+  projectName: string;
+  overview: string;
+  myRole: string;
+  teamSize: number;
+  technologies: string;
+  challenges: string;
+  decisions: string;
+  outcomes: string;
+};
+
+type UpdateProjectPayload = {
+  projectName?: string;
+  overview?: string;
+  myRole?: string;
+  teamSize?: number;
+  technologies?: string;
+  challenges?: string;
+  decisions?: string;
+  outcomes?: string;
+};
+
+export type { CreateProjectPayload, Project, UpdateProjectPayload };

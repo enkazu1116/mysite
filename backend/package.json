@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "tsc -b --pretty false",
-    "test": "bun test src --path-ignore-patterns '**/_integration_/**'",
+    "test": "bun test src/features/skills/_test_ src/features/books/_test_ src/features/users/_test_ src/features/projects/_test_",
     "test:integration": "infisical run -- bun run test:integration:ci",
     "test:integration:ci": "bun test --timeout 60000 src/features/books/_integration_",
     "db:push": "infisical run -- drizzle-kit push",
