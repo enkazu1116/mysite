@@ -1,27 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  createChapterMemo,
-  createOutput,
   createUserBook,
-  deleteChapterMemo,
   deleteUserBook,
   getUserBook,
-  listChapterMemos,
-  listOutputs,
   listUserBooks,
   resolveBooksUserId,
   searchBooks,
-  updateChapterMemo,
-  updateOutput,
   updateUserBook,
 } from "../api/fetchBooks";
 import type {
   BookSearchResult,
-  CreateBookOutputPayload,
-  CreateChapterMemoPayload,
   ReadingStatus,
-  UpdateBookOutputPayload,
-  UpdateChapterMemoPayload,
   UpdateUserBookPayload,
   UserBook,
 } from "../types/book";
@@ -30,9 +19,6 @@ export const bookKeys = {
   search: (query: string) => ["books", "search", query] as const,
   userBooks: (userId: string) => ["user-books", userId] as const,
   userBook: (userBookId: string) => ["user-book", userBookId] as const,
-  chapterMemos: (userBookId: string) =>
-    ["chapter-memos", userBookId] as const,
-  outputs: (userBookId: string) => ["book-outputs", userBookId] as const,
 };
 
 export function useBookSearchQuery(query: string, enabled: boolean) {
@@ -42,7 +28,6 @@ export function useBookSearchQuery(query: string, enabled: boolean) {
     enabled,
   });
 }
-
 export function useBooksUserIdQuery() {
   return useQuery({
     queryKey: ["books-user-id"] as const,
@@ -61,22 +46,6 @@ export function useUserBookQuery(userBookId: string | undefined) {
   return useQuery({
     queryKey: bookKeys.userBook(userBookId ?? ""),
     queryFn: () => getUserBook(userBookId ?? ""),
-    enabled: Boolean(userBookId),
-  });
-}
-
-export function useChapterMemosQuery(userBookId: string | undefined) {
-  return useQuery({
-    queryKey: bookKeys.chapterMemos(userBookId ?? ""),
-    queryFn: () => listChapterMemos(userBookId ?? ""),
-    enabled: Boolean(userBookId),
-  });
-}
-
-export function useBookOutputsQuery(userBookId: string | undefined) {
-  return useQuery({
-    queryKey: bookKeys.outputs(userBookId ?? ""),
-    queryFn: () => listOutputs(userBookId ?? ""),
     enabled: Boolean(userBookId),
   });
 }
@@ -175,98 +144,6 @@ export function useDeleteUserBookMutation() {
       void queryClient.invalidateQueries({ queryKey: ["user-books"] });
       queryClient.removeQueries({
         queryKey: bookKeys.userBook(userBook.userBookId),
-      });
-      queryClient.removeQueries({
-        queryKey: bookKeys.chapterMemos(userBook.userBookId),
-      });
-      queryClient.removeQueries({
-        queryKey: bookKeys.outputs(userBook.userBookId),
-      });
-    },
-  });
-}
-
-export function useCreateChapterMemoMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      userBookId,
-      payload,
-    }: {
-      userBookId: string;
-      payload: CreateChapterMemoPayload;
-    }) => createChapterMemo(userBookId, payload),
-    onSuccess: (chapterMemo) => {
-      void queryClient.invalidateQueries({
-        queryKey: bookKeys.chapterMemos(chapterMemo.userBookId),
-      });
-    },
-  });
-}
-
-export function useUpdateChapterMemoMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (variables: {
-      chapterMemoId: string;
-      userBookId: string;
-      payload: UpdateChapterMemoPayload;
-    }) => updateChapterMemo(variables.chapterMemoId, variables.payload),
-    onSuccess: (_chapterMemo, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: bookKeys.chapterMemos(variables.userBookId),
-      });
-    },
-  });
-}
-
-export function useDeleteChapterMemoMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (variables: { chapterMemoId: string; userBookId: string }) =>
-      deleteChapterMemo(variables.chapterMemoId),
-    onSuccess: (_chapterMemo, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: bookKeys.chapterMemos(variables.userBookId),
-      });
-    },
-  });
-}
-
-export function useCreateBookOutputMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      userBookId,
-      payload,
-    }: {
-      userBookId: string;
-      payload: CreateBookOutputPayload;
-    }) => createOutput(userBookId, payload),
-    onSuccess: (output) => {
-      void queryClient.invalidateQueries({
-        queryKey: bookKeys.outputs(output.userBookId),
-      });
-    },
-  });
-}
-
-export function useUpdateBookOutputMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (variables: {
-      bookOutputId: string;
-      userBookId: string;
-      payload: UpdateBookOutputPayload;
-    }) => updateOutput(variables.bookOutputId, variables.payload),
-    onSuccess: (_output, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: bookKeys.outputs(variables.userBookId),
       });
     },
   });

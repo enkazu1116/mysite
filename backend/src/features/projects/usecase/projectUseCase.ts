@@ -8,6 +8,7 @@ import type { Project } from "../types/project";
 import {
     validateCreateProjectInput,
     validateListProjectsInput,
+    validateProjectId,
     validateUpdateProjectInput,
 } from "../validation/validators/projectValidation";
 
@@ -33,6 +34,10 @@ class ProjectUseCase {
     }
 
     async getProjectById(projectId: string): Promise<Project | null> {
+        const errors = validateProjectId(projectId, "プロジェクトIDが不正です。");
+        if (errors.length > 0) {
+            throw new Error(errors.join("\n"));
+        }
         return this.projectRepository.findProjectById(projectId);
     }
 
@@ -46,6 +51,10 @@ class ProjectUseCase {
     }
 
     async deleteProject(projectId: string): Promise<Project> {
+        const errors = validateProjectId(projectId, "プロジェクトIDが不正です。");
+        if (errors.length > 0) {
+            throw new Error(errors.join("\n"));
+        }
         return this.projectRepository.deleteProject(projectId);
     }
 }

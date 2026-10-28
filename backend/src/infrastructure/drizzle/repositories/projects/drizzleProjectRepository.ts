@@ -28,13 +28,18 @@ class DrizzleProjectRepository implements ProjectRepository {
             .values({
                 user_id: input.userId,
                 project_name: input.projectName,
-                overview: input.overview,
+                is_highlighted: input.isHighlighted,
+                start_date: input.startDate,
+                end_date: input.endDate,
+                description: input.description,
                 my_role: input.myRole,
                 team_size: input.teamSize,
                 technologies: input.technologies,
+                project_scale: input.projectScale,
                 challenges: input.challenges,
                 decisions: input.decisions,
                 outcomes: input.outcomes,
+                reflection: input.reflection,
             })
             .returning();
 
@@ -81,8 +86,17 @@ class DrizzleProjectRepository implements ProjectRepository {
                 ...(input.projectName !== undefined
                     ? { project_name: input.projectName }
                     : {}),
-                ...(input.overview !== undefined
-                    ? { overview: input.overview }
+                ...(input.description !== undefined
+                    ? { description: input.description }
+                    : {}),
+                ...(input.isHighlighted !== undefined
+                    ? { is_highlighted: input.isHighlighted }
+                    : {}),
+                ...(input.startDate !== undefined
+                    ? { start_date: input.startDate }
+                    : {}),
+                ...(input.endDate !== undefined
+                    ? { end_date: input.endDate }
                     : {}),
                 ...(input.myRole !== undefined ? { my_role: input.myRole } : {}),
                 ...(input.teamSize !== undefined
@@ -90,6 +104,9 @@ class DrizzleProjectRepository implements ProjectRepository {
                     : {}),
                 ...(input.technologies !== undefined
                     ? { technologies: input.technologies }
+                    : {}),
+                ...(input.projectScale !== undefined
+                    ? { project_scale: input.projectScale }
                     : {}),
                 ...(input.challenges !== undefined
                     ? { challenges: input.challenges }
@@ -99,6 +116,9 @@ class DrizzleProjectRepository implements ProjectRepository {
                     : {}),
                 ...(input.outcomes !== undefined
                     ? { outcomes: input.outcomes }
+                    : {}),
+                ...(input.reflection !== undefined
+                    ? { reflection: input.reflection }
                     : {}),
                 updated_at: nowInstant(),
             })

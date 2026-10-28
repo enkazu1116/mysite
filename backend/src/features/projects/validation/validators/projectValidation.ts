@@ -3,6 +3,7 @@ import type {
     ListProjectsInput,
     UpdateProjectInput,
 } from "../../commands/projectCommands";
+import { z } from "zod";
 import {
     createProjectSchema,
     listProjectsSchema,
@@ -14,6 +15,16 @@ type ParseResult<T> = {
     errors: string[];
     data?: T;
 };
+
+function validateProjectId(projectId: string, message: string): string[] {
+    return toErrorMessages(
+        createProjectIdSchema(message).safeParse(projectId),
+    );
+}
+
+function createProjectIdSchema(message: string) {
+    return z.uuid({ error: () => message });
+}
 
 function validateCreateProjectInput(
     input: CreateProjectInput,
@@ -38,4 +49,5 @@ export {
     validateCreateProjectInput,
     validateListProjectsInput,
     validateUpdateProjectInput,
+    validateProjectId,
 };

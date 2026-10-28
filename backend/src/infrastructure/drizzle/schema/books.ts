@@ -32,7 +32,6 @@ export const booksTable = sqliteTable(
         ),
     ],
 );
-
 /**
  * ユーザーが保存した書籍データを保持するテーブル
  */
@@ -48,7 +47,6 @@ export const userBooksTable = sqliteTable(
             .references(() => booksTable.book_id),
         status: text("status").notNull(),
         current_page: integer("current_page"),
-        note: text("note"),
         started_at: isoDateTime(),
         finished_at: isoDateTime(),
         created_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
@@ -61,34 +59,3 @@ export const userBooksTable = sqliteTable(
         ),
     ],
 );
-
-/**
- * ユーザーが読んでいる本に紐づく章ごとのメモを保持するテーブ
- */
-export const bookChapterMemosTable = sqliteTable("book_chapter_memos_table", {
-    chapter_memo_id: uuid("chapter_memo_id").$defaultFn(() => uuidv7()).notNull().primaryKey(),
-    user_book_id: uuid("user_book_id")
-        .notNull()
-        .references(() => userBooksTable.user_book_id),
-    chapter_title: text("chapter_title"),
-    chapter_order: integer("chapter_order").notNull(),
-    memo: text("memo"),
-    created_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
-    updated_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
-});
-
-/**
- * ユーザーが本の内容をアウトプットした内容を保持するテーブル。
- */
-export const bookOutputsTable = sqliteTable("book_outputs_table", {
-    book_output_id: uuid("book_output_id").$defaultFn(() => uuidv7()).notNull().primaryKey(),
-    user_book_id: uuid("user_book_id")
-        .notNull()
-        .references(() => userBooksTable.user_book_id),
-    chapter_title: text("chapter_title"),
-    chapter_order: integer("chapter_order").notNull().default(0),
-    title: text("title").notNull(),
-    body: text("body").notNull(),
-    created_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
-    updated_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
-});

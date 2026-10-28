@@ -4,13 +4,18 @@
 type CreateProjectInput = {
     userId: string;
     projectName: string;
-    overview: string;
+    isHighlighted: boolean;
+    startDate: string | null;
+    endDate: string | null;
+    description: string;
     myRole: string;
     teamSize: number;
     technologies: string;
+    projectScale: string;
     challenges: string;
     decisions: string;
     outcomes: string;
+    reflection: string;
 };
 
 /**
@@ -26,13 +31,18 @@ type ListProjectsInput = {
 type UpdateProjectInput = {
     projectId: string;
     projectName?: string;
-    overview?: string;
+    isHighlighted?: boolean;
+    startDate?: string | null;
+    endDate?: string | null;
+    description?: string;
     myRole?: string;
     teamSize?: number;
     technologies?: string;
+    projectScale?: string;
     challenges?: string;
     decisions?: string;
     outcomes?: string;
+    reflection?: string;
 };
 
 export type { CreateProjectInput, ListProjectsInput, UpdateProjectInput };

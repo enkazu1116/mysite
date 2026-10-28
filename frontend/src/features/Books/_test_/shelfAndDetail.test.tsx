@@ -66,7 +66,7 @@ describe("本棚", () => {
 });
 
 describe("本の詳細", () => {
-  test("タイトル・著者・状態とメモ／アウトプットへのリンクがある", async () => {
+  test("タイトル・著者・状態が表示される", async () => {
     renderBooks(`/books/${readingBook.userBookId}`);
 
     expect(
@@ -75,17 +75,6 @@ describe("本の詳細", () => {
     expect(screen.getByText(readingBook.book.authors[0])).toBeInTheDocument();
     expect(screen.getByText("読書中")).toBeInTheDocument();
 
-    const memosLink = screen.getByRole("link", { name: /メモ/ });
-    expect(memosLink).toHaveAttribute(
-      "href",
-      `/books/${readingBook.userBookId}/memos`,
-    );
-
-    const outputsLink = screen.getByRole("link", { name: /アウトプット/ });
-    expect(outputsLink).toHaveAttribute(
-      "href",
-      `/books/${readingBook.userBookId}/outputs`,
-    );
   });
 
   test("見つからない本なら案内が出る", async () => {

@@ -148,7 +148,6 @@ describe("books integration (Google Books + Turso)", () => {
                     body: JSON.stringify({
                         status: "reading",
                         currentPage: 12,
-                        note: "integration-test",
                     }),
                 },
             );
@@ -157,12 +156,10 @@ describe("books integration (Google Books + Turso)", () => {
                 userBook: {
                     status: string;
                     currentPage: number | null;
-                    note: string | null;
                 };
             };
             expect(patchBody.userBook.status).toBe("reading");
             expect(patchBody.userBook.currentPage).toBe(12);
-            expect(patchBody.userBook.note).toBe("integration-test");
 
             const listResponse = await app.request(
                 `/api/user-books?userId=${encodeURIComponent(userId)}&status=reading`,

@@ -43,6 +43,20 @@
       "when": 1786600000000,
       "tag": "0005_projects",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1792886400000,
+      "tag": "0006_project_model_and_remove_book_notes",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792972800000,
+      "tag": "0007_project_highlight_period",
+      "breakpoints": true
     }
   ]
 }

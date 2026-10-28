@@ -11,6 +11,7 @@ import {
     validateListUserBooksInput,
     validateSearchBooksQuery,
     validateUpdateUserBookInput,
+    validateUserBookId,
 } from "../validation/validators/userBookValidation";
 
 class UserBookUseCase {
@@ -77,6 +78,8 @@ class UserBookUseCase {
      * @returns
      */
     async getUserBookById(userBookId: string): Promise<UserBook | null> {
+        const errors = validateUserBookId(userBookId);
+        if (errors.length > 0) throw new Error(errors.join("\n"));
         return this.userBookRepository.findUserBookById(userBookId);
     }
 
@@ -102,6 +105,8 @@ class UserBookUseCase {
      * @returns
      */
     async deleteUserBook(userBookId: string): Promise<UserBook> {
+        const errors = validateUserBookId(userBookId);
+        if (errors.length > 0) throw new Error(errors.join("\n"));
         return this.userBookRepository.deleteUserBook(userBookId);
     }
 }

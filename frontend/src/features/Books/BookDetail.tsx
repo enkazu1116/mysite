@@ -3,11 +3,7 @@ import { EmptyState } from "@heroui/react/empty-state";
 import { Spinner } from "@heroui/react/spinner";
 import { motion, useReducedMotion } from "motion/react";
 import { Link as RouterLink, useParams } from "react-router";
-import {
-  ArrowLeftIcon,
-  NotebookIcon,
-  StickyNotePlusIcon,
-} from "../../components/icons";
+import { ArrowLeftIcon } from "../../components/icons";
 import { LibrarySurface } from "../../components/LibrarySurface.tsx";
 import { QueryErrorAlert } from "../../components/status";
 import { readingStatusLabel, readingStatusToneClass } from "./components/readingStatus";
@@ -108,40 +104,10 @@ export default function BookDetail() {
                   </p>
                 ) : null}
 
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <RouterLink
-                    to={`/books/${userBook.data.userBookId}/memos`}
-                    data-detail-link="memos"
-                    className="lib-cta"
-                  >
-                    <StickyNotePlusIcon className="h-4 w-4" />
-                    メモ
-                  </RouterLink>
-                  <RouterLink
-                    to={`/books/${userBook.data.userBookId}/outputs`}
-                    data-detail-link="outputs"
-                    className="lib-cta"
-                  >
-                    <NotebookIcon className="h-4 w-4" />
-                    アウトプット
-                  </RouterLink>
-                </div>
               </div>
             </div>
           </section>
 
-          {userBook.data.note ? (
-            <section className="mx-auto mb-8 max-w-5xl text-left">
-              <h2 className="font-display mb-3 text-xl font-semibold text-[var(--lib-ink)]">
-                読書メモ
-              </h2>
-              <article className="lib-panel p-5">
-                <p className="m-0 whitespace-pre-wrap text-sm leading-relaxed text-[var(--lib-ink)]">
-                  {userBook.data.note}
-                </p>
-              </article>
-            </section>
-          ) : null}
         </motion.div>
       )}
     </LibrarySurface>

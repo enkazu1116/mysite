@@ -1,13 +1,7 @@
 import { http, HttpResponse } from "msw";
-import type {
-  BookChapterMemo,
-  BookOutput,
-  UserBook,
-} from "../features/Books/types/book";
+import type { UserBook } from "../features/Books/types/book";
 import {
   OWNER_USER_ID,
-  bookOutput,
-  chapterMemo,
   cloneUserBook,
   readingBook,
   searchResult,
@@ -16,15 +10,11 @@ import {
 
 type BooksStore = {
   userBooks: UserBook[];
-  memos: BookChapterMemo[];
-  outputs: BookOutput[];
 };
 
 function createInitialStore(): BooksStore {
   return {
     userBooks: [cloneUserBook(unreadBook), cloneUserBook(readingBook)],
-    memos: [{ ...chapterMemo }],
-    outputs: [{ ...bookOutput }],
   };
 }
 
@@ -36,14 +26,6 @@ export function resetBooksStore() {
 
 export function setUserBooks(books: UserBook[]) {
   store.userBooks = books.map(cloneUserBook);
-}
-
-export function setMemos(memos: BookChapterMemo[]) {
-  store.memos = memos.map((memo) => ({ ...memo }));
-}
-
-export function setOutputs(outputs: BookOutput[]) {
-  store.outputs = outputs.map((output) => ({ ...output }));
 }
 
 export const booksHandlers = [
@@ -81,7 +63,6 @@ export const booksHandlers = [
       bookId: `book-${body.book.sourceBookId}`,
       status: body.status ?? "unread",
       currentPage: null,
-      note: null,
       startedAt: null,
       finishedAt: null,
       createdAt: new Date().toISOString(),
@@ -125,54 +106,4 @@ export const booksHandlers = [
     return HttpResponse.json({ books });
   }),
 
-  http.get("/api/user-books/:userBookId/chapter-memos", ({ params }) => {
-    const chapterMemos = store.memos.filter(
-      (memo) => memo.userBookId === params.userBookId,
-    );
-    return HttpResponse.json({ chapterMemos });
-  }),
-
-  http.post("/api/user-books/:userBookId/chapter-memos", async ({ params, request }) => {
-    const payload = (await request.json()) as Omit<
-      BookChapterMemo,
-      "chapterMemoId" | "userBookId" | "createdAt" | "updatedAt"
-    >;
-    const chapterMemoCreated: BookChapterMemo = {
-      chapterMemoId: `memo-${String(store.memos.length + 1)}`,
-      userBookId: String(params.userBookId),
-      chapterTitle: payload.chapterTitle,
-      chapterOrder: payload.chapterOrder,
-      memo: payload.memo,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    store.memos = [...store.memos, chapterMemoCreated];
-    return HttpResponse.json({ chapterMemo: chapterMemoCreated }, { status: 201 });
-  }),
-
-  http.get("/api/user-books/:userBookId/outputs", ({ params }) => {
-    const outputs = store.outputs.filter(
-      (output) => output.userBookId === params.userBookId,
-    );
-    return HttpResponse.json({ outputs });
-  }),
-
-  http.post("/api/user-books/:userBookId/outputs", async ({ params, request }) => {
-    const payload = (await request.json()) as Omit<
-      BookOutput,
-      "bookOutputId" | "userBookId" | "createdAt" | "updatedAt"
-    >;
-    const output: BookOutput = {
-      bookOutputId: `output-${String(store.outputs.length + 1)}`,
-      userBookId: String(params.userBookId),
-      chapterTitle: payload.chapterTitle,
-      chapterOrder: payload.chapterOrder,
-      title: payload.title,
-      body: payload.body,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    store.outputs = [...store.outputs, output];
-    return HttpResponse.json({ output }, { status: 201 });
-  }),
 ];

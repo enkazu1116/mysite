@@ -106,11 +106,21 @@ export function UserProjectsManager({
                     <h3 className="font-display m-0 text-lg font-semibold text-[var(--lib-ink)]">
                       {project.projectName}
                     </h3>
+                    {project.isHighlighted ? (
+                      <span className="mt-1 inline-block rounded-full bg-[var(--lib-accent-soft)] px-2 py-1 text-xs text-[var(--lib-ink)]">
+                        Highlight
+                      </span>
+                    ) : null}
                     <p className="mt-1 mb-0 text-sm text-[var(--lib-ink-muted)]">
                       {project.myRole} · チーム {project.teamSize}名
                     </p>
+                    {project.startDate || project.endDate ? (
+                      <p className="mt-1 mb-0 text-xs text-[var(--lib-ink-muted)]">
+                        {project.startDate ?? "開始日未設定"} — {project.endDate ?? "継続中"}
+                      </p>
+                    ) : null}
                     <p className="mt-2 mb-0 text-sm text-[var(--lib-ink-muted)]">
-                      {project.overview}
+                      {project.description}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">

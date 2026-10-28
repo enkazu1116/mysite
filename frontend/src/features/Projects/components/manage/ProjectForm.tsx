@@ -9,36 +9,51 @@ import type { CreateProjectPayload, Project, UpdateProjectPayload } from "../../
 
 type ProjectFormValues = {
   projectName: string;
-  overview: string;
+  isHighlighted: boolean;
+  startDate: string;
+  endDate: string;
+  description: string;
   myRole: string;
   teamSize: string;
   technologies: string;
+  projectScale: string;
   challenges: string;
   decisions: string;
   outcomes: string;
+  reflection: string;
 };
 
 const emptyValues: ProjectFormValues = {
   projectName: "",
-  overview: "",
+  isHighlighted: false,
+  startDate: "",
+  endDate: "",
+  description: "",
   myRole: "",
   teamSize: "1",
   technologies: "",
+  projectScale: "",
   challenges: "",
   decisions: "",
   outcomes: "",
+  reflection: "",
 };
 
 function fromProject(project: Project): ProjectFormValues {
   return {
     projectName: project.projectName,
-    overview: project.overview,
+    isHighlighted: project.isHighlighted,
+    startDate: project.startDate ?? "",
+    endDate: project.endDate ?? "",
+    description: project.description,
     myRole: project.myRole,
     teamSize: String(project.teamSize),
     technologies: project.technologies,
+    projectScale: project.projectScale,
     challenges: project.challenges,
     decisions: project.decisions,
     outcomes: project.outcomes,
+    reflection: project.reflection,
   };
 }
 
@@ -47,13 +62,18 @@ function toPayload(
 ): Omit<CreateProjectPayload, "userId"> & UpdateProjectPayload {
   return {
     projectName: values.projectName.trim(),
-    overview: values.overview.trim(),
+    isHighlighted: values.isHighlighted,
+    startDate: values.startDate || null,
+    endDate: values.endDate || null,
+    description: values.description.trim(),
     myRole: values.myRole.trim(),
     teamSize: Number(values.teamSize),
     technologies: values.technologies.trim(),
+    projectScale: values.projectScale.trim(),
     challenges: values.challenges.trim(),
     decisions: values.decisions.trim(),
     outcomes: values.outcomes.trim(),
+    reflection: values.reflection.trim(),
   };
 }
 
@@ -102,6 +122,45 @@ export function ProjectForm({
         <Input className="bg-[var(--lib-paper-elevated)] text-sm" />
       </TextField>
 
+      <label className="flex items-center gap-2 text-sm text-[var(--lib-ink)]">
+        <input
+          type="checkbox"
+          checked={values.isHighlighted}
+          disabled={isPending}
+          onChange={(event) => {
+            setValues((prev) => ({ ...prev, isHighlighted: event.target.checked }));
+          }}
+        />
+        ハイライト表示する
+      </label>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block text-left">
+          <span className="text-xs text-[var(--lib-ink-muted)]">適用開始日</span>
+          <input
+            type="date"
+            value={values.startDate}
+            disabled={isPending}
+            onChange={(event) => {
+              setField("startDate")(event.target.value);
+            }}
+            className={fieldClass}
+          />
+        </label>
+        <label className="block text-left">
+          <span className="text-xs text-[var(--lib-ink-muted)]">終了日</span>
+          <input
+            type="date"
+            value={values.endDate}
+            disabled={isPending}
+            onChange={(event) => {
+              setField("endDate")(event.target.value);
+            }}
+            className={fieldClass}
+          />
+        </label>
+      </div>
+
       <TextField
         value={values.myRole}
         onChange={setField("myRole")}
@@ -128,11 +187,13 @@ export function ProjectForm({
 
       {(
         [
-          ["overview", "概要"],
+          ["description", "説明"],
           ["technologies", "使用技術"],
+          ["projectScale", "プロジェクト規模"],
           ["challenges", "課題"],
-          ["decisions", "工夫 / 意思決定"],
+          ["decisions", "判断 / 意思決定"],
           ["outcomes", "成果"],
+          ["reflection", "反省点"],
         ] as const
       ).map(([key, label]) => (
         <label key={key} className="block text-left">

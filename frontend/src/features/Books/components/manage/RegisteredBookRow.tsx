@@ -1,12 +1,6 @@
 import { Button } from "@heroui/react/button";
 import { Chip } from "@heroui/react/chip";
-import { Link as RouterLink } from "react-router";
-import {
-  ChevronDownIcon,
-  NotebookIcon,
-  StickyNotePlusIcon,
-  TrashIcon,
-} from "../../../../components/icons";
+import { ChevronDownIcon, TrashIcon } from "../../../../components/icons";
 import {
   ReadingStatusSelect,
 } from "../ReadingStatusSelect";
@@ -20,7 +14,6 @@ import { QueryErrorAlert } from "../../../../components/status";
 
 export function RegisteredBookRow({
   book,
-  userId,
   canEdit,
   isExpanded,
   onToggle,
@@ -28,7 +21,6 @@ export function RegisteredBookRow({
   isDeleting,
 }: {
   book: UserBook;
-  userId: string;
   canEdit: boolean;
   isExpanded: boolean;
   onToggle: () => void;
@@ -126,28 +118,6 @@ export function RegisteredBookRow({
             </Chip>
           )}
 
-          <div className="flex flex-wrap gap-2">
-            <RouterLink
-              to={`/users/${userId}/books/${book.userBookId}/memos`}
-              data-manage-link="memos"
-              aria-label="メモページへ"
-              title="メモページへ"
-              className="lib-cta h-9 px-3 text-xs"
-            >
-              <StickyNotePlusIcon className="h-4 w-4" />
-              メモ
-            </RouterLink>
-            <RouterLink
-              to={`/users/${userId}/books/${book.userBookId}/outputs`}
-              data-manage-link="outputs"
-              aria-label="アウトプットページへ"
-              title="アウトプットページへ"
-              className="lib-cta h-9 px-3 text-xs"
-            >
-              <NotebookIcon className="h-4 w-4" />
-              アウトプット
-            </RouterLink>
-          </div>
         </div>
       )}
     </div>

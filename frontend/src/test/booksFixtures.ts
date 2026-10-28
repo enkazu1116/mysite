@@ -1,9 +1,4 @@
-import type {
-  BookChapterMemo,
-  BookOutput,
-  BookSearchResult,
-  UserBook,
-} from "../features/Books/types/book";
+import type { BookSearchResult, UserBook } from "../features/Books/types/book";
 
 export const OWNER_USER_ID = "owner-1";
 
@@ -15,7 +10,6 @@ export const unreadBook: UserBook = {
   bookId: "book-unread",
   status: "unread",
   currentPage: null,
-  note: null,
   startedAt: null,
   finishedAt: null,
   createdAt: now,
@@ -43,7 +37,6 @@ export const readingBook: UserBook = {
   bookId: "book-reading",
   status: "reading",
   currentPage: 40,
-  note: "途中まで読んだ",
   startedAt: now,
   finishedAt: null,
   createdAt: now,
@@ -76,27 +69,6 @@ export const searchResult: BookSearchResult = {
   pageCount: 120,
   thumbnailUrl: null,
   infoLink: null,
-};
-
-export const chapterMemo: BookChapterMemo = {
-  chapterMemoId: "memo-1",
-  userBookId: readingBook.userBookId,
-  chapterTitle: "はじめに",
-  chapterOrder: 1,
-  memo: "既存の章メモ本文",
-  createdAt: now,
-  updatedAt: now,
-};
-
-export const bookOutput: BookOutput = {
-  bookOutputId: "output-1",
-  userBookId: readingBook.userBookId,
-  chapterTitle: "まとめ",
-  chapterOrder: 2,
-  title: "既存アウトプット",
-  body: "既存のアウトプット本文",
-  createdAt: now,
-  updatedAt: now,
 };
 
 export function cloneUserBook(book: UserBook): UserBook {

@@ -7,7 +7,7 @@ import { usersTable } from "./users";
 
 /**
  * ユーザーに紐づく参画プロジェクトを保持するテーブル。
- * 使用技術は自由記述テキストとして持つ。
+ * 概要項目と詳細項目を同一レコード内で管理する。
  */
 export const projectsTable = sqliteTable("projects_table", {
     project_id: uuid("project_id").$defaultFn(() => uuidv7()).notNull().primaryKey(),
@@ -15,13 +15,20 @@ export const projectsTable = sqliteTable("projects_table", {
         .notNull()
         .references(() => usersTable.user_id),
     project_name: text("project_name").notNull(),
-    overview: text("overview").notNull(),
+    is_highlighted: integer("is_highlighted", { mode: "boolean" })
+        .notNull()
+        .default(false),
+    start_date: text("start_date"),
+    end_date: text("end_date"),
+    description: text("description").notNull(),
     my_role: text("my_role").notNull(),
     team_size: integer("team_size").notNull(),
     technologies: text("technologies").notNull(),
+    project_scale: text("project_scale").notNull(),
     challenges: text("challenges").notNull(),
     decisions: text("decisions").notNull(),
     outcomes: text("outcomes").notNull(),
+    reflection: text("reflection").notNull(),
     created_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
     updated_at: isoDateTime().notNull().default(sql`(CURRENT_TIMESTAMP)`),
 });
