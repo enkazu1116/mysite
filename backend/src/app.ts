@@ -1,9 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-import { bookOutputRouter } from "./features/books/router/bookOutputRouter";
 import { booksSearchRouter } from "./features/books/router/booksSearchRouter";
-import { chapterMemoRouter } from "./features/books/router/chapterMemoRouter";
 import { userBooksRouter } from "./features/books/router/userBooksRouter";
 import { projectsRouter } from "./features/projects/router/router";
 import { skillsRouter } from "./features/skills/router/router";
@@ -28,9 +26,7 @@ const api = new Hono()
     .route("/users", userRoutes)
     .route("/projects", projectsRouter)
     .route("/books", booksSearchRouter)
-    .route("/user-books", userBooksRouter)
-    .route("/user-books", chapterMemoRouter)
-    .route("/user-books", bookOutputRouter);
+    .route("/user-books", userBooksRouter);
 
 const app = new Hono()
     .use(
