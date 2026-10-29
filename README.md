@@ -9,15 +9,26 @@
 ```sh
 pnpm install
 
-# backend（別ターミナル）
-cd backend && bun run dev
+# API（D1 はローカル）。初回とスキーマ変更後
+pnpm db:migrate
+
+# API（別ターミナル）http://localhost:3000
+pnpm dev
 
 # frontend（別ターミナル）
 cd frontend && pnpm dev
 ```
 
+Google Books のキーはリポジトリに置かない。ルートの `.dev.vars` に `BOOKS_API` を書く。
+
 ## デプロイ
 
-- Backend: Cloud Run（`mysite-backend` / `asia-northeast1`）— `.github/workflows/cd-backend.yml`
-- Frontend: Firebase Hosting（`frontend/` で `pnpm build` → `firebase deploy --only hosting`）— `.github/workflows/cd-frontend.yml`
-- Hosting の `/api/**` は Cloud Run へリライト（`frontend/firebase.json`。検証中は外している場合あり）
+Worker 1 つ（`wrangler.jsonc`）。フロントは Static Assets、API は同じ Worker、データは D1。
+
+```sh
+pnpm exec wrangler secret put BOOKS_API
+pnpm deploy
+pnpm db:migrate:remote
+```
+
+GitHub Actions の `cd` は `CLOUDFLARE_API_TOKEN` で `wrangler deploy` する。D1 のマイグレーションもデプロイ時に適用される。

@@ -7,24 +7,14 @@
     "./rpc": "./src/app.ts"
   },
   "scripts": {
-    "dev": "infisical run -- bun run --hot src/index.ts",
-    "start": "bun run src/index.ts",
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "tsc -b --pretty false",
     "test": "bun test src/features/skills/_test_ src/features/books/_test_ src/features/users/_test_ src/features/projects/_test_",
-    "test:integration": "infisical run -- bun run test:integration:ci",
-    "test:integration:ci": "bun test --timeout 60000 src/features/books/_integration_",
-    "db:push": "infisical run -- drizzle-kit push",
-    "db:push:ci": "drizzle-kit push",
-    "db:ensure-skills": "bun run scripts/ensureSkillsSchema.ts",
-    "db:generate": "infisical run -- drizzle-kit generate",
-    "db:migrate": "infisical run -- drizzle-kit migrate",
-    "db:studio": "infisical run -- drizzle-kit studio",
-    "db:introspect": "infisical run -- drizzle-kit introspect"
+    "test:integration": "bun test --timeout 60000 src/features/books/_integration_",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@libsql/client": "^0.17.3",
     "@types/uuid": "^11.0.0",
     "drizzle-orm": "^0.45.2",
     "hono": "4.12.18",

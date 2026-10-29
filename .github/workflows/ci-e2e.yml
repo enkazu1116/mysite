@@ -1,4 +1,4 @@
-# E2E: Frontend + Backend（MSW なし / Infisical → Turso + Google Books）
+# E2E: Frontend + Workers（MSW なし / ローカル D1 + Google Books）
 name: ci-e2e
 
 on:
@@ -18,7 +18,6 @@ concurrency:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   e2e:
@@ -42,25 +41,14 @@ jobs:
           cache: true
           install: false
 
-      - name: Load secrets from Infisical
-        uses: Infisical/secrets-action@v1.0.16
-        with:
-          method: oidc
-          identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
-          project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
-          env-slug: ${{ vars.INFISICAL_ENV_SLUG }}
-          domain: https://app.infisical.com
-
-      - name: Ensure Infisical secrets are present
+      - name: Ensure BOOKS_API is present
+        env:
+          BOOKS_API: ${{ secrets.BOOKS_API }}
         run: |
-          missing=0
-          for name in TURSO_DATABASE_URL TURSO_AUTH_TOKEN BOOKS_API; do
-            if [ -z "${!name}" ]; then
-              echo "::error::$name が未設定です。"
-              missing=1
-            fi
-          done
-          exit "$missing"
+          if [ -z "${BOOKS_API}" ]; then
+            echo "::error::BOOKS_API が未設定です。GitHub Actions のシークレットを確認してください。"
+            exit 1
+          fi
 
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
@@ -78,6 +66,7 @@ jobs:
         env:
           CI: true
           VITE_E2E: "1"
+          BOOKS_API: ${{ secrets.BOOKS_API }}
         run: pnpm run test:e2e
 
       - name: Upload Playwright report

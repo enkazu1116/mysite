@@ -1,25 +1,33 @@
 import { Hono } from "hono";
-import { GoogleBooksProvider } from "../../../infrastructure/books/providers/googleBooksProvider";
-import { DrizzleUserBookRepository } from "../../../infrastructure/drizzle/repositories/books/drizzleUserBookRepository";
+import { createDbFromEnv, type AppBindings } from "../../../infrastructure/drizzle/db";
+import { DrizzleUserBookRepository } from "../drizzle/drizzleUserBookRepository";
 import { readingStatuses, type ReadingStatus } from "../types/readingStatus";
 import { userBookPersistenceMessages } from "../../../util/messages/persistence/books/userBook";
 import { UserBookUseCase } from "../usecase/userBookUseCase";
 import { validator } from "hono/validator";
 import type { CreateUserBookInput, UpdateUserBookInput } from "../commands/userBookCommands";
 
-const userBookUseCase = new UserBookUseCase(
-    new DrizzleUserBookRepository(),
-    new GoogleBooksProvider(),
-);
-
-const userBooksRouter = new Hono()
+const userBooksRouter = new Hono<{
+    Bindings: AppBindings;
+    Variables: { useCase: UserBookUseCase };
+}>().use("*", async (c, next) => {
+    c.set(
+        "useCase",
+        new UserBookUseCase(
+            new DrizzleUserBookRepository(createDbFromEnv(c.env)),
+            // 検索は booksSearchRouter 側。更新系はカタログだけを使う。
+            { searchBooks: async () => [] },
+        ),
+    );
+    await next();
+})
     .get("/", async (c) => {
         try {
             // クエリから userId / status を取得して一覧検索
             const userId = c.req.query("userId") ?? "";
             const status = c.req.query("status");
 
-            const userBooks = await userBookUseCase.getUserBooks({
+            const userBooks = await c.get("useCase").getUserBooks({
                 userId,
                 status:
                     status && readingStatuses.includes(status as ReadingStatus)
@@ -50,7 +58,7 @@ const userBooksRouter = new Hono()
             const body = c.req.valid("json");
 
             // ユーザー本を登録し、201: Created を返す
-            const userBook = await userBookUseCase.createUserBook(body);
+            const userBook = await c.get("useCase").createUserBook(body);
             return c.json({ userBook }, 201);
         } catch (error) {
             // 失敗時はエラーメッセージと 400: Bad Request を返す
@@ -68,7 +76,7 @@ const userBooksRouter = new Hono()
     )
     .get("/:userBookId", async (c) => {
         try {
-            const userBook = await userBookUseCase.getUserBookById(c.req.param("userBookId"));
+            const userBook = await c.get("useCase").getUserBookById(c.req.param("userBookId"));
             if (!userBook) {
                 return c.json({ message: userBookPersistenceMessages.userBookNotFound }, 404);
             }
@@ -89,7 +97,7 @@ const userBooksRouter = new Hono()
             const body = c.req.valid("json");
 
             // ユーザー本を更新し、200: OK を返す
-            const userBook = await userBookUseCase.updateUserBook({
+            const userBook = await c.get("useCase").updateUserBook({
                 userBookId: c.req.param("userBookId"),
                 ...body,
             });
@@ -112,7 +120,7 @@ const userBooksRouter = new Hono()
     )
     .delete("/:userBookId", async (c) => {
         try {
-            const userBook = await userBookUseCase.deleteUserBook(
+            const userBook = await c.get("useCase").deleteUserBook(
                 c.req.param("userBookId"),
             );
             return c.json({ userBook });

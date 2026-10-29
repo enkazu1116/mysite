@@ -1,38 +1,25 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
+import type { AppBindings } from "./infrastructure/drizzle/db";
 import { booksSearchRouter } from "./features/books/router/booksSearchRouter";
 import { userBooksRouter } from "./features/books/router/userBooksRouter";
 import { projectsRouter } from "./features/projects/router/router";
 import { skillsRouter } from "./features/skills/router/router";
 import { userRoutes } from "./features/users/router/router";
-function resolveCorsOrigin(): string | string[] {
-    const raw = process.env.CORS_ORIGIN?.trim();
 
-    if (!raw || raw === "*") {
-        return "*";
-    }
-
-    const origins = raw
-        .split(",")
-        .map((origin) => origin.trim())
-        .filter(Boolean);
-
-    return origins.length === 1 ? origins[0]! : origins;
-}
-
-const api = new Hono()
+const api = new Hono<{ Bindings: AppBindings }>()
     .route("/skills", skillsRouter)
     .route("/users", userRoutes)
     .route("/projects", projectsRouter)
     .route("/books", booksSearchRouter)
     .route("/user-books", userBooksRouter);
 
-const app = new Hono()
+const app = new Hono<{ Bindings: AppBindings }>()
     .use(
         "*",
         cors({
-            origin: resolveCorsOrigin(),
+            origin: "*",
             allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
             allowHeaders: ["Content-Type", "Authorization"],
         }),

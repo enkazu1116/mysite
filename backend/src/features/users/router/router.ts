@@ -1,25 +1,35 @@
 import { Hono } from "hono";
-import { DrizzleUsersRepository } from "../../../infrastructure/drizzle/repositories/users/drizzleUsersRepository";
+import { createDbFromEnv, type AppBindings } from "../../../infrastructure/drizzle/db";
+import { DrizzleUsersRepository } from "../drizzle/drizzleUsersRepository";
 import { userPersistenceMessages } from "../../../util/messages/persistence/users";
 import { UserUseCase } from "../usecase/userUseCase";
 
-const userUseCase = new UserUseCase(new DrizzleUsersRepository());
-
-const userRoutes = new Hono()
+const userRoutes = new Hono<{
+    Bindings: AppBindings;
+    Variables: { useCase: UserUseCase };
+}>().use("*", async (c, next) => {
+    c.set(
+        "useCase",
+        new UserUseCase(
+            new DrizzleUsersRepository(createDbFromEnv(c.env)),
+        ),
+    );
+    await next();
+})
     .get("/", async (c) => {
         // すべてのユーザーを検索
-        const users = await userUseCase.listUsers();
+        const users = await c.get("useCase").listUsers();
         return c.json({ users });
     })
     .post("/", async (c) => {
         try {
             // リクエストボディを取得し、createUser の第1引数の型として扱う
             const body = (await c.req.json()) as Parameters<
-                typeof userUseCase.createUser
+                UserUseCase["createUser"]
             >[0];
 
             // 新しいユーザーを作成し、201: Createdを返す
-            const user = await userUseCase.createUser(body);
+            const user = await c.get("useCase").createUser(body);
             return c.json({ user }, 201);
         } catch (error) {
 
@@ -37,7 +47,7 @@ const userRoutes = new Hono()
     })
     .get("/:userId", async (c) => {
         // ID検索
-        const user = await userUseCase.findUserById(c.req.param("userId"));
+        const user = await c.get("useCase").findUserById(c.req.param("userId"));
 
         if (!user) {
             // 存在しないIDの場合は404: Not Foundを返す
@@ -50,11 +60,11 @@ const userRoutes = new Hono()
         try {
             // リクエストボディを取得し、updateUser の第2引数の型として扱う
             const body = (await c.req.json()) as Parameters<
-                typeof userUseCase.updateUser
+                UserUseCase["updateUser"]
             >[1];
 
             // ユーザーを更新し、200: OKを返す
-            const user = await userUseCase.updateUser(
+            const user = await c.get("useCase").updateUser(
                 c.req.param("userId"),
                 body,
             );
@@ -81,7 +91,7 @@ const userRoutes = new Hono()
     })
     .delete("/:userId", async (c) => {
         // ID指定でユーザーを削除
-        const user = await userUseCase.deleteUser(c.req.param("userId"));
+        const user = await c.get("useCase").deleteUser(c.req.param("userId"));
 
         if (!user) {
             // 存在しないIDの場合は404: Not Foundを返す

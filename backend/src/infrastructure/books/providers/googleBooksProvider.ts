@@ -5,7 +5,6 @@ import type {
 import {
     GOOGLE_BOOKS_MAX_RESULTS,
     GOOGLE_BOOKS_VOLUMES_URL,
-    GOOGLE_BOOKS_API_KEY,
 } from "../constants/googleBooksApi";
 import { googleBooksResponseSchema } from "../types/googleBooksResponse";
 
@@ -14,11 +13,11 @@ import { googleBooksResponseSchema } from "../types/googleBooksResponse";
  *
  * @param query 検索クエリ（本の名前）
  */
-function buildGoogleBooksSearchUrl(query: string): string {
+function buildGoogleBooksSearchUrl(query: string, apiKey: string): string {
     const params = new URLSearchParams({
         q: `intitle:${query}`,
         maxResults: String(GOOGLE_BOOKS_MAX_RESULTS),
-        key: GOOGLE_BOOKS_API_KEY,
+        key: apiKey,
     });
 
     return `${GOOGLE_BOOKS_VOLUMES_URL}?${params.toString()}`;
@@ -28,6 +27,8 @@ function buildGoogleBooksSearchUrl(query: string): string {
  * Google Books API を利用して本情報を検索・提供するプロバイダー
  */
 class GoogleBooksProvider implements BookSearchAdapter {
+    constructor(private readonly apiKey: string) {}
+
     /**
      * 本の検索結果を取得する
      *
@@ -35,8 +36,9 @@ class GoogleBooksProvider implements BookSearchAdapter {
      * @returns
      */
     async searchBooks(query: string): Promise<BookSearchResult[]> {
-        // URLを生成し、fetchでAPIを呼び出す
-        const response = await fetch(buildGoogleBooksSearchUrl(query));
+        const response = await fetch(
+            buildGoogleBooksSearchUrl(query, this.apiKey),
+        );
         if (!response.ok) {
             throw new Error(
                 `Google Books API の呼び出しに失敗しました: ${response.status}`,

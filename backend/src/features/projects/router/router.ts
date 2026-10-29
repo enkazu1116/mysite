@@ -1,17 +1,27 @@
 import { Hono } from "hono";
 import { validator } from "hono/validator";
-import { DrizzleProjectRepository } from "../../../infrastructure/drizzle/repositories/projects/drizzleProjectRepository";
+import { createDbFromEnv, type AppBindings } from "../../../infrastructure/drizzle/db";
+import { DrizzleProjectRepository } from "../drizzle/drizzleProjectRepository";
 import { projectPersistenceMessages } from "../../../util/messages/persistence/projects/project";
 import { ProjectUseCase } from "../usecase/projectUseCase";
 import type { CreateProjectInput, UpdateProjectInput } from "../commands/projectCommands";
 
-const projectUseCase = new ProjectUseCase(new DrizzleProjectRepository());
-
-const projectsRouter = new Hono()
+const projectsRouter = new Hono<{
+    Bindings: AppBindings;
+    Variables: { useCase: ProjectUseCase };
+}>().use("*", async (c, next) => {
+    c.set(
+        "useCase",
+        new ProjectUseCase(
+            new DrizzleProjectRepository(createDbFromEnv(c.env)),
+        ),
+    );
+    await next();
+})
     .get("/", async (c) => {
         try {
             const userId = c.req.query("userId");
-            const projects = await projectUseCase.getProjects(
+            const projects = await c.get("useCase").getProjects(
                 userId ? { userId } : {},
             );
             return c.json({ projects });
@@ -33,7 +43,7 @@ const projectsRouter = new Hono()
         async (c) => {
         try {
             const body = c.req.valid("json");
-            const project = await projectUseCase.createProject(body);
+            const project = await c.get("useCase").createProject(body);
             return c.json({ project }, 201);
         } catch (error) {
             return c.json(
@@ -50,7 +60,7 @@ const projectsRouter = new Hono()
     )
     .get("/:projectId", async (c) => {
         try {
-            const project = await projectUseCase.getProjectById(c.req.param("projectId"));
+            const project = await c.get("useCase").getProjectById(c.req.param("projectId"));
             if (!project) {
                 return c.json({ message: projectPersistenceMessages.projectNotFound }, 404);
             }
@@ -68,7 +78,7 @@ const projectsRouter = new Hono()
         async (c) => {
         try {
             const body = c.req.valid("json");
-            const project = await projectUseCase.updateProject({
+            const project = await c.get("useCase").updateProject({
                 projectId: c.req.param("projectId"),
                 ...body,
             });
@@ -88,7 +98,7 @@ const projectsRouter = new Hono()
     )
     .delete("/:projectId", async (c) => {
         try {
-            const project = await projectUseCase.deleteProject(
+            const project = await c.get("useCase").deleteProject(
                 c.req.param("projectId"),
             );
             return c.json({ project });

@@ -1,26 +1,19 @@
-import type { Client } from "@libsql/client";
-import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/d1";
 
-/**
- * Turso 接続情報はリポジトリに置かず、環境変数から読む。
- * 開発・統合テスト: Infisical（`bun run dev` / `bun run test:integration`）
- * 本番: プラットフォームのシークレット / `bun run start`
- */
-function requireEnv(name: string): string {
-    const value = process.env[name];
-    if (!value) {
-        throw new Error(
-            `環境変数 ${name} が未設定です。Turso 用の値を Infisical（開発・IT）またはデプロイ先のシークレットに設定してください。`,
-        );
-    }
-    return value;
+export function createDb(database: Parameters<typeof drizzle>[0]) {
+    return drizzle(database);
 }
 
-const db: LibSQLDatabase & { $client: Client } = drizzle({
-    connection: {
-        url: requireEnv("TURSO_DATABASE_URL"),
-        authToken: requireEnv("TURSO_AUTH_TOKEN"),
-    },
-});
+export function createDbFromEnv(env: AppBindings | undefined): AppDatabase {
+    if (!env?.DB) {
+        return undefined as unknown as AppDatabase;
+    }
+    return createDb(env.DB);
+}
 
-export default db;
+export type AppDatabase = ReturnType<typeof createDb>;
+
+export type AppBindings = {
+    DB: Parameters<typeof createDb>[0];
+    BOOKS_API?: string;
+};

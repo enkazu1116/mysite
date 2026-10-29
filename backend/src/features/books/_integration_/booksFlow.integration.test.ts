@@ -1,27 +1,38 @@
+import path from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { getPlatformProxy, type GetPlatformProxyOptions } from "wrangler";
+import type { AppBindings } from "../../../infrastructure/drizzle/db";
 import type { AppType } from "../../../app";
 
 /**
- * Google Books API + Turso を実接続する統合テスト。
- * 秘密情報は Infisical から注入する（ローカル: `bun run test:integration`、
- * CI: Infisical Secrets Action → `bun run test:integration:ci`）。
+ * Google Books API + ローカル D1 を使う統合テスト。
+ * BOOKS_API は環境変数かルートの .dev.vars。
  */
-function requireEnv(name: string): void {
-    if (!process.env[name]?.trim()) {
+function requireEnv(name: string): string {
+    const value = process.env[name]?.trim();
+    if (!value) {
         throw new Error(
-            `${name} が未設定です。Infisical に TURSO_* / BOOKS_API があるか確認してください。`,
+            `${name} が未設定です。ルートの .dev.vars か CI のシークレットを確認してください。`,
         );
     }
+    return value;
+}
+
+let app: AppType;
+let bindings: AppBindings;
+let dispose: (() => Promise<void>) | undefined;
+
+async function request(input: string, init?: RequestInit): Promise<Response> {
+    return app.request(input, init, bindings);
 }
 
 async function searchBooksWithRetry(
-    app: AppType,
     query: string,
     attempts = 3,
 ): Promise<Response> {
     let last: Response | undefined;
     for (let i = 0; i < attempts; i += 1) {
-        last = await app.request(
+        last = await request(
             `/api/books/search?q=${encodeURIComponent(query)}`,
         );
         if (last.status === 200) {
@@ -41,40 +52,50 @@ async function searchBooksWithRetry(
     return last!;
 }
 
-describe("books integration (Google Books + Turso)", () => {
-    let app: AppType;
+describe("books integration (Google Books + D1)", () => {
     let userId = "";
     let userBookId = "";
 
     beforeAll(async () => {
-        requireEnv("TURSO_DATABASE_URL");
-        requireEnv("TURSO_AUTH_TOKEN");
-        requireEnv("BOOKS_API");
+        const booksApi = requireEnv("BOOKS_API");
+        const root = path.resolve(import.meta.dir, "../../../../..");
+        const proxy = await getPlatformProxy({
+            configPath: path.join(root, "wrangler.jsonc"),
+            persist: { path: path.join(root, ".wrangler/state") },
+        } satisfies GetPlatformProxyOptions);
+        dispose = proxy.dispose;
+        bindings = { DB: proxy.env.DB, BOOKS_API: booksApi };
 
-        // db / BOOKS_API はモジュール読み込み時に評価されるため、env 確認後に遅延 import
+        const migrationPath = path.join(root, "backend/migrations");
+        const files = new Bun.Glob("*.sql").scan({ cwd: migrationPath });
+        for await (const file of files) {
+            const sql = await Bun.file(path.join(migrationPath, file)).text();
+            const statements = sql
+                .split("--> statement-breakpoint")
+                .map((statement) => statement.trim())
+                .filter(Boolean);
+            for (const statement of statements) {
+                await bindings.DB.exec(statement);
+            }
+        }
+
         ({ app } = await import("../../../app"));
     });
 
     afterAll(async () => {
-        if (!app) {
-            return;
+        if (app && userBookId) {
+            await request(`/api/user-books/${userBookId}`, { method: "DELETE" });
         }
-
-        if (userBookId) {
-            await app.request(`/api/user-books/${userBookId}`, {
-                method: "DELETE",
-            });
+        if (app && userId) {
+            await request(`/api/users/${userId}`, { method: "DELETE" });
         }
-
-        if (userId) {
-            await app.request(`/api/users/${userId}`, { method: "DELETE" });
-        }
+        await dispose?.();
     });
 
     test(
         "検索 → 登録 → 取得 → 更新 → 削除の一連が通る",
         async () => {
-            const createUserResponse = await app.request("/api/users", {
+            const createUserResponse = await request("/api/users", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -88,7 +109,7 @@ describe("books integration (Google Books + Turso)", () => {
             userId = createUserBody.user.id;
             expect(userId).toBeTruthy();
 
-            const searchResponse = await searchBooksWithRetry(app, "Clean Code");
+            const searchResponse = await searchBooksWithRetry("Clean Code");
             expect(searchResponse.status).toBe(200);
             const searchBody = (await searchResponse.json()) as {
                 books: Array<{
@@ -104,7 +125,7 @@ describe("books integration (Google Books + Turso)", () => {
             expect(book.sourceBookId).toBeTruthy();
             expect(book.title).toBeTruthy();
 
-            const createBookResponse = await app.request("/api/user-books", {
+            const createBookResponse = await request("/api/user-books", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -130,7 +151,7 @@ describe("books integration (Google Books + Turso)", () => {
                 book.sourceBookId,
             );
 
-            const getResponse = await app.request(
+            const getResponse = await request(
                 `/api/user-books/${userBookId}`,
             );
             expect(getResponse.status).toBe(200);
@@ -140,7 +161,7 @@ describe("books integration (Google Books + Turso)", () => {
             expect(getBody.userBook.userBookId).toBe(userBookId);
             expect(getBody.userBook.book.title).toBeTruthy();
 
-            const patchResponse = await app.request(
+            const patchResponse = await request(
                 `/api/user-books/${userBookId}`,
                 {
                     method: "PATCH",
@@ -161,7 +182,7 @@ describe("books integration (Google Books + Turso)", () => {
             expect(patchBody.userBook.status).toBe("reading");
             expect(patchBody.userBook.currentPage).toBe(12);
 
-            const listResponse = await app.request(
+            const listResponse = await request(
                 `/api/user-books?userId=${encodeURIComponent(userId)}&status=reading`,
             );
             expect(listResponse.status).toBe(200);
@@ -172,19 +193,19 @@ describe("books integration (Google Books + Turso)", () => {
                 listBody.userBooks.some((row) => row.userBookId === userBookId),
             ).toBe(true);
 
-            const deleteResponse = await app.request(
+            const deleteResponse = await request(
                 `/api/user-books/${userBookId}`,
                 { method: "DELETE" },
             );
             expect(deleteResponse.status).toBe(200);
             userBookId = "";
 
-            const missingResponse = await app.request(
+            const missingResponse = await request(
                 `/api/user-books/${createBookBody.userBook.userBookId}`,
             );
             expect(missingResponse.status).toBe(404);
 
-            const deleteUserResponse = await app.request(`/api/users/${userId}`, {
+            const deleteUserResponse = await request(`/api/users/${userId}`, {
                 method: "DELETE",
             });
             expect(deleteUserResponse.status).toBe(200);

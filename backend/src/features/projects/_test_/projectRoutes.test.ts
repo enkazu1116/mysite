@@ -18,7 +18,7 @@ describe("projects router.ts HTTP エンドポイント", () => {
 
     beforeAll(async () => {
         mock.module(
-            "../../../infrastructure/drizzle/repositories/projects/drizzleProjectRepository",
+            "../drizzle/drizzleProjectRepository",
             () => ({
                 DrizzleProjectRepository: class MockDrizzleProjectRepository {
                     listProjects = listProjects;

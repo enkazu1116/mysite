@@ -4,11 +4,11 @@ import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const backendDir = path.resolve(dirname, "../backend");
+const repoRoot = path.resolve(dirname, "..");
 const isCi = Boolean(process.env.CI);
 
 /**
- * E2E: Frontend (MSW なし) + Backend (Infisical / CI では注入済み env)
+ * E2E: Frontend (MSW なし) + Workers（ローカル D1）
  */
 export default defineConfig({
   testDir: "./e2e",
@@ -30,10 +30,8 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: isCi
-        ? "bash -lc 'bun run db:ensure-skills && bun run start'"
-        : "infisical run -- bash -lc 'bun run db:ensure-skills && bun run start'",
-      cwd: backendDir,
+      command: "pnpm db:migrate && pnpm dev",
+      cwd: repoRoot,
       url: "http://127.0.0.1:3000/health",
       reuseExistingServer: !isCi,
       timeout: 180_000,

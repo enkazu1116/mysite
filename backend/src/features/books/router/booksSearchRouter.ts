@@ -1,14 +1,25 @@
 import { Hono } from "hono";
+import { createDbFromEnv, type AppBindings } from "../../../infrastructure/drizzle/db";
 import { GoogleBooksProvider } from "../../../infrastructure/books/providers/googleBooksProvider";
-import { DrizzleUserBookRepository } from "../../../infrastructure/drizzle/repositories/books/drizzleUserBookRepository";
+import { DrizzleUserBookRepository } from "../drizzle/drizzleUserBookRepository";
 import { UserBookUseCase } from "../usecase/userBookUseCase";
 
-const userBookUseCase = new UserBookUseCase(
-    new DrizzleUserBookRepository(),
-    new GoogleBooksProvider(),
-);
+const booksSearchRouter = new Hono<{ Bindings: AppBindings }>().get(
+    "/search",
+    async (c) => {
+    const apiKey = c.env?.BOOKS_API?.trim();
+    if (!apiKey) {
+        return c.json(
+            { message: "BOOKS_API が未設定です。" },
+            500,
+        );
+    }
 
-const booksSearchRouter = new Hono().get("/search", async (c) => {
+    const userBookUseCase = new UserBookUseCase(
+        new DrizzleUserBookRepository(createDbFromEnv(c.env)),
+        new GoogleBooksProvider(apiKey),
+    );
+
     try {
         // 検索クエリを取得し、空なら空配列を返す
         const query = c.req.query("q") ?? "";
@@ -30,6 +41,7 @@ const booksSearchRouter = new Hono().get("/search", async (c) => {
             400,
         );
     }
-});
+},
+);
 
 export { booksSearchRouter };
