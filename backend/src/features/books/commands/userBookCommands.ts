@@ -26,7 +26,6 @@ type UpdateUserBookInput = {
     userBookId: string;
     status?: ReadingStatus;
     currentPage?: number | null;
-    note?: string | null;
     startedAt?: Temporal.Instant | null;
     finishedAt?: Temporal.Instant | null;
 };

@@ -10,7 +10,7 @@ import { userBookPersistenceMessages } from "../../../../util/messages/persisten
 import { nowInstant, type Temporal } from "../../../../util/temporal/instant";
 import { mapUserBookRow } from "../../mappers/books/userBookMapper";
 import db from "../../db";
-import { booksTable, bookChapterMemosTable, bookOutputsTable, userBooksTable, usersTable } from "../../schema";
+import { booksTable, userBooksTable, usersTable } from "../../schema";
 import { DrizzleBookCatalogRepository } from "./drizzleBookCatalogRepository";
 
 class DrizzleUserBookRepository implements UserBookRepository {
@@ -118,9 +118,6 @@ class DrizzleUserBookRepository implements UserBookRepository {
         if (input.currentPage !== undefined) {
             updateValues.current_page = input.currentPage;
         }
-        if (input.note !== undefined) {
-            updateValues.note = input.note;
-        }
         if (input.startedAt !== undefined) {
             updateValues.started_at = input.startedAt;
         }
@@ -152,13 +149,6 @@ class DrizzleUserBookRepository implements UserBookRepository {
         if (!existing) {
             throw new Error(userBookPersistenceMessages.userBookNotFound);
         }
-
-        await db
-            .delete(bookChapterMemosTable)
-            .where(eq(bookChapterMemosTable.user_book_id, userBookId));
-        await db
-            .delete(bookOutputsTable)
-            .where(eq(bookOutputsTable.user_book_id, userBookId));
 
         const [deleted] = await db
             .delete(userBooksTable)

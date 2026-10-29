@@ -20,26 +20,6 @@ const BookDetail = lazy(() => import("./features/Books/BookDetail"));
 const UserBooksManagerPage = lazy(
   () => import("./features/Books/pages/UserBooksManagerPage"),
 );
-const BookMemosPage = lazy(() =>
-  import("./features/Books/pages/BookMemosPage").then((module) => ({
-    default: module.BookMemosPage,
-  })),
-);
-const BookOutputsPage = lazy(() =>
-  import("./features/Books/pages/BookOutputsPage").then((module) => ({
-    default: module.BookOutputsPage,
-  })),
-);
-const UserBookMemosPage = lazy(() =>
-  import("./features/Books/pages/UserBookMemosPage").then((module) => ({
-    default: module.UserBookMemosPage,
-  })),
-);
-const UserBookOutputsPage = lazy(() =>
-  import("./features/Books/pages/UserBookOutputsPage").then((module) => ({
-    default: module.UserBookOutputsPage,
-  })),
-);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,21 +54,8 @@ function AppRoutes() {
                 path="/users/:userId/books"
                 element={<UserBooksManagerPage />}
               />
-              <Route
-                path="/users/:userId/books/:userBookId/memos"
-                element={<UserBookMemosPage />}
-              />
-              <Route
-                path="/users/:userId/books/:userBookId/outputs"
-                element={<UserBookOutputsPage />}
-              />
               <Route path="/books" element={<Books />} />
               <Route path="/books/:userBookId" element={<BookDetail />} />
-              <Route path="/books/:userBookId/memos" element={<BookMemosPage />} />
-              <Route
-                path="/books/:userBookId/outputs"
-                element={<BookOutputsPage />}
-              />
             </Routes>
           </Suspense>
         </ErrorBoundary>

@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router";
 import { describe, expect, test } from "vitest";
 import UserBooksManagerPage from "../pages/UserBooksManagerPage";
-import { OWNER_USER_ID, searchResult, unreadBook } from "../../../test/booksFixtures";
+import { searchResult, unreadBook } from "../../../test/booksFixtures";
 import { renderWithProviders } from "../../../test/render";
 
 function renderManager(userId: string) {
@@ -62,7 +62,7 @@ describe("Books 管理", () => {
     ).toBeInTheDocument();
   });
 
-  test("行を開くとメモ／アウトプットへ進めて、削除後に一覧から消える", async () => {
+  test("行を開いて削除すると一覧から消える", async () => {
     const user = userEvent.setup();
     renderManager("user-1");
 
@@ -73,15 +73,6 @@ describe("Books 管理", () => {
     await user.click(title);
 
     const detail = within(row as HTMLElement);
-    expect(detail.getByRole("link", { name: "メモページへ" })).toHaveAttribute(
-      "href",
-      `/users/${OWNER_USER_ID}/books/${unreadBook.userBookId}/memos`,
-    );
-    expect(detail.getByRole("link", { name: "アウトプットページへ" })).toHaveAttribute(
-      "href",
-      `/users/${OWNER_USER_ID}/books/${unreadBook.userBookId}/outputs`,
-    );
-
     await user.click(detail.getByRole("button", { name: "削除" }));
 
     await waitFor(() => {

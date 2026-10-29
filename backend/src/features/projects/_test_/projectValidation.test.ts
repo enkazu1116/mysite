@@ -23,11 +23,36 @@ describe("projectValidation", () => {
     test("validateCreateProjectInput (異常系) 空文字を拒否", () => {
         const result = validateCreateProjectInput({
             ...validCreateProjectInput,
-            overview: "   ",
+            description: "   ",
         });
         expect(result.errors).toContain(
-            projectValidationMessages.overviewRequired,
+            projectValidationMessages.descriptionRequired,
         );
+    });
+
+    test("validateCreateProjectInput (異常系) 制御文字を拒否", () => {
+        const result = validateCreateProjectInput({
+            ...validCreateProjectInput,
+            description: "説明\u0000",
+        });
+        expect(result.errors).toContain(projectValidationMessages.descriptionRequired);
+    });
+
+    test("validateCreateProjectInput (異常系) プロジェクト規模を必須にする", () => {
+        const result = validateCreateProjectInput({
+            ...validCreateProjectInput,
+            projectScale: "   ",
+        });
+        expect(result.errors).toContain(projectValidationMessages.projectScaleRequired);
+    });
+
+    test("validateCreateProjectInput (異常系) 日付の形式と順序を検証する", () => {
+        const result = validateCreateProjectInput({
+            ...validCreateProjectInput,
+            startDate: "2026-02-01",
+            endDate: "2026-01-01",
+        });
+        expect(result.errors).toContain(projectValidationMessages.dateRangeInvalid);
     });
 
     test("validateListProjectsInput (正常系) userId なし", () => {

@@ -23,7 +23,6 @@ const userBookValidationMessages = {
     // 更新時にユーザーが明示送信する項目（不正なら専用メッセージで失敗）
     statusInvalid: "読書ステータスが不正です。",
     currentPageInvalid: "現在のページ数が不正です。",
-    noteInvalid: "メモが不正です。",
     startedAtInvalid: "読み始めた日時が不正です。",
     finishedAtInvalid: "読み終わった日時が不正です。",
 };

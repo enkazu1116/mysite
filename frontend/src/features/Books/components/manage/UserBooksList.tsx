@@ -19,7 +19,6 @@ import { RegisteredBookRow } from "./RegisteredBookRow";
 export type { StatusFilter } from "../readingStatus";
 
 type UserBooksListProps = {
-  userId: string;
   canEdit: boolean;
   isLoading: boolean;
   totalCount: number;
@@ -44,7 +43,6 @@ type UserBooksListProps = {
 };
 
 export function UserBooksList({
-  userId,
   canEdit,
   isLoading,
   totalCount,
@@ -158,7 +156,6 @@ export function UserBooksList({
               <RegisteredBookRow
                 key={book.userBookId}
                 book={book}
-                userId={userId}
                 canEdit={canEdit}
                 isExpanded={expandedUserBookId === book.userBookId}
                 onToggle={() => { onToggleExpand(book.userBookId); }}

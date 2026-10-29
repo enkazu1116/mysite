@@ -17,6 +17,19 @@ const readingStatusSchema = z.enum(readingStatuses, {
     error: () => userBookValidationMessages.statusInvalid,
 });
 
+const safeBookText = (message: string, max: number) =>
+    z.string().trim().min(1, message).max(max, message).refine(
+        (value) => [...value].every((char) => {
+            const code = char.charCodeAt(0);
+            return code >= 0x20 && code !== 0x7f;
+        }),
+        message,
+    );
+
+const safeHttpUrl = z.string().max(2048).url().refine(
+    (value) => value.startsWith("https://") || value.startsWith("http://"),
+);
+
 /**
  * 本の検索結果のデータ検証
  */
@@ -30,19 +43,20 @@ const bookSearchResultSchema = z.object({
     sourceBookId: z
         .string()
         .trim()
-        .min(1, userBookValidationMessages.sourceBookIdRequired),
+        .min(1, userBookValidationMessages.sourceBookIdRequired)
+        .max(200, userBookValidationMessages.sourceBookIdRequired),
     
     // 検索結果の必須項目の検証
-    title: z.string().trim().min(1, userBookValidationMessages.titleRequired),
+    title: safeBookText(userBookValidationMessages.titleRequired, 500),
     
     // 任意項目の検証
-    authors: z.array(z.string()).catch([]),
-    publisher: optionalNullableStringSchema,
-    publishedDate: optionalNullableStringSchema,
-    description: optionalNullableStringSchema,
-    pageCount: z.union([z.number().int().min(0), z.null()]).catch(null),
-    thumbnailUrl: optionalNullableStringSchema,
-    infoLink: optionalNullableStringSchema,
+    authors: z.array(z.string().trim().max(200)).max(50).catch([]),
+    publisher: optionalNullableStringSchema.pipe(z.string().trim().max(500).nullable()),
+    publishedDate: optionalNullableStringSchema.pipe(z.string().trim().max(100).nullable()),
+    description: optionalNullableStringSchema.pipe(z.string().max(10000).nullable()),
+    pageCount: z.union([z.number().int().min(0).max(100000), z.null()]).catch(null),
+    thumbnailUrl: optionalNullableStringSchema.pipe(safeHttpUrl.nullable()),
+    infoLink: optionalNullableStringSchema.pipe(safeHttpUrl.nullable()),
 }) satisfies z.ZodType<BookSearchResult>;
 
 /**
@@ -82,9 +96,6 @@ const updateUserBookSchema = z.object({
             error: () => userBookValidationMessages.currentPageInvalid,
         },
     ).optional(),
-    note: z.union([z.string(), z.null()], {
-            error: () => userBookValidationMessages.noteInvalid,
-    }).optional(),
     startedAt: nullableInstantSchema.optional(),
     finishedAt: nullableInstantSchema.optional(),
 }) satisfies z.ZodType<UpdateUserBookInput>;

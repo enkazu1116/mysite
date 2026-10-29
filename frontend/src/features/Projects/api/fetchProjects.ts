@@ -3,8 +3,11 @@ import type {
   Project,
   UpdateProjectPayload,
 } from "../types/project";
+import { projectsRpc } from "./rpc";
+import { readRpcResponse } from "../../../lib/api-client";
+import { usersRpc } from "../../Users/api/rpc";
+import type { User } from "../../Users/types/user";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "";
 const configuredProjectsUserId = import.meta.env.VITE_BOOKS_USER_ID?.trim();
 
 export async function resolveProjectsUserId(): Promise<string> {
@@ -12,8 +15,9 @@ export async function resolveProjectsUserId(): Promise<string> {
     return configuredProjectsUserId;
   }
 
-  const { users } = await requestJson<{ users: { id: string }[] }>(
-    "/users",
+  const usersResponse = await usersRpc.$get({});
+  const { users } = await readRpcResponse<{ users: User[] }>(
+    usersResponse,
     "Failed to fetch users",
   );
   const userId = users[0]?.id;
@@ -23,69 +27,26 @@ export async function resolveProjectsUserId(): Promise<string> {
   return userId;
 }
 
-async function requestJson<T>(
-  path: string,
-  fallback: string,
-  init?: RequestInit,
-): Promise<T> {
-  const headers = new Headers(init?.headers);
-  if (!headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json");
-  }
-
-  const response = await fetch(`${API_BASE}/api${path}`, {
-    ...init,
-    headers,
-  });
-
-  if (!response.ok) {
-    throw await parseApiError(response, fallback);
-  }
-
-  return response.json() as Promise<T>;
-}
-
-async function parseApiError(response: Response, fallback: string) {
-  const errorBody = (await response.json().catch(() => null)) as
-    | { message?: string }
-    | null;
-  return new Error(
-    errorBody?.message ?? `${fallback}: ${String(response.status)}`,
-  );
-}
-
 export const listProjects = async (userId?: string): Promise<Project[]> => {
-  const params = new URLSearchParams();
-  if (userId) {
-    params.set("userId", userId);
-  }
-  const query = params.toString();
-  const { projects } = await requestJson<{ projects: Project[] }>(
-    `/projects${query ? `?${query}` : ""}`,
+  const response = await projectsRpc.$get({ query: userId ? { userId } : {} });
+  const { projects } = await readRpcResponse<{ projects: Project[] }>(
+    response,
     "Failed to fetch projects",
   );
   return projects;
 };
 
 export const getProject = async (projectId: string): Promise<Project> => {
-  const { project } = await requestJson<{ project: Project }>(
-    `/projects/${encodeURIComponent(projectId)}`,
-    "Failed to fetch project",
-  );
+  const response = await projectsRpc[":projectId"].$get({ param: { projectId } });
+  const { project } = await readRpcResponse<{ project: Project }>(response, "Failed to fetch project");
   return project;
 };
 
 export const createProject = async (
   payload: CreateProjectPayload,
 ): Promise<Project> => {
-  const { project } = await requestJson<{ project: Project }>(
-    "/projects",
-    "Failed to create project",
-    {
-      method: "POST",
-      body: JSON.stringify(payload),
-    },
-  );
+  const response = await projectsRpc.$post({ json: payload });
+  const { project } = await readRpcResponse<{ project: Project }>(response, "Failed to create project");
   return project;
 };
 
@@ -93,25 +54,17 @@ export const updateProject = async (
   projectId: string,
   payload: UpdateProjectPayload,
 ): Promise<Project> => {
-  const { project } = await requestJson<{ project: Project }>(
-    `/projects/${encodeURIComponent(projectId)}`,
-    "Failed to update project",
-    {
-      method: "PATCH",
-      body: JSON.stringify(payload),
-    },
-  );
+  const response = await projectsRpc[":projectId"].$patch({
+    param: { projectId },
+    json: payload,
+  });
+  const { project } = await readRpcResponse<{ project: Project }>(response, "Failed to update project");
   return project;
 };
 
 export const deleteProject = async (projectId: string): Promise<Project> => {
-  const { project } = await requestJson<{ project: Project }>(
-    `/projects/${encodeURIComponent(projectId)}`,
-    "Failed to delete project",
-    {
-      method: "DELETE",
-    },
-  );
+  const response = await projectsRpc[":projectId"].$delete({ param: { projectId } });
+  const { project } = await readRpcResponse<{ project: Project }>(response, "Failed to delete project");
   return project;
 };
 

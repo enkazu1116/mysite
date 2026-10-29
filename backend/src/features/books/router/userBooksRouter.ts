@@ -4,6 +4,8 @@ import { DrizzleUserBookRepository } from "../../../infrastructure/drizzle/repos
 import { readingStatuses, type ReadingStatus } from "../types/readingStatus";
 import { userBookPersistenceMessages } from "../../../util/messages/persistence/books/userBook";
 import { UserBookUseCase } from "../usecase/userBookUseCase";
+import { validator } from "hono/validator";
+import type { CreateUserBookInput, UpdateUserBookInput } from "../commands/userBookCommands";
 
 const userBookUseCase = new UserBookUseCase(
     new DrizzleUserBookRepository(),
@@ -39,12 +41,13 @@ const userBooksRouter = new Hono()
             );
         }
     })
-    .post("/", async (c) => {
+    .post(
+        "/",
+        validator("json", (value) => value as CreateUserBookInput),
+        async (c) => {
         try {
             // リクエストボディを取得し、createUserBook の第1引数の型として扱う
-            const body = (await c.req.json()) as Parameters<
-                typeof userBookUseCase.createUserBook
-            >[0];
+            const body = c.req.valid("json");
 
             // ユーザー本を登録し、201: Created を返す
             const userBook = await userBookUseCase.createUserBook(body);
@@ -61,27 +64,29 @@ const userBooksRouter = new Hono()
                 400,
             );
         }
-    })
+        },
+    )
     .get("/:userBookId", async (c) => {
-        // ID 検索
-        const userBook = await userBookUseCase.getUserBookById(
-            c.req.param("userBookId"),
-        );
-
-        if (!userBook) {
-            // 存在しない ID の場合は 404: Not Found を返す
-            return c.json({ message: userBookPersistenceMessages.userBookNotFound }, 404);
+        try {
+            const userBook = await userBookUseCase.getUserBookById(c.req.param("userBookId"));
+            if (!userBook) {
+                return c.json({ message: userBookPersistenceMessages.userBookNotFound }, 404);
+            }
+            return c.json({ userBook });
+        } catch (error) {
+            return c.json({ message: error instanceof Error ? error.message : "ユーザー本の取得に失敗しました。" }, 400);
         }
-
-        return c.json({ userBook });
     })
-    .patch("/:userBookId", async (c) => {
+    .patch(
+        "/:userBookId",
+        validator(
+            "json",
+            (value) => value as Omit<UpdateUserBookInput, "userBookId">,
+        ),
+        async (c) => {
         try {
             // リクエストボディを取得し、updateUserBook の入力型として扱う
-            const body = (await c.req.json()) as Omit<
-                Parameters<typeof userBookUseCase.updateUserBook>[0],
-                "userBookId"
-            >;
+            const body = c.req.valid("json");
 
             // ユーザー本を更新し、200: OK を返す
             const userBook = await userBookUseCase.updateUserBook({
@@ -103,7 +108,8 @@ const userBooksRouter = new Hono()
                     : 400;
             return c.json({ message }, statusCode);
         }
-    })
+        },
+    )
     .delete("/:userBookId", async (c) => {
         try {
             const userBook = await userBookUseCase.deleteUserBook(

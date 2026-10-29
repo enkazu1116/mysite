@@ -122,7 +122,6 @@ export function UserBooksManager({
       )}
 
       <UserBooksList
-        userId={userId ?? ""}
         canEdit={canEdit}
         isLoading={userBooks.isLoading}
         totalCount={totalCount}

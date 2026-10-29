@@ -8,12 +8,14 @@ import { QueryErrorAlert } from "../../components/status";
 import { useProjectQuery } from "./hooks/useProjectsQuery";
 
 const sections = [
-  { key: "overview", label: "概要" },
+  { key: "description", label: "説明" },
   { key: "myRole", label: "自分の役割" },
   { key: "technologies", label: "使用技術" },
+  { key: "projectScale", label: "プロジェクト規模" },
   { key: "challenges", label: "課題" },
-  { key: "decisions", label: "工夫 / 意思決定" },
+  { key: "decisions", label: "判断 / 意思決定" },
   { key: "outcomes", label: "成果" },
+  { key: "reflection", label: "反省点" },
 ] as const;
 
 export default function ProjectDetail() {
@@ -68,6 +70,14 @@ export default function ProjectDetail() {
           <p className="mt-2 text-sm text-[var(--lib-ink-muted)]">
             チーム規模: {project.data.teamSize}名
           </p>
+          {project.data.isHighlighted ? (
+            <p className="mt-1 text-sm text-[var(--lib-ink-muted)]">ハイライト表示</p>
+          ) : null}
+          {project.data.startDate || project.data.endDate ? (
+            <p className="mt-1 text-sm text-[var(--lib-ink-muted)]">
+              適用期間: {project.data.startDate ?? "開始日未設定"} — {project.data.endDate ?? "継続中"}
+            </p>
+          ) : null}
 
           <div className="mt-8 space-y-6">
             {sections.map((section) => (

@@ -1,7 +1,4 @@
 import type { InferResponseType } from "hono/client";
+import { skillsRpc } from "../api/rpc";
 
-import type { client } from "../../../lib/api-client";
-
-type SkillsResponse = InferResponseType<typeof client.skills.$get>;
-
-export type Skill = SkillsResponse[number];
+export type Skill = InferResponseType<typeof skillsRpc.$get, 200>[number];

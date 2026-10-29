@@ -17,6 +17,7 @@ export default defineConfig({
         "./src/infrastructure/drizzle/schema/users.ts",
         "./src/infrastructure/drizzle/schema/skills.ts",
         "./src/infrastructure/drizzle/schema/books.ts",
+        "./src/infrastructure/drizzle/schema/projects.ts",
     ],
     dialect: "turso",
     dbCredentials: {

@@ -1,39 +1,10 @@
-type Project = {
-  projectId: string;
-  userId: string;
-  projectName: string;
-  overview: string;
-  myRole: string;
-  teamSize: number;
-  technologies: string;
-  challenges: string;
-  decisions: string;
-  outcomes: string;
-  createdAt: string;
-  updatedAt: string;
-};
+import type { InferRequestType, InferResponseType } from "hono/client";
+import { projectsRpc } from "../api/rpc";
 
-type CreateProjectPayload = {
-  userId: string;
-  projectName: string;
-  overview: string;
-  myRole: string;
-  teamSize: number;
-  technologies: string;
-  challenges: string;
-  decisions: string;
-  outcomes: string;
-};
-
-type UpdateProjectPayload = {
-  projectName?: string;
-  overview?: string;
-  myRole?: string;
-  teamSize?: number;
-  technologies?: string;
-  challenges?: string;
-  decisions?: string;
-  outcomes?: string;
-};
+type Project = InferResponseType<typeof projectsRpc.$get, 200>["projects"][number];
+type CreateProjectPayload = InferRequestType<typeof projectsRpc.$post>["json"];
+type UpdateProjectPayload = InferRequestType<
+  typeof projectsRpc[":projectId"]["$patch"]
+>["json"];
 
 export type { CreateProjectPayload, Project, UpdateProjectPayload };

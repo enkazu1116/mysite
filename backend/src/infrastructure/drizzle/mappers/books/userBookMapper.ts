@@ -31,7 +31,6 @@ function mapUserBookRow(userBookRow: UserBookTableRow, bookRow: BookTableRow): U
         bookId: userBookRow.book_id,
         status: userBookRow.status as ReadingStatus,
         currentPage: userBookRow.current_page,
-        note: userBookRow.note,
         startedAt: userBookRow.started_at,
         finishedAt: userBookRow.finished_at,
         createdAt: userBookRow.created_at,
