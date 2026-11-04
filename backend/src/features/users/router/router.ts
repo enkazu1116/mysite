@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { createDbFromEnv, type AppBindings } from "../../../infrastructure/drizzle/db";
+import type { AppBindings } from "../../../app";
+import { createDb } from "../../../infrastructure/drizzle/db";
 import { DrizzleUsersRepository } from "../drizzle/drizzleUsersRepository";
 import { userPersistenceMessages } from "../../../util/messages/persistence/users";
 import { UserUseCase } from "../usecase/userUseCase";
@@ -11,7 +12,7 @@ const userRoutes = new Hono<{
     c.set(
         "useCase",
         new UserUseCase(
-            new DrizzleUsersRepository(createDbFromEnv(c.env)),
+            new DrizzleUsersRepository(createDb(c.env.DB)),
         ),
     );
     await next();

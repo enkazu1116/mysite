@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { createDbFromEnv, type AppBindings } from "../../../infrastructure/drizzle/db";
+import type { AppBindings } from "../../../app";
+import { createDb } from "../../../infrastructure/drizzle/db";
 import { GoogleBooksProvider } from "../../../infrastructure/books/providers/googleBooksProvider";
 import { DrizzleUserBookRepository } from "../drizzle/drizzleUserBookRepository";
 import { UserBookUseCase } from "../usecase/userBookUseCase";
@@ -16,7 +17,7 @@ const booksSearchRouter = new Hono<{ Bindings: AppBindings }>().get(
     }
 
     const userBookUseCase = new UserBookUseCase(
-        new DrizzleUserBookRepository(createDbFromEnv(c.env)),
+        new DrizzleUserBookRepository(createDb(c.env.DB)),
         new GoogleBooksProvider(apiKey),
     );
 

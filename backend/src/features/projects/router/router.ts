@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { validator } from "hono/validator";
-import { createDbFromEnv, type AppBindings } from "../../../infrastructure/drizzle/db";
+import type { AppBindings } from "../../../app";
+import { createDb } from "../../../infrastructure/drizzle/db";
 import { DrizzleProjectRepository } from "../drizzle/drizzleProjectRepository";
 import { projectPersistenceMessages } from "../../../util/messages/persistence/projects/project";
 import { ProjectUseCase } from "../usecase/projectUseCase";
@@ -13,7 +14,7 @@ const projectsRouter = new Hono<{
     c.set(
         "useCase",
         new ProjectUseCase(
-            new DrizzleProjectRepository(createDbFromEnv(c.env)),
+            new DrizzleProjectRepository(createDb(c.env.DB)),
         ),
     );
     await next();

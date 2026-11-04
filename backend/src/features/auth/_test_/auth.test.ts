@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { sign } from "hono/jwt";
-import { app } from "../../../app";
-import type { AppBindings } from "../../../infrastructure/drizzle/db";
+import { app, type AppBindings } from "../../../app";
 
 const secret = "test-secret-that-is-longer-than-32-characters";
 const env = {

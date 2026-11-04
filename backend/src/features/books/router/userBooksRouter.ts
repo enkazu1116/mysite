@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { createDbFromEnv, type AppBindings } from "../../../infrastructure/drizzle/db";
+import type { AppBindings } from "../../../app";
+import { createDb } from "../../../infrastructure/drizzle/db";
 import { DrizzleUserBookRepository } from "../drizzle/drizzleUserBookRepository";
 import { readingStatuses, type ReadingStatus } from "../types/readingStatus";
 import { userBookPersistenceMessages } from "../../../util/messages/persistence/books/userBook";
@@ -14,7 +15,7 @@ const userBooksRouter = new Hono<{
     c.set(
         "useCase",
         new UserBookUseCase(
-            new DrizzleUserBookRepository(createDbFromEnv(c.env)),
+            new DrizzleUserBookRepository(createDb(c.env.DB)),
             // 検索は booksSearchRouter 側。更新系はカタログだけを使う。
             { searchBooks: async () => [] },
         ),
