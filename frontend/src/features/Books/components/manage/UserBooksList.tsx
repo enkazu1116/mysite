@@ -1,8 +1,5 @@
 import type { Key } from "react";
-import { Chip } from "@heroui/react/chip";
-import { ListBox } from "@heroui/react/list-box";
-import { Select } from "@heroui/react/select";
-import { Spinner } from "@heroui/react/spinner";
+import { Chip, ListBox, Select, Spinner } from "@obsidian/ui";
 import {
   PaginationControls,
   PaginationInputs,

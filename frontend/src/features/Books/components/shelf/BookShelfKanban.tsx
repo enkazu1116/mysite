@@ -1,4 +1,4 @@
-import { Chip } from "@heroui/react/chip";
+import { Chip } from "@obsidian/ui";
 import {
   readingStatusLabel,
   readingStatusToneClass,

@@ -1,7 +1,5 @@
 import { useMemo } from "react";
-import { Chip } from "@heroui/react/chip";
-import { EmptyState } from "@heroui/react/empty-state";
-import { Spinner } from "@heroui/react/spinner";
+import { Chip, EmptyState, Spinner } from "@obsidian/ui";
 import { motion, useReducedMotion } from "motion/react";
 import { LibrarySurface } from "../../components/LibrarySurface.tsx";
 import { QueryErrorAlert } from "../../components/status";

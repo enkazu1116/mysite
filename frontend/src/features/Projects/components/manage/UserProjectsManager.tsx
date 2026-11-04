@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@heroui/react/button";
+import { Button } from "@obsidian/ui";
 import { Link as RouterLink } from "react-router";
 import { QueryErrorAlert } from "../../../../components/status";
 import {

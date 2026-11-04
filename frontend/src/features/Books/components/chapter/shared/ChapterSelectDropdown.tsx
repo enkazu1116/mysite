@@ -1,5 +1,4 @@
-import { ListBox } from "@heroui/react/list-box";
-import { Select } from "@heroui/react/select";
+import { ListBox, Select } from "@obsidian/ui";
 import type { Key } from "react";
 
 export function ChapterSelectDropdown({

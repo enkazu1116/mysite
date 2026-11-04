@@ -1,6 +1,5 @@
 import type { Table } from "@tanstack/react-table";
-import { Spinner } from "@heroui/react/spinner";
-import { Surface } from "@heroui/react/surface";
+import { Spinner, Surface } from "@obsidian/ui";
 import { useTransition } from "react";
 import {
   PaginationControls,

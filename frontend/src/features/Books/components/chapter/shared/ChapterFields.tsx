@@ -1,7 +1,4 @@
-import { Input } from "@heroui/react/input";
-import { Label } from "@heroui/react/label";
-import { NumberField } from "@heroui/react/number-field";
-import { TextField } from "@heroui/react/textfield";
+import { Input, Label, NumberField, TextField } from "@obsidian/ui";
 
 export function ChapterFields({
   chapterTitle,

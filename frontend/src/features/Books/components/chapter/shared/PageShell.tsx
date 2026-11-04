@@ -1,4 +1,4 @@
-import { Typography } from "@heroui/react/typography";
+import { Typography } from "@obsidian/ui";
 import type { ReactNode } from "react";
 import { Link as RouterLink } from "react-router";
 import { ArrowLeftIcon } from "../../../../../components/icons";

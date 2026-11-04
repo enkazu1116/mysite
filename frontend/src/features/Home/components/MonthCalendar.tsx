@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button } from "@heroui/react/button";
+import { Button } from "@obsidian/ui";
 import type { CalendarEvent } from "../types/profile";
 
 type Props = {

@@ -1,4 +1,4 @@
-import { EmptyState } from "@heroui/react/empty-state";
+import { EmptyState } from "@obsidian/ui";
 import { motion, useReducedMotion } from "motion/react";
 import { ProjectCard } from "./components/Card";
 import { useProjectsQuery } from "./hooks/useProjectsQuery";
@@ -42,12 +42,11 @@ export default function Projects() {
             </p>
           </EmptyState>
         ) : (
-          <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {projects.map((project, index) => (
+          <div className="mt-8 grid grid-cols-[repeat(auto-fit,minmax(18rem,1fr))] gap-4">
+            {projects.map((project) => (
               <ProjectCard
                 key={project.projectId}
                 project={project}
-                featured={index === 0}
               />
             ))}
           </div>

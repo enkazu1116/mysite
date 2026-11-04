@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Spinner } from "@heroui/react/spinner";
+import { Spinner } from "@obsidian/ui";
 import { ChapterSelectDropdown } from "./ChapterSelectDropdown";
 
 export function ChapterWorkspace({

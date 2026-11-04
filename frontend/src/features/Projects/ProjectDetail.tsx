@@ -1,5 +1,4 @@
-import { EmptyState } from "@heroui/react/empty-state";
-import { Spinner } from "@heroui/react/spinner";
+import { EmptyState, Spinner } from "@obsidian/ui";
 import { motion, useReducedMotion } from "motion/react";
 import { Link as RouterLink, useParams } from "react-router";
 import { ArrowLeftIcon } from "../../components/icons";

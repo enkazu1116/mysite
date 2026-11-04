@@ -1,5 +1,4 @@
-import { Button } from "@heroui/react/button";
-import { ButtonGroup } from "@heroui/react/button-group";
+import { Button, ButtonGroup } from "@obsidian/ui";
 
 type Props = {
   isPending: boolean;

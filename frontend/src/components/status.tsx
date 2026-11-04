@@ -1,6 +1,4 @@
-import { Alert } from "@heroui/react/alert";
-import { Button } from "@heroui/react/button";
-import { Spinner } from "@heroui/react/spinner";
+import { Alert, Button, Spinner } from "@obsidian/ui";
 import { getErrorMessage } from "../utils/getErrorMessage";
 
 type LoadingStateProps = {

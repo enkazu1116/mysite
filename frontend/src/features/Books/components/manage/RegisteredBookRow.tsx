@@ -1,5 +1,4 @@
-import { Button } from "@heroui/react/button";
-import { Chip } from "@heroui/react/chip";
+import { Button, Chip } from "@obsidian/ui";
 import { ChevronDownIcon, TrashIcon } from "../../../../components/icons";
 import {
   ReadingStatusSelect,

@@ -1,4 +1,4 @@
-import { EmptyState } from "@heroui/react/empty-state";
+import { EmptyState } from "@obsidian/ui";
 import { useSkillsTable } from "../hooks/useSkillsTable";
 import { useSkillsSuspenseQuery } from "../hooks/useSkillsSuspenseQuery";
 import { Pagination } from "./Pagination";

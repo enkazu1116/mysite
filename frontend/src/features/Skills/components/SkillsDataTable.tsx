@@ -1,5 +1,5 @@
 import { flexRender, type Table as TanstackTable } from "@tanstack/react-table";
-import { Table } from "@heroui/react/table";
+import { Table } from "@obsidian/ui";
 import type { Skill } from "../types/skill";
 
 type Props = {
