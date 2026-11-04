@@ -13,6 +13,7 @@
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote"
   },
   "devDependencies": {
+    "cf": "1.0.0-beta.27",
     "wrangler": "^4.154.0"
   }
 }
