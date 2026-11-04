@@ -1,5 +1,14 @@
 import type { OAuthCredentials } from "./oauthProvider";
 
+/**
+ * アクセストークン取得リクエストを送信
+ * @param tokenUrl 
+ * @param credentials 
+ * @param code 
+ * @param redirectUri 
+ * @param additionalParameters 
+ * @returns 
+ */
 export async function requestAccessToken(
     tokenUrl: string,
     credentials: OAuthCredentials,
@@ -19,6 +28,8 @@ export async function requestAccessToken(
         }),
     }).catch(() => null);
     if (!response?.ok) return null;
+
     const body = await response.json() as { access_token?: string };
+    
     return body.access_token ?? null;
 }

@@ -8,7 +8,7 @@ import { projectsRouter } from "./features/projects/router/router";
 import { skillsRouter } from "./features/skills/router/router";
 import { userRoutes } from "./features/users/router/router";
 import { authRouter } from "./features/auth/router/router";
-import { requireAdministratorForWrite } from "./middleware/adminAuthentication";
+import { requireAdministratorForWrite } from "./middleware/adminAccessControl";
 
 export type AppBindings = {
     DB: Parameters<typeof createDb>[0];
