@@ -2,8 +2,11 @@ import type { Context } from "hono";
 import { Hono } from "hono";
 import type { AppBindings } from "../../../app";
 import { getAdministratorAllowList } from "../../../infrastructure/auth/administratorAllowList";
+import {
+    createAuthorizationUrl,
+    resolveAdministratorIdentity,
+} from "../../../infrastructure/auth/oauthAuthentication";
 import { getOAuthCredentials } from "../../../infrastructure/auth/oauthCredentials";
-import { getOAuthProvider } from "../../../infrastructure/auth/providers/oauthProviders";
 import {
     beginOAuthState,
     consumeOAuthState,
@@ -54,12 +57,12 @@ function startOAuthAuthentication(c: AuthContext) {
         return c.json({ message: "認証設定が不足しています。" }, 503);
     }
     const state = beginOAuthState(c, provider);
-    return c.redirect(c.get("useCase").startOAuthAuthentication({
+    return c.redirect(createAuthorizationUrl(
         provider,
         credentials,
-        redirectUri: oauthCallbackUrl(c.req.url, provider),
+        oauthCallbackUrl(c.req.url, provider),
         state,
-    }));
+    ));
 }
 
 async function completeOAuthAuthentication(c: AuthContext) {
@@ -74,16 +77,19 @@ async function completeOAuthAuthentication(c: AuthContext) {
     if (!credentials) {
         return c.json({ message: "認証設定が不足しています。" }, 503);
     }
-    const result = await c.get("useCase").completeOAuthAuthentication({
+    const identity = await resolveAdministratorIdentity(
         provider,
         credentials,
         code,
-        redirectUri: oauthCallbackUrl(c.req.url, provider),
-        administratorAllowList: getAdministratorAllowList(c.env),
-    });
-    if (result.type === "unauthenticated") {
+        oauthCallbackUrl(c.req.url, provider),
+    );
+    if (!identity) {
         return c.json({ message: "OAuth ユーザー情報を取得できません。" }, 502);
     }
+    const result = c.get("useCase").authenticateAdministrator({
+        identity,
+        administratorAllowList: getAdministratorAllowList(c.env),
+    });
     if (result.type === "unauthorized") {
         return c.json({
             message: "管理者として許可されていません。",
@@ -104,7 +110,7 @@ function logoutAdministrator(c: AuthContext) {
 
 export const authRouter = new Hono<AuthEnv>()
     .use("*", async (c, next) => {
-        c.set("useCase", new AuthUseCase(getOAuthProvider));
+        c.set("useCase", new AuthUseCase());
         await next();
     })
     .get("/me", getAdministratorSession)

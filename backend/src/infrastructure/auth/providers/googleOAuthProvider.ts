@@ -1,4 +1,4 @@
-import type { OAuthProvider } from "../../../features/auth/repositories/oauthProvider";
+import type { OAuthProvider } from "./oauthProvider";
 import { requestAccessToken } from "./oauthClient";
 
 export const googleOAuthProvider: OAuthProvider = {
@@ -14,7 +14,10 @@ export const googleOAuthProvider: OAuthProvider = {
     },
     async getIdentity(credentials, code, redirectUri) {
         const accessToken = await requestAccessToken(
-            "https://oauth2.googleapis.com/token", credentials, code, redirectUri,
+            "https://oauth2.googleapis.com/token",
+            credentials,
+            code,
+            redirectUri,
             { grant_type: "authorization_code" },
         );
         if (!accessToken) return null;
@@ -23,7 +26,7 @@ export const googleOAuthProvider: OAuthProvider = {
         }).catch(() => null);
         if (!response?.ok) return null;
         const profile = await response.json() as { sub?: string; email_verified?: boolean };
-        if (!profile.sub) return null;
-        return { provider: "google", id: profile.sub, emailVerified: profile.email_verified === true };
+        if (!profile.sub || profile.email_verified !== true) return null;
+        return { provider: "google", id: profile.sub };
     },
 };

@@ -1,6 +1,6 @@
 import type { AuthProvider } from "../../features/auth/domain/authIdentity";
-import type { OAuthCredentials } from "../../features/auth/repositories/oauthProvider";
 import type { AppBindings } from "../../app";
+import type { OAuthCredentials } from "./providers/oauthProvider";
 
 export function getOAuthCredentials(
     env: AppBindings,
