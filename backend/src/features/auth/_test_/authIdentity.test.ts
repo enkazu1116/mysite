@@ -18,13 +18,4 @@ describe("管理者認可", () => {
             { provider: "google", id: "other" }, allowList,
         )).toBe(false);
     });
-
-    test("Googleアカウントはメールアドレスが確認済みの場合に認証を許可する", () => {
-        expect(canAuthenticateAsAdministrator(
-            { provider: "google", id: "google-subject", emailVerified: false }, allowList,
-        )).toBe(false);
-        expect(canAuthenticateAsAdministrator(
-            { provider: "google", id: "google-subject", emailVerified: true }, allowList,
-        )).toBe(true);
-    });
 });

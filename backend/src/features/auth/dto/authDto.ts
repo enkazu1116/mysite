@@ -1,26 +1,10 @@
-import type {
-    AdminAllowList,
-    AuthProvider,
-    OAuthIdentity,
-} from "../domain/authIdentity";
-import type { OAuthCredentials } from "../repositories/oauthProvider";
+import type { AdminAllowList, AdminIdentity } from "../domain/authIdentity";
 
-export type StartOAuthAuthenticationInput = Readonly<{
-    provider: AuthProvider;
-    credentials: OAuthCredentials;
-    redirectUri: string;
-    state: string;
-}>;
-
-export type CompleteOAuthAuthenticationInput = Readonly<{
-    provider: AuthProvider;
-    credentials: OAuthCredentials;
-    redirectUri: string;
-    code: string;
+export type AuthenticateAdministratorInput = Readonly<{
+    identity: AdminIdentity;
     administratorAllowList: AdminAllowList;
 }>;
 
-export type CompleteOAuthAuthenticationResult =
-    | Readonly<{ type: "authenticated"; identity: OAuthIdentity }>
-    | Readonly<{ type: "unauthenticated" }>
-    | Readonly<{ type: "unauthorized"; identity: OAuthIdentity }>;
+export type AuthenticateAdministratorResult =
+    | Readonly<{ type: "authenticated"; identity: AdminIdentity }>
+    | Readonly<{ type: "unauthorized"; identity: AdminIdentity }>;

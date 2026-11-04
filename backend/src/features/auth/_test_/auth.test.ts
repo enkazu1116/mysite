@@ -92,8 +92,8 @@ describe("管理者認証", () => {
             const response = await app.request("http://localhost:3000/api/auth/google/callback?code=code&state=state", {
                 headers: { Cookie: "oauth_state=google:state" },
             }, env);
-            expect(response.status).toBe(403);
-            expect((await response.json()).subject).toBe("allowed-sub");
+            // 未確認メールは OAuth identity 解決失敗として扱う
+            expect(response.status).toBe(502);
             verified = true;
             const accepted = await app.request("http://localhost:3000/api/auth/google/callback?code=code&state=state", {
                 headers: { Cookie: "oauth_state=google:state" },
@@ -105,3 +105,4 @@ describe("管理者認証", () => {
         }
     });
 });
+

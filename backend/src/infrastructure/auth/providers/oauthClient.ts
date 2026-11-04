@@ -1,4 +1,4 @@
-import type { OAuthCredentials } from "../../../features/auth/repositories/oauthProvider";
+import type { OAuthCredentials } from "./oauthProvider";
 
 export async function requestAccessToken(
     tokenUrl: string,

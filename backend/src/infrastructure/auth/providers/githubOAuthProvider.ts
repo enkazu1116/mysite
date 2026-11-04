@@ -1,4 +1,4 @@
-import type { OAuthProvider } from "../../../features/auth/repositories/oauthProvider";
+import type { OAuthProvider } from "./oauthProvider";
 import { requestAccessToken } from "./oauthClient";
 
 export const githubOAuthProvider: OAuthProvider = {
@@ -14,7 +14,10 @@ export const githubOAuthProvider: OAuthProvider = {
     },
     async getIdentity(credentials, code, redirectUri) {
         const accessToken = await requestAccessToken(
-            "https://github.com/login/oauth/access_token", credentials, code, redirectUri,
+            "https://github.com/login/oauth/access_token",
+            credentials,
+            code,
+            redirectUri,
         );
         if (!accessToken) return null;
         const response = await fetch("https://api.github.com/user", {
@@ -27,6 +30,6 @@ export const githubOAuthProvider: OAuthProvider = {
         if (!response?.ok) return null;
         const profile = await response.json() as { id?: number };
         if (profile.id === undefined) return null;
-        return { provider: "github", id: String(profile.id), emailVerified: true };
+        return { provider: "github", id: String(profile.id) };
     },
 };
