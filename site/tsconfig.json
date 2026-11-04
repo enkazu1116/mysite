@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "types": []
   },
-  "include": ["index.ts", "../worker-configuration.d.ts"]
+  "include": ["src/index.ts", "cloudflare.config.ts", "wrangler.config.ts", ".cloudflare/types/index.d.ts"]
 }

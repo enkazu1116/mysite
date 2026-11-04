@@ -8,9 +8,6 @@ importers:
 
   .:
     devDependencies:
-      cf:
-        specifier: 1.0.0-beta.27
-        version: 1.0.0-beta.27
       wrangler:
         specifier: ^4.154.0
         version: 4.154.0
@@ -175,6 +172,19 @@ importers:
       vitest:
         specifier: ^4.1.5
         version: 4.1.9(@types/node@24.13.2)(@vitest/coverage-v8@4.1.9)(jsdom@29.1.1)(msw@2.14.6(@types/node@24.13.2)(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4))
+
+  site:
+    dependencies:
+      backend:
+        specifier: workspace:*
+        version: link:../backend
+    devDependencies:
+      cf:
+        specifier: 1.0.0-beta.27
+        version: 1.0.0-beta.27
+      wrangler:
+        specifier: ^4.154.0
+        version: 4.154.0
 
 packages:
 

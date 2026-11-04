@@ -59,7 +59,7 @@ describe("books integration (Google Books + D1)", () => {
         const booksApi = requireEnv("BOOKS_API");
         const root = path.resolve(import.meta.dir, "../../../../..");
         const proxy = await getPlatformProxy({
-            configPath: path.join(root, "wrangler.jsonc"),
+            configPath: path.join(root, "site/wrangler.jsonc"),
             persist: { path: path.join(root, ".wrangler/state") },
         } satisfies GetPlatformProxyOptions);
         dispose = proxy.dispose;

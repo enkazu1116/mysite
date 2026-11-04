@@ -4,5 +4,7 @@ node_modules/
 skills-lock.json
 .dev.vars
 .wrangler/
+.cloudflare/
+design-mysite/
 .env
 .env.*

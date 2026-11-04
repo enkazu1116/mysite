@@ -50,7 +50,7 @@ FRONTEND_ORIGIN=http://localhost:5173
 
 ## デプロイ
 
-Worker 1 つ（`wrangler.jsonc`）。フロントは Static Assets、API は同じ Worker、データは D1。
+Worker 1 つ（`site/` + `cf deploy`）。フロントは Static Assets、API は同じ Worker、データは D1。
 
 ```sh
 pnpm exec wrangler secret put BOOKS_API

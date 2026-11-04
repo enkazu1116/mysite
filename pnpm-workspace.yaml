@@ -1,6 +1,7 @@
 packages:
   - "backend"
   - "frontend"
+  - "site"
 allowBuilds:
   esbuild: true
   msw: true

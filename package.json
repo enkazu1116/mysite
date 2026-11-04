@@ -5,15 +5,17 @@
   "engines": {
     "node": ">=24"
   },
+  "type": "module",
   "scripts": {
-    "dev": "wrangler dev --port 3000",
-    "deploy": "wrangler deploy",
-    "types": "wrangler types",
-    "db:migrate": "wrangler d1 migrations apply DB --local",
-    "db:migrate:remote": "wrangler d1 migrations apply DB --remote"
+    "dev": "pnpm --filter site dev",
+    "build": "pnpm --filter frontend build && pnpm --filter site build",
+    "deploy": "pnpm --filter frontend build && pnpm --filter site deploy --",
+    "deploy:dry-run": "pnpm --filter site exec cf deploy --dry-run",
+    "types": "pnpm --filter site types",
+    "db:migrate": "wrangler d1 migrations apply DB --local --config site/wrangler.jsonc",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote --config site/wrangler.jsonc"
   },
   "devDependencies": {
-    "cf": "1.0.0-beta.27",
     "wrangler": "^4.154.0"
   }
 }

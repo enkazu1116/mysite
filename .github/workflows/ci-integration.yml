@@ -5,8 +5,7 @@ on:
   push:
     paths:
       - "backend/**"
-      - "worker/**"
-      - "wrangler.jsonc"
+      - "site/**"
       - ".github/workflows/ci-integration.yml"
   workflow_dispatch:
 

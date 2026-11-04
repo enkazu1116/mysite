@@ -1,4 +1,4 @@
-import { app } from "../backend/src/app";
+import { app } from "backend/app";
 
 type WorkerEnv = Env & {
     BOOKS_API?: string;
