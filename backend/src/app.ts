@@ -1,13 +1,27 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 
-import type { AppBindings } from "./infrastructure/drizzle/db";
+import { createDb } from "./infrastructure/drizzle/db";
 import { booksSearchRouter } from "./features/books/router/booksSearchRouter";
 import { userBooksRouter } from "./features/books/router/userBooksRouter";
 import { projectsRouter } from "./features/projects/router/router";
 import { skillsRouter } from "./features/skills/router/router";
 import { userRoutes } from "./features/users/router/router";
-import { adminFromRequest, authRouter } from "./features/auth/auth";
+import { authRouter } from "./features/auth/router/router";
+import { requireAdministratorForWrite } from "./middleware/adminAuthentication";
+
+export type AppBindings = {
+    DB: Parameters<typeof createDb>[0];
+    BOOKS_API?: string;
+    JWT_SECRET?: string;
+    GOOGLE_CLIENT_ID?: string;
+    GOOGLE_CLIENT_SECRET?: string;
+    GITHUB_CLIENT_ID?: string;
+    GITHUB_CLIENT_SECRET?: string;
+    ADMIN_GOOGLE_SUBS?: string;
+    ADMIN_GITHUB_IDS?: string;
+    FRONTEND_ORIGIN?: string;
+};
 
 const api = new Hono<{ Bindings: AppBindings }>()
     .route("/auth", authRouter)
@@ -26,26 +40,7 @@ const app = new Hono<{ Bindings: AppBindings }>()
             allowHeaders: ["Content-Type", "Authorization"],
         }),
     )
-    .use("/api/*", async (c, next) => {
-        if (c.req.method === "GET" || c.req.method === "HEAD" || c.req.method === "OPTIONS") {
-            await next();
-            return;
-        }
-        const origin = c.req.header("Origin");
-        const siteOrigin = new URL(c.req.url).origin;
-        const allowedOrigins = [siteOrigin, c.env?.FRONTEND_ORIGIN].filter(Boolean);
-        if (!origin || !allowedOrigins.includes(origin)) {
-            return c.json({ message: "リクエスト元を確認できません。" }, 403);
-        }
-        if (new URL(c.req.url).pathname === "/api/auth/logout") {
-            await next();
-            return;
-        }
-        if (!await adminFromRequest(c)) {
-            return c.json({ message: "管理者ログインが必要です。" }, 401);
-        }
-        await next();
-    })
+    .use("/api/*", requireAdministratorForWrite)
     .get("/health", (c) => c.json({ ok: true }))
     .get("/", (c) => c.text("Hello Hono!"))
     .route("/api", api);

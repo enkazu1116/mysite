@@ -1,8 +1,7 @@
 import path from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { getPlatformProxy, type GetPlatformProxyOptions } from "wrangler";
-import type { AppBindings } from "../../../infrastructure/drizzle/db";
-import type { AppType } from "../../../app";
+import type { AppBindings, AppType } from "../../../app";
 
 /**
  * Google Books API + ローカル D1 を使う統合テスト。
