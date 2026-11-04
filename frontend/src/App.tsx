@@ -5,6 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import Header from "./components/header";
 import { SiteChrome } from "./components/SiteChrome.tsx";
 import { ErrorState, LoadingState } from "./components/status";
+import AdminPage, { AdminGate } from "./features/Auth/AdminPage";
 
 const Home = lazy(() => import("./features/Home/home"));
 const Skills = lazy(() => import("./features/Skills/skills"));
@@ -31,17 +32,7 @@ const queryClient = new QueryClient({
 function AppRoutes() {
   const location = useLocation();
   if (location.pathname === "/") {
-    return (
-      <ErrorBoundary
-        fallback={<ErrorState message="予期しないエラーが発生しました。" />}
-      >
-        <Suspense fallback={<LoadingState />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-          </Routes>
-        </Suspense>
-      </ErrorBoundary>
-    );
+    return <ErrorBoundary fallback={<ErrorState message="予期しないエラーが発生しました。" />}><Suspense fallback={<LoadingState />}><Routes><Route path="/" element={<Home />} /></Routes></Suspense></ErrorBoundary>;
   }
   return (
     <SiteChrome>
@@ -56,13 +47,14 @@ function AppRoutes() {
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:projectId" element={<ProjectDetail />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/admin" element={<AdminGate><AdminPage /></AdminGate>} />
             <Route
               path="/users/:userId/projects"
-              element={<UserProjectsManagerPage />}
+              element={<AdminGate><UserProjectsManagerPage /></AdminGate>}
             />
             <Route
               path="/users/:userId/books"
-              element={<UserBooksManagerPage />}
+              element={<AdminGate><UserBooksManagerPage /></AdminGate>}
             />
             <Route path="/books" element={<Books />} />
             <Route path="/books/:userBookId" element={<BookDetail />} />

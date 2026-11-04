@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "tsc -b --pretty false",
-    "test": "bun test src/features/skills/_test_ src/features/books/_test_ src/features/users/_test_ src/features/projects/_test_",
+    "test": "bun test src/features/skills/_test_ src/features/books/_test_ src/features/users/_test_ src/features/projects/_test_ src/features/auth/_test_",
     "test:integration": "bun test --timeout 60000 src/features/books/_integration_",
     "db:generate": "drizzle-kit generate"
   },
