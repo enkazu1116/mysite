@@ -1,10 +1,6 @@
 import { useState } from "react";
 import type { SyntheticEvent } from "react";
-import { Button } from "@heroui/react/button";
-import { Form } from "@heroui/react/form";
-import { Input } from "@heroui/react/input";
-import { Label } from "@heroui/react/label";
-import { TextField } from "@heroui/react/textfield";
+import { Button, Form, Input, Label, TextField } from "@obsidian/ui";
 import type { CreateProjectPayload, Project, UpdateProjectPayload } from "../../types/project";
 
 type ProjectFormValues = {

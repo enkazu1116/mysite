@@ -1,5 +1,4 @@
-import { Chip } from "@heroui/react/chip";
-import { Typography } from "@heroui/react/typography";
+import { Chip, Typography } from "@obsidian/ui";
 
 type Props = {
   pageIndex: number;

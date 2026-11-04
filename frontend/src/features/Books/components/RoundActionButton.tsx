@@ -1,4 +1,4 @@
-import { Button } from "@heroui/react/button";
+import { Button } from "@obsidian/ui";
 import type { ReactNode } from "react";
 
 export function RoundActionButton({

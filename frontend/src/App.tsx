@@ -1,8 +1,7 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router";
 import { ErrorBoundary } from "react-error-boundary";
-import { RouterProvider } from "@heroui/react";
 import Header from "./components/header";
 import { SiteChrome } from "./components/SiteChrome.tsx";
 import { ErrorState, LoadingState } from "./components/status";
@@ -30,37 +29,47 @@ const queryClient = new QueryClient({
 });
 
 function AppRoutes() {
-  const navigate = useNavigate();
-
+  const location = useLocation();
+  if (location.pathname === "/") {
+    return (
+      <ErrorBoundary
+        fallback={<ErrorState message="予期しないエラーが発生しました。" />}
+      >
+        <Suspense fallback={<LoadingState />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
   return (
-    <RouterProvider navigate={(...args) => { void navigate(...args); }}>
-      <SiteChrome>
-        <Header />
-        <ErrorBoundary
-          fallback={<ErrorState message="予期しないエラーが発生しました。" />}
-        >
-          <Suspense fallback={<LoadingState />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/skills" element={<Skills />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:projectId" element={<ProjectDetail />} />
-              <Route path="/users" element={<Users />} />
-              <Route
-                path="/users/:userId/projects"
-                element={<UserProjectsManagerPage />}
-              />
-              <Route
-                path="/users/:userId/books"
-                element={<UserBooksManagerPage />}
-              />
-              <Route path="/books" element={<Books />} />
-              <Route path="/books/:userBookId" element={<BookDetail />} />
-            </Routes>
-          </Suspense>
-        </ErrorBoundary>
-      </SiteChrome>
-    </RouterProvider>
+    <SiteChrome>
+      <Header />
+      <ErrorBoundary
+        fallback={<ErrorState message="予期しないエラーが発生しました。" />}
+      >
+        <Suspense fallback={<LoadingState />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/skills" element={<Skills />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:projectId" element={<ProjectDetail />} />
+            <Route path="/users" element={<Users />} />
+            <Route
+              path="/users/:userId/projects"
+              element={<UserProjectsManagerPage />}
+            />
+            <Route
+              path="/users/:userId/books"
+              element={<UserBooksManagerPage />}
+            />
+            <Route path="/books" element={<Books />} />
+            <Route path="/books/:userBookId" element={<BookDetail />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
+    </SiteChrome>
   );
 }
 

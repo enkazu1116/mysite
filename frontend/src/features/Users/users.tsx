@@ -1,9 +1,4 @@
-import { Avatar } from "@heroui/react/avatar";
-import { Chip } from "@heroui/react/chip";
-import { Input } from "@heroui/react/input";
-import { Label } from "@heroui/react/label";
-import { TextField } from "@heroui/react/textfield";
-import { Typography } from "@heroui/react/typography";
+import { Avatar, Chip, Input, Label, TextField, Typography } from "@obsidian/ui";
 import { motion, useReducedMotion } from "motion/react";
 import { Link as RouterLink } from "react-router";
 import { LibrarySurface } from "../../components/LibrarySurface.tsx";

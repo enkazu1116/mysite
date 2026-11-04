@@ -1,17 +1,12 @@
 import { Link as RouterLink } from "react-router";
 import type { Project } from "../types/project";
 
-type Props = {
-  project: Project;
-  featured?: boolean;
-};
+type Props = { project: Project };
 
-export function ProjectCard({ project, featured = false }: Props) {
+export function ProjectCard({ project }: Props) {
   return (
     <article
-      className={`lib-panel flex h-full flex-col p-5 text-left ${
-        featured ? "md:col-span-2" : ""
-      }`}
+      className="lib-panel flex h-full flex-col p-5 text-left"
     >
       <h2 className="font-display m-0 text-lg font-semibold text-[var(--lib-ink)]">
         {project.projectName}

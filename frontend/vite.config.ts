@@ -9,6 +9,14 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: [
+      {
+        find: "@obsidian/ui",
+        replacement: path.resolve(dirname, "src/components/obsidian-primitives.tsx"),
+      },
+    ],
+  },
   server: {
     proxy: {
       "/api": {

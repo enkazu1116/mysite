@@ -1,4 +1,4 @@
-import { EmptyState } from "@heroui/react/empty-state";
+import { EmptyState } from "@obsidian/ui";
 import { Link as RouterLink, useParams } from "react-router";
 import { ArrowLeftIcon } from "../../../components/icons";
 import { LibrarySurface } from "../../../components/LibrarySurface.tsx";

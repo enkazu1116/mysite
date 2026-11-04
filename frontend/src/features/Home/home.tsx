@@ -1,39 +1,35 @@
 import { motion, useReducedMotion } from "motion/react";
+import { Link } from "react-router";
 import { profile } from "./data/profileData";
-import { MonthCalendar } from "./components/MonthCalendar";
-import { ProfileSection } from "./components/ProfileSection";
 
+const skills = [
+  { label: "Frontend", value: "React / TypeScript", detail: "使いやすく、長く育つUIを設計する。", icon: "⌘" },
+  { label: "Design", value: "UI / UX", detail: "情報の優先順位を、迷いのない体験へ。", icon: "✦" },
+  { label: "Engineering", value: "Architecture", detail: "品質と保守性を両立する実装を選ぶ。", icon: "◇" },
+];
+const projects = [
+  { no: "01", title: "Personal knowledge base", text: "日々の学びと制作を、考えの流れごと残す個人のワークスペース。", tags: ["React", "Notes"] },
+  { no: "02", title: "Web applications", text: "目的と使う人を起点に、プロダクトの画面と体験をつくる。", tags: ["TypeScript", "UI"] },
+  { no: "03", title: "Experiments", text: "新しい技術を試し、次の制作につながる小さな実験を重ねる。", tags: ["Learning", "Prototype"] },
+];
+const icon = (name: "link" | "arrow" | "github" | "spark") => {
+  if (name === "github") return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8a9.2 9.2 0 0 0-2.91 17.93c.46.08.63-.2.63-.45v-1.72c-2.56.56-3.1-1.09-3.1-1.09-.42-1.06-1.02-1.34-1.02-1.34-.83-.57.06-.56.06-.56.92.07 1.4.94 1.4.94.82 1.4 2.14 1 2.66.76.08-.6.32-1 .58-1.23-2.04-.23-4.18-1.02-4.18-4.55 0-1 .36-1.82.94-2.46-.1-.23-.4-1.17.1-2.44 0 0 .77-.25 2.52.94A8.75 8.75 0 0 1 12 7.27c.79 0 1.58.1 2.32.3 1.75-1.19 2.52-.94 2.52-.94.5 1.27.2 2.21.1 2.44.59.64.94 1.46.94 2.46 0 3.54-2.14 4.31-4.19 4.54.33.29.62.85.62 1.7v2.52c0 .25.16.54.63.45A9.2 9.2 0 0 0 12 2.8Z" fill="currentColor" /></svg>;
+  if (name === "arrow") return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+  if (name === "spark") return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Zm7 13 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" fill="currentColor" /></svg>;
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14 14 10M8.2 16.8l-1.4 1.4a3 3 0 0 1-4.2-4.2l3.5-3.5a3 3 0 0 1 4.2 0M15.8 7.2l1.4-1.4a3 3 0 0 1 4.2 4.2l-3.5 3.5a3 3 0 0 1-4.2 0" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>;
+};
 export default function Home() {
   const reduceMotion = useReducedMotion();
-
-  return (
-    <main className="flex-1 px-4 pb-10 pt-6 sm:px-6">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-start">
-        <aside
-          aria-label="カレンダー"
-          className="hidden shrink-0 lg:sticky lg:top-6 lg:block lg:w-72 lg:border-r lg:border-[var(--lib-line)] lg:pr-6"
-        >
-          <MonthCalendar events={profile.calendarEvents} />
-        </aside>
-
-        <div className="min-w-0 flex-1 text-left lg:pl-8">
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-          >
-            <h1 className="font-display m-0 text-4xl font-semibold tracking-tight text-[var(--lib-ink)] sm:text-5xl">
-              Home
-            </h1>
-            <p className="mt-2 max-w-xl text-base text-[var(--lib-ink-muted)]">
-              スキル、プロジェクト、読書記録をまとめた個人サイトです。
-            </p>
-          </motion.div>
-          <div className="mt-8">
-            <ProfileSection profile={profile} />
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+  const scrollTo = (id: string) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
+  return <main className="portfolio-shell">
+    <aside className="vault-sidebar" aria-label="ページナビゲーション"><a className="vault-brand" href="#top"><span className="brand-mark">⌁</span><span>my vault</span></a><p className="vault-label">EXPLORE</p><nav><button onClick={() => scrollTo("#about")}><i>01</i>自己紹介概要</button><button onClick={() => scrollTo("#skills")}><i>02</i>スキルと経験</button><button onClick={() => scrollTo("#projects")}><i>03</i>主なプロジェクト</button><button onClick={() => scrollTo("#career")}><i>04</i>職歴</button><button onClick={() => scrollTo("#future")}><i>05</i>今後やりたいこと</button><button onClick={() => scrollTo("#connect")}><i>06</i>GitHub URL・サイトや活動</button></nav><div className="vault-sidebar-bottom"><span className="status-dot" />AVAILABLE FOR NEW IDEAS</div></aside>
+    <div className="portfolio-content" id="top"><header className="portfolio-topbar"><Link className="topbar-home" to="/"><b>⌘</b> / home</Link><nav aria-label="サイトナビゲーション" className="landing-nav"><Link to="/#about">About</Link><Link to="/skills">Skills</Link><Link to="/projects">Projects</Link><Link to="/books">Books</Link></nav><Link to="/#connect">contact {icon("arrow")}</Link></header>
+      <motion.section className="hero-note" initial={reduceMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: "easeOut" }}><div className="hero-copy"><p className="eyebrow">HELLO, I AM</p><h1>{profile.name}<span className="hero-period">.</span></h1><p className="hero-role">{profile.title}<br />designing thoughtful digital experiences.</p><button className="hero-action" onClick={() => scrollTo("#about")}>Scroll to explore <span>↓</span></button></div><div className="hero-orbit"><div className="orbit-ring orbit-ring-one" /><div className="orbit-ring orbit-ring-two" /><span className="orbit-core"><img src="/images/chihuahua-icon.jpg" alt="スーツ姿のドット絵チワワ" /></span><span className="orbit-note">ideas<br />in motion</span></div></motion.section>
+      <section id="about" className="note-section"><div className="section-marker">01 / ABOUT</div><div><p className="note-kicker">[[ introduction ]]</p><h2>ものづくりを通して、<br /><em>考える時間</em>をつくる。</h2><div className="about-body">{profile.bio.slice(0, 2).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div><div className="note-links"><span>{icon("link")} curious by default</span><span>{icon("link")} based in Japan</span></div></div></section>
+      <section id="skills" className="note-section"><div className="section-marker">02 / SKILLS</div><div className="section-wide"><div className="section-heading"><div><p className="note-kicker">[[ toolset ]]</p><h2>思考を、<em>動くかたち</em>に。</h2></div><Link className="section-link" to="/skills">スキル一覧 {icon("arrow")}</Link></div><div className="skill-grid">{skills.map((skill) => <article className="skill-card" key={skill.label}><span className="skill-icon">{skill.icon}</span><p>{skill.label}</p><h3>{skill.value}</h3><small>{skill.detail}</small></article>)}</div></div></section>
+      <section id="projects" className="note-section"><div className="section-marker">03 / PROJECTS</div><div className="section-wide"><div className="projects-heading"><div><p className="note-kicker">[[ selected work ]]</p><h2>つくりながら、<em>学び続ける。</em></h2></div><Link className="section-link" to="/projects">プロジェクト一覧 {icon("arrow")}</Link></div><div className="project-list">{projects.map((project) => <article className="project-row" key={project.no}><span className="project-no">{project.no}</span><div><h3>{project.title}</h3><p>{project.text}</p><div>{project.tags.map((tag) => <span className="tag" key={tag}>#{tag}</span>)}</div></div><Link to="/projects" aria-label={`${project.title} を見る`}>{icon("arrow")}</Link></article>)}</div></div></section>
+      <section id="career" className="note-section"><div className="section-marker">04 / CAREER</div><div className="section-wide"><p className="note-kicker">[[ timeline ]]</p><h2>経験を、次の選択へ。</h2><div className="timeline"><div><time>NOW</time><h3>Web Developer</h3><p>フロントエンドを中心に、使い心地のよいWeb体験を探求。</p></div><div><time>ALWAYS</time><h3>Independent learner</h3><p>読書、試作、対話を通して、技術とデザインの視野を広げる。</p></div></div></div></section>
+      <section id="future" className="future-note"><span className="future-cursor">✦</span><p className="eyebrow">05 / WHAT'S NEXT</p><h2>誰かの「できる」を<br /><em>そっと増やす</em>仕事を。</h2><p>複雑なことをわかりやすく。<br />技術とデザインのあいだで、よりよい道筋を見つけていきたい。</p></section>
+      <footer id="connect" className="portfolio-footer"><div><p className="eyebrow">06 / LINKS & ACTIVITIES</p><h2>次のノートを、<br />いっしょに開こう。</h2></div><div className="footer-links"><a href="https://github.com/" target="_blank" rel="noreferrer">{icon("github")} GitHub <span>↗</span></a><Link to="/books">{icon("link")} Bookshelf <span>→</span></Link><a href="mailto:hello@example.com">{icon("link")} Say hello <span>↗</span></a></div><p className="copyright">© 2026 {profile.name} · built as a personal vault</p></footer>
+    </div></main>;
 }
