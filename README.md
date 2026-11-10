@@ -23,7 +23,7 @@ Google Books のキーはリポジトリに置かない。ルートの `.dev.var
 
 ## 管理者ログイン
 
-`/admin` から Google または GitHub の OAuth でログインする。JWT はサーバーが発行し、8 時間有効な HttpOnly Cookie に保存する。API の POST/PATCH/DELETE は管理者ログインが必要。管理者の判定にはメールアドレスや GitHub ユーザー名ではなく、Google の `sub` または GitHub の数値ユーザー ID を使う。
+`/admin` から Google または GitHub の OAuth でログインする。Web Crypto API の HMAC-SHA-256 で署名したセッションを、8 時間有効な `__Host-`・`HttpOnly`・`Secure` Cookie に保存する。API の POST/PATCH/DELETE は管理者ログインが必要。管理者の判定にはメールアドレスや GitHub ユーザー名ではなく、Google の `sub` または GitHub の数値ユーザー ID を使う。
 
 Google Cloud Console で Web アプリの OAuth クライアント、GitHub で OAuth App を作り、それぞれのコールバック URL に次を登録する（ローカル開発は `http://localhost:3000`）。
 
@@ -32,10 +32,10 @@ https://<サイトのホスト>/api/auth/google/callback
 https://<サイトのホスト>/api/auth/github/callback
 ```
 
-ルートの `.dev.vars` に以下を設定する。本番では `wrangler secret put <変数名>` で同じ値を登録する。`JWT_SECRET` は 32 文字以上のランダムな値にする。管理者 ID はカンマ区切りで複数指定できる。片方の OAuth を使わない場合、そのプロバイダーのクライアント設定と管理者 ID は省略できる。
+ルートの `.dev.vars` に以下を設定する。本番では `wrangler secret put <変数名>` で同じ値を登録する。`SESSION_SECRET` は 32 文字以上のランダムな値にする。管理者 ID はカンマ区切りで複数指定できる。片方の OAuth を使わない場合、そのプロバイダーのクライアント設定と管理者 ID は省略できる。以前の `JWT_SECRET` は利用しないため、`SESSION_SECRET` を登録してからデプロイする。
 
 ```
-JWT_SECRET=<32文字以上のランダムな値>
+SESSION_SECRET=<32文字以上のランダムな値>
 GOOGLE_CLIENT_ID=<Google OAuth クライアント ID>
 GOOGLE_CLIENT_SECRET=<Google OAuth クライアントシークレット>
 GITHUB_CLIENT_ID=<GitHub OAuth クライアント ID>

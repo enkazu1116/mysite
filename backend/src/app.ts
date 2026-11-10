@@ -9,11 +9,14 @@ import { skillsRouter } from "./features/skills/router/router";
 import { userRoutes } from "./features/users/router/router";
 import { authRouter } from "./features/auth/router/router";
 import { requireAdministratorForWrite } from "./middleware/adminAccessControl";
+import { HTTPException } from "hono/http-exception";
+import { etagCache } from "./middleware/etagCache";
+import { ApiHttpException } from "./middleware/httpError";
 
 export type AppBindings = {
     DB: Parameters<typeof createDb>[0];
     BOOKS_API?: string;
-    JWT_SECRET?: string;
+    SESSION_SECRET?: string;
     GOOGLE_CLIENT_ID?: string;
     GOOGLE_CLIENT_SECRET?: string;
     GITHUB_CLIENT_ID?: string;
@@ -40,10 +43,23 @@ const app = new Hono<{ Bindings: AppBindings }>()
             allowHeaders: ["Content-Type", "Authorization"],
         }),
     )
+    .use("*", etagCache)
     .use("/api/*", requireAdministratorForWrite)
     .get("/health", (c) => c.json({ ok: true }))
     .get("/", (c) => c.text("Hello Hono!"))
     .route("/api", api);
+
+app.onError((error, c) => {
+    if (error instanceof HTTPException) {
+        return c.json(
+            error instanceof ApiHttpException ? error.body : { message: error.message },
+            error.status,
+        );
+    }
+
+    console.error(error);
+    return c.json({ message: "サーバー内部でエラーが発生しました。" }, 500);
+});
 
 export type ApiType = typeof api;
 export type AppType = typeof app;

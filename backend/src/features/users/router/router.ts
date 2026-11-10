@@ -4,6 +4,8 @@ import { createDb } from "../../../infrastructure/drizzle/db";
 import { DrizzleUsersRepository } from "../drizzle/drizzleUsersRepository";
 import { userPersistenceMessages } from "../../../util/messages/persistence/users";
 import { UserUseCase } from "../usecase/userUseCase";
+import { HTTPException } from "hono/http-exception";
+import { asHttpException } from "../../../middleware/httpError";
 
 const userRoutes = new Hono<{
     Bindings: AppBindings;
@@ -35,15 +37,7 @@ const userRoutes = new Hono<{
         } catch (error) {
 
             // 失敗時はエラーメッセージとエラーコード400: Bad Requestを返す
-            return c.json(
-                {
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : "ユーザーの作成に失敗しました。",
-                },
-                400,
-            );
+            throw asHttpException(error, 400, "ユーザーの作成に失敗しました。");
         }
     })
     .get("/:userId", async (c) => {
@@ -52,7 +46,7 @@ const userRoutes = new Hono<{
 
         if (!user) {
             // 存在しないIDの場合は404: Not Foundを返す
-            return c.json({ message: userPersistenceMessages.notFound }, 404);
+            throw new HTTPException(404, { message: userPersistenceMessages.notFound });
         }
 
         return c.json({ user });
@@ -72,22 +66,14 @@ const userRoutes = new Hono<{
 
             if (!user) {
                 // 存在しないIDの場合は404: Not Foundを返す
-                return c.json({ message: userPersistenceMessages.notFound }, 404);
+                throw new HTTPException(404, { message: userPersistenceMessages.notFound });
             }
 
             return c.json({ user });
         } catch (error) {
 
             // 失敗時はエラーメッセージとエラーコード400: Bad Requestを返す
-            return c.json(
-                {
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : "ユーザーの更新に失敗しました。",
-                },
-                400,
-            );
+            throw asHttpException(error, 400, "ユーザーの更新に失敗しました。");
         }
     })
     .delete("/:userId", async (c) => {
@@ -96,7 +82,7 @@ const userRoutes = new Hono<{
 
         if (!user) {
             // 存在しないIDの場合は404: Not Foundを返す
-            return c.json({ message: userPersistenceMessages.notFound }, 404);
+            throw new HTTPException(404, { message: userPersistenceMessages.notFound });
         }
 
         return c.json({ user });

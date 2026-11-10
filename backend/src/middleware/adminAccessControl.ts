@@ -3,10 +3,11 @@ import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { AuthProvider } from "../features/auth/domain/authIdentity";
 import type { AppBindings } from "../app";
 import { authValidationMessages } from "../features/auth/validation/messages";
-import { type AppContext, type AppEnv, cookieOptions } from "./cookieOptions";
+import { cookieNames, expireSecurityCookie, securityCookieOptions, type AppContext, type AppEnv } from "./cookieOptions";
 import { getAdministratorFromSession } from "./adminSession";
+import { HTTPException } from "hono/http-exception";
 
-const stateCookie = "oauth_state";
+const stateCookie = cookieNames.oauthState;
 
 /**
  * OAuth の CSRF 対策用 state を生成し Cookie に保存する
@@ -15,11 +16,9 @@ const stateCookie = "oauth_state";
 export function beginOAuthState<E extends AppEnv>(c: AppContext<E>, provider: AuthProvider): string {
     const state = crypto.randomUUID();
 
-    // cookieOptions を利用して、state を cookie に保存
-    setCookie(c, stateCookie, `${provider}:${state}`, {
-        ...cookieOptions(c.req.url),
-        maxAge: 600,
-    });
+    setCookie(c, stateCookie, `${provider}:${state}`, securityCookieOptions({
+        prefix: "__Host-", maxAge: 600,
+    }));
 
     return state;
 }
@@ -35,7 +34,7 @@ export function consumeOAuthState<E extends AppEnv>(
 ): boolean {
     // 保存済み state を読み取り、照合後に Cookie を削除する
     const savedState = getCookie(c, stateCookie);
-    deleteCookie(c, stateCookie, cookieOptions(c.req.url));
+    deleteCookie(c, stateCookie, expireSecurityCookie());
 
     // 一致しない場合はセッションハイジャックを防ぐため失敗とする
     return Boolean(state) && savedState === `${provider}:${state}`;
@@ -56,7 +55,7 @@ export const requireAdministratorForWrite: MiddlewareHandler<{ Bindings: AppBind
 
     if (!origin || !allowedOrigins.includes(origin)) {
         // リクエスト元を確認できない場合は、不正アクセスを防止するためエラーを返す
-        return c.json({ message: authValidationMessages.originUnverified }, 403);
+        throw new HTTPException(403, { message: authValidationMessages.originUnverified });
     }
 
     if (new URL(c.req.url).pathname === "/api/auth/logout") {
@@ -67,7 +66,7 @@ export const requireAdministratorForWrite: MiddlewareHandler<{ Bindings: AppBind
 
     if (!await getAdministratorFromSession(c)) {
         // 管理者でない場合はログインが必要である旨を返す
-        return c.json({ message: authValidationMessages.administratorLoginRequired }, 401);
+        throw new HTTPException(401, { message: authValidationMessages.administratorLoginRequired });
     }
     await next();
 };

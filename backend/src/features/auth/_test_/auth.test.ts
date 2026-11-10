@@ -1,10 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { sign } from "hono/jwt";
 import { app, type AppBindings } from "../../../app";
 
 const secret = "test-secret-that-is-longer-than-32-characters";
 const env = {
-    JWT_SECRET: secret,
+    SESSION_SECRET: secret,
     GOOGLE_CLIENT_ID: "google-client",
     GOOGLE_CLIENT_SECRET: "google-secret",
     ADMIN_GOOGLE_SUBS: "allowed-sub",
@@ -24,17 +23,11 @@ describe("管理者認証", () => {
         expect(crossOrigin.status).toBe(403);
     });
 
-    test("許可リストに登録された識別子に対して署名済みJWTだけを受け入れる", async () => {
-        const now = Math.floor(Date.now() / 1000);
-        const claims = { iss: "mysite", aud: "admin", iat: now, exp: now + 60 };
-        const allowed = await sign({ ...claims, sub: "google:allowed-sub" }, secret);
-        const denied = await sign({ ...claims, sub: "google:other-sub" }, secret);
-        for (const [token, expected] of [[allowed, true], [denied, false]] as const) {
-            const response = await app.request("http://localhost:3000/api/auth/me", {
-                headers: { Cookie: `admin_session=${token}` },
-            }, env);
-            expect((await response.json()).authenticated).toBe(expected);
-        }
+    test("形式だけ整った未署名 Cookie を管理者セッションとして受け入れない", async () => {
+        const response = await app.request("http://localhost:3000/api/auth/me", {
+            headers: { Cookie: "__Host-admin_session=header.payload.signature" },
+        }, env);
+        expect((await response.json()).authenticated).toBe(false);
     });
 
     test("state Cookieを設定し、異なるstateのコールバックを拒否する", async () => {
@@ -44,12 +37,12 @@ describe("管理者認証", () => {
         expect(start.headers.get("set-cookie")).toContain("HttpOnly");
 
         const callback = await app.request("http://localhost:3000/api/auth/google/callback?code=code&state=wrong", {
-            headers: { Cookie: "oauth_state=google:expected" },
+            headers: { Cookie: "__Host-oauth_state=google:expected" },
         }, env);
         expect(callback.status).toBe(400);
     });
 
-    test("許可リストに登録されたGitHubコールバック後にJWTを発行する", async () => {
+    test("許可リストに登録されたGitHubコールバック後に署名付き Cookie を発行する", async () => {
         const originalFetch = globalThis.fetch;
         globalThis.fetch = (async (input) => {
             const url = String(input);
@@ -63,13 +56,20 @@ describe("管理者認証", () => {
         }) as typeof fetch;
         try {
             const response = await app.request("http://localhost:3000/api/auth/github/callback?code=code&state=state", {
-                headers: { Cookie: "oauth_state=github:state" },
+                headers: { Cookie: "__Host-oauth_state=github:state" },
             }, {
                 ...env, GITHUB_CLIENT_ID: "github-client", GITHUB_CLIENT_SECRET: "github-secret",
             });
             expect(response.status).toBe(302);
-            expect(response.headers.get("set-cookie")).toContain("admin_session=");
+            expect(response.headers.get("set-cookie")).toContain("__Host-admin_session=");
+            expect(response.headers.get("set-cookie")).toContain("Secure");
+            expect(response.headers.get("set-cookie")).toContain("Path=/");
             expect(response.headers.get("location")).toBe("/admin");
+            const session = response.headers.get("set-cookie")?.match(/__Host-admin_session=([^;]+)/u)?.[1];
+            const sessionResponse = await app.request("http://localhost:3000/api/auth/me", {
+                headers: { Cookie: `__Host-admin_session=${session}` },
+            }, env);
+            expect((await sessionResponse.json()).authenticated).toBe(true);
         } finally {
             globalThis.fetch = originalFetch;
         }
@@ -90,16 +90,16 @@ describe("管理者認証", () => {
         }) as typeof fetch;
         try {
             const response = await app.request("http://localhost:3000/api/auth/google/callback?code=code&state=state", {
-                headers: { Cookie: "oauth_state=google:state" },
+                headers: { Cookie: "__Host-oauth_state=google:state" },
             }, env);
             // 未確認メールは OAuth identity 解決失敗として扱う
             expect(response.status).toBe(502);
             verified = true;
             const accepted = await app.request("http://localhost:3000/api/auth/google/callback?code=code&state=state", {
-                headers: { Cookie: "oauth_state=google:state" },
+                headers: { Cookie: "__Host-oauth_state=google:state" },
             }, env);
             expect(accepted.status).toBe(302);
-            expect(accepted.headers.get("set-cookie")).toContain("admin_session=");
+            expect(accepted.headers.get("set-cookie")).toContain("__Host-admin_session=");
         } finally {
             globalThis.fetch = originalFetch;
         }

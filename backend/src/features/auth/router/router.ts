@@ -23,16 +23,18 @@ import {
 } from "../validation/authValidation";
 import { authValidationMessages } from "../validation/messages";
 import { toAuthErrorStatus } from "../validation/toAuthErrorStatus";
+import { HTTPException } from "hono/http-exception";
+import { ApiHttpException } from "../../../middleware/httpError";
 
 /**
  * 認証エラーをメッセージと HTTP ステータスに変換して返す
  */
-function authErrorResponse(c: AuthContext, error: unknown) {
+function authErrorResponse(error: unknown): never {
     const message =
         error instanceof Error
             ? error.message
             : authValidationMessages.authenticationFailed;
-    return c.json({ message }, toAuthErrorStatus(message));
+    throw new HTTPException(toAuthErrorStatus(message), { message });
 }
 
 /**
@@ -44,7 +46,7 @@ function startOAuthAuthentication(c: AuthContext) {
         // リクエストからプロバイダーを取得し、許可された値か検証する
         const provider = parseAuthProvider(c.req.param("provider"));
         if (!provider) {
-            return c.json({ message: authValidationMessages.providerUnsupported }, 404);
+            throw new HTTPException(404, { message: authValidationMessages.providerUnsupported });
         }
 
         const credentials = requireOAuthSetup(c.env, provider);
@@ -57,7 +59,7 @@ function startOAuthAuthentication(c: AuthContext) {
             state,
         ));
     } catch (error) {
-        return authErrorResponse(c, error);
+        return authErrorResponse(error);
     }
 }
 
@@ -68,7 +70,7 @@ async function completeOAuthAuthentication(c: AuthContext) {
     try {
         const provider = parseAuthProvider(c.req.param("provider"));
         if (!provider) {
-            return c.json({ message: authValidationMessages.providerUnsupported }, 404);
+            throw new HTTPException(404, { message: authValidationMessages.providerUnsupported });
         }
 
         const code = c.req.query("code");
@@ -78,9 +80,9 @@ async function completeOAuthAuthentication(c: AuthContext) {
             stateMatches: consumeOAuthState(c, provider, c.req.query("state")),
         });
         if (errors.length > 0 || !code) {
-            return c.json({
+            throw new HTTPException(400, {
                 message: errors.join("\n") || authValidationMessages.oauthVerificationFailed,
-            }, 400);
+            });
         }
 
         const credentials = requireOAuthSetup(c.env, provider);
@@ -91,7 +93,7 @@ async function completeOAuthAuthentication(c: AuthContext) {
             oauthCallbackUrl(c.req.url, provider),
         );
         if (!identity) {
-            return c.json({ message: authValidationMessages.identityFetchFailed }, 502);
+            throw new HTTPException(502, { message: authValidationMessages.identityFetchFailed });
         }
 
         // 許可リストに含まれる管理者かどうか検証する
@@ -100,18 +102,18 @@ async function completeOAuthAuthentication(c: AuthContext) {
             administratorAllowList: getAdministratorAllowList(c.env),
         });
         if (result.type === "unauthorized") {
-            return c.json({
+            throw new ApiHttpException(403, {
                 message: authValidationMessages.administratorNotAllowed,
                 provider: result.identity.provider,
                 subject: result.identity.id,
-            }, 403);
+            });
         }
 
         await startAdministratorSession(c, result.identity);
         c.header("Cache-Control", "no-store");
         return c.redirect(c.env.FRONTEND_ORIGIN ? `${c.env.FRONTEND_ORIGIN}/admin` : "/admin");
     } catch (error) {
-        return authErrorResponse(c, error);
+        return authErrorResponse(error);
     }
 }
 
@@ -124,7 +126,7 @@ function logoutAdministrator(c: AuthContext) {
         c.header("Cache-Control", "no-store");
         return c.json({ authenticated: false });
     } catch (error) {
-        return authErrorResponse(c, error);
+        return authErrorResponse(error);
     }
 }
 

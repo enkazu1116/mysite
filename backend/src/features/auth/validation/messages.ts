@@ -7,7 +7,7 @@ const authValidationMessages = {
     oauthVerificationFailed: "OAuth の検証に失敗しました。",
     identityFetchFailed: "OAuth ユーザー情報を取得できません。",
     administratorNotAllowed: "管理者として許可されていません。",
-    jwtSecretInvalid: "JWT_SECRET が未設定または短すぎます。",
+    sessionSecretInvalid: "SESSION_SECRET が未設定または短すぎます。",
     originUnverified: "リクエスト元を確認できません。",
     administratorLoginRequired: "管理者ログインが必要です。",
     authenticationFailed: "認証処理に失敗しました。",

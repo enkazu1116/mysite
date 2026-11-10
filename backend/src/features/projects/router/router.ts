@@ -6,6 +6,8 @@ import { DrizzleProjectRepository } from "../drizzle/drizzleProjectRepository";
 import { projectPersistenceMessages } from "../../../util/messages/persistence/projects/project";
 import { ProjectUseCase } from "../usecase/projectUseCase";
 import type { CreateProjectInput, UpdateProjectInput } from "../commands/projectCommands";
+import { HTTPException } from "hono/http-exception";
+import { asHttpException } from "../../../middleware/httpError";
 
 const projectsRouter = new Hono<{
     Bindings: AppBindings;
@@ -27,15 +29,7 @@ const projectsRouter = new Hono<{
             );
             return c.json({ projects });
         } catch (error) {
-            return c.json(
-                {
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : "プロジェクトの一覧取得に失敗しました。",
-                },
-                400,
-            );
+            throw asHttpException(error, 400, "プロジェクトの一覧取得に失敗しました。");
         }
     })
     .post(
@@ -47,15 +41,7 @@ const projectsRouter = new Hono<{
             const project = await c.get("useCase").createProject(body);
             return c.json({ project }, 201);
         } catch (error) {
-            return c.json(
-                {
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : "プロジェクトの登録に失敗しました。",
-                },
-                400,
-            );
+            throw asHttpException(error, 400, "プロジェクトの登録に失敗しました。");
         }
         },
     )
@@ -63,11 +49,11 @@ const projectsRouter = new Hono<{
         try {
             const project = await c.get("useCase").getProjectById(c.req.param("projectId"));
             if (!project) {
-                return c.json({ message: projectPersistenceMessages.projectNotFound }, 404);
+                throw new HTTPException(404, { message: projectPersistenceMessages.projectNotFound });
             }
             return c.json({ project });
         } catch (error) {
-            return c.json({ message: error instanceof Error ? error.message : "プロジェクトの取得に失敗しました。" }, 400);
+            throw asHttpException(error, 400, "プロジェクトの取得に失敗しました。");
         }
     })
     .patch(
@@ -93,7 +79,7 @@ const projectsRouter = new Hono<{
                 message === projectPersistenceMessages.projectNotFound
                     ? 404
                     : 400;
-            return c.json({ message }, statusCode);
+            throw new HTTPException(statusCode, { message });
         }
         },
     )
@@ -112,7 +98,7 @@ const projectsRouter = new Hono<{
                 message === projectPersistenceMessages.projectNotFound
                     ? 404
                     : 400;
-            return c.json({ message }, statusCode);
+            throw new HTTPException(statusCode, { message });
         }
     });
 
