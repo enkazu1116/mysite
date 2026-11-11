@@ -8,7 +8,7 @@ import type { AppBindings, AppType } from "../../../app";
  * BOOKS_API は環境変数かルートの .dev.vars。
  */
 function requireEnv(name: string): string {
-    const value = process.env[name]?.trim();
+    const value = Bun.env[name]?.trim();
     if (!value) {
         throw new Error(
             `${name} が未設定です。ルートの .dev.vars か CI のシークレットを確認してください。`,

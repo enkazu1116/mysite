@@ -4,16 +4,15 @@ import { createDb } from "../../../infrastructure/drizzle/db";
 import { GoogleBooksProvider } from "../../../infrastructure/books/providers/googleBooksProvider";
 import { DrizzleUserBookRepository } from "../drizzle/drizzleUserBookRepository";
 import { UserBookUseCase } from "../usecase/userBookUseCase";
+import { HTTPException } from "hono/http-exception";
+import { asHttpException } from "../../../middleware/httpError";
 
 const booksSearchRouter = new Hono<{ Bindings: AppBindings }>().get(
     "/search",
     async (c) => {
     const apiKey = c.env?.BOOKS_API?.trim();
     if (!apiKey) {
-        return c.json(
-            { message: "BOOKS_API が未設定です。" },
-            500,
-        );
+        throw new HTTPException(500, { message: "BOOKS_API が未設定です。" });
     }
 
     const userBookUseCase = new UserBookUseCase(
@@ -32,15 +31,7 @@ const booksSearchRouter = new Hono<{ Bindings: AppBindings }>().get(
         return c.json({ books });
     } catch (error) {
         // 失敗時はエラーメッセージと 400: Bad Request を返す
-        return c.json(
-            {
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "本の検索に失敗しました。",
-            },
-            400,
-        );
+        throw asHttpException(error, 400, "本の検索に失敗しました。");
     }
 },
 );

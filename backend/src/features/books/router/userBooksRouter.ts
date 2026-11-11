@@ -7,6 +7,8 @@ import { userBookPersistenceMessages } from "../../../util/messages/persistence/
 import { UserBookUseCase } from "../usecase/userBookUseCase";
 import { validator } from "hono/validator";
 import type { CreateUserBookInput, UpdateUserBookInput } from "../commands/userBookCommands";
+import { HTTPException } from "hono/http-exception";
+import { asHttpException } from "../../../middleware/httpError";
 
 const userBooksRouter = new Hono<{
     Bindings: AppBindings;
@@ -39,15 +41,7 @@ const userBooksRouter = new Hono<{
             return c.json({ userBooks });
         } catch (error) {
             // 失敗時はエラーメッセージと 400: Bad Request を返す
-            return c.json(
-                {
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : "ユーザー本の一覧取得に失敗しました。",
-                },
-                400,
-            );
+            throw asHttpException(error, 400, "ユーザー本の一覧取得に失敗しました。");
         }
     })
     .post(
@@ -63,15 +57,7 @@ const userBooksRouter = new Hono<{
             return c.json({ userBook }, 201);
         } catch (error) {
             // 失敗時はエラーメッセージと 400: Bad Request を返す
-            return c.json(
-                {
-                    message:
-                        error instanceof Error
-                            ? error.message
-                            : "ユーザー本の登録に失敗しました。",
-                },
-                400,
-            );
+            throw asHttpException(error, 400, "ユーザー本の登録に失敗しました。");
         }
         },
     )
@@ -79,11 +65,11 @@ const userBooksRouter = new Hono<{
         try {
             const userBook = await c.get("useCase").getUserBookById(c.req.param("userBookId"));
             if (!userBook) {
-                return c.json({ message: userBookPersistenceMessages.userBookNotFound }, 404);
+                throw new HTTPException(404, { message: userBookPersistenceMessages.userBookNotFound });
             }
             return c.json({ userBook });
         } catch (error) {
-            return c.json({ message: error instanceof Error ? error.message : "ユーザー本の取得に失敗しました。" }, 400);
+            throw asHttpException(error, 400, "ユーザー本の取得に失敗しました。");
         }
     })
     .patch(
@@ -115,7 +101,7 @@ const userBooksRouter = new Hono<{
                 message === userBookPersistenceMessages.userBookNotFound
                     ? 404
                     : 400;
-            return c.json({ message }, statusCode);
+            throw new HTTPException(statusCode, { message });
         }
         },
     )
@@ -134,7 +120,7 @@ const userBooksRouter = new Hono<{
                 message === userBookPersistenceMessages.userBookNotFound
                     ? 404
                     : 400;
-            return c.json({ message }, statusCode);
+            throw new HTTPException(statusCode, { message });
         }
     });
 

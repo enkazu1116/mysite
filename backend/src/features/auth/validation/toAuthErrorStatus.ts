@@ -6,7 +6,7 @@ import { authValidationMessages } from "./messages";
 export function toAuthErrorStatus(message: string): 400 | 401 | 403 | 502 | 503 {
     switch (message) {
         case authValidationMessages.setupIncomplete:
-        case authValidationMessages.jwtSecretInvalid:
+        case authValidationMessages.sessionSecretInvalid:
             return 503;
         case authValidationMessages.identityFetchFailed:
             return 502;
